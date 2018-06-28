@@ -1,5 +1,13 @@
 import { StyleSheet } from 'react-native';
 
+export const colors = {
+	navigation: '#2b2b2b',
+	background: '#313335',
+	text:       '#ffffff',
+	highlight:  '#00ff00',
+	item:       '#555555'
+};
+
 export default {
 	styles: StyleSheet.create(
 		{
@@ -16,10 +24,13 @@ export default {
 			}
 		}
 	),
-	colors:  {
-		navigation: '#2b2b2b',
-		background: '#313335',
-		text:       '#ffffff',
-		highlight:  '#00ff00'
-	}
+	colors: StyleSheet.create(
+		{
+			navigation: { backgroundColor: colors.navigation },
+			background: { backgroundColor: colors.background },
+			text:       { color: colors.text },
+			highlight:  { color: colors.highlight },
+			item:       { backgroundColor: colors.item }
+		}
+	)
 }

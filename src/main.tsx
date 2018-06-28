@@ -8,20 +8,20 @@ import Stopwatch from './stopwatch/stopwatch';
 import Timer from './timer/timer';
 import Settings from './settings';
 
-import config from './config';
+import config, { colors } from './config';
 
-export default class extends React.PureComponent {
+export default class Main extends React.PureComponent {
 	
 	render() {
 		return <View style={[ config.styles.flex ]}>
 			<StatusBar barStyle='light-content'/>
-			<Main/>
+			<MainNav/>
 		</View>;
 	}
 	
 }
 
-const Main = createBottomTabNavigator(
+const MainNav = createBottomTabNavigator(
 	{
 		Alarm:     Alarm,
 		Stopwatch: Stopwatch,
@@ -62,10 +62,8 @@ const Main = createBottomTabNavigator(
 			}
 		},
 		tabBarOptions:    {
-			activeTintColor: config.colors.highlight,
-			style:           {
-				backgroundColor: config.colors.navigation
-			}
+			activeTintColor: colors.highlight,
+			style:           [ config.colors.navigation ]
 		}
 	}
 );

@@ -4,7 +4,7 @@ import Swipeable from 'react-native-swipeable';
 
 import SwipeList from './swipeList';
 
-import config from '../config';
+import config, { colors } from '../config';
 
 export type SwipeListItemProps = {
 	leftContent?: React.ReactElement<any>,
@@ -19,7 +19,7 @@ export type SwipeListItemProps = {
 	rightButtonWidth?: number
 };
 
-export default class extends React.PureComponent {
+export default class SwipeListItem extends React.PureComponent {
 	
 	props: SwipeListItemProps & {
 		item,
@@ -43,31 +43,31 @@ export default class extends React.PureComponent {
 		const { item, parent, renderItem, leftButtons, rightButtons, ...props } = this.props;
 		
 		return <Swipeable
-			onSwipeStart={this.onSwipeStart.bind( this )}
-			onSwipeRelease={() => parent.setState( { isSwiping: false } )}
-			onRef={ref => this.setState( { swipeable: ref } )}
+			onSwipeStart={this.onSwipeStart}
+			onSwipeRelease={this.onSwipeRelease}
+			onRef={this.onRef}
 			leftButtons={leftButtons.map(
 				button =>
 					<TouchableOpacity
 						style={[ config.styles.flex, config.styles.center, {
-							backgroundColor: button.color || config.colors.highlight,
+							backgroundColor: button.color || colors.highlight,
 							width:           this.props.leftButtonWidth
 						} ]}
 						onPress={button.onPress}
 					>
-						<Text style={{ color: config.colors.text }}>{button.text}</Text>
+						<Text style={[ config.colors.text ]}>{button.text}</Text>
 					</TouchableOpacity>
 			)}
 			rightButtons={rightButtons.map(
 				button =>
 					<TouchableOpacity
 						style={[ config.styles.flex, config.styles.center, {
-							backgroundColor: button.color || config.colors.highlight,
+							backgroundColor: button.color || colors.highlight,
 							width:           this.props.rightButtonWidth
 						} ]}
 						onPress={button.onPress}
 					>
-						<Text style={{ color: config.colors.text }}>{button.text}</Text>
+						<Text style={[ config.colors.text ]}>{button.text}</Text>
 					</TouchableOpacity>
 			)}
 			{...props}
@@ -76,7 +76,7 @@ export default class extends React.PureComponent {
 		</Swipeable>
 	}
 	
-	onSwipeStart() {
+	private onSwipeStart = () => {
 		const { parent } = this.props,
 				{ state }  = parent;
 		parent.setState( { isSwiping: true } );
@@ -84,6 +84,14 @@ export default class extends React.PureComponent {
 			state.currentSwipeable.recenter();
 		}
 		parent.setState( { currentSwipeable: this.state.swipeable } );
-	}
+	};
+	
+	private onSwipeRelease = () => {
+		this.props.parent.setState( { isSwiping: false } );
+	};
+	
+	private onRef = ( ref ) => {
+		this.setState( { swipeable: ref } );
+	};
 	
 }

@@ -7,7 +7,7 @@ import config from '../config';
 
 type SwipeListProps = FlatListProps<any> & SwipeListItemProps;
 
-export default class extends React.PureComponent {
+export default class SwipeList extends React.PureComponent {
 	
 	props: SwipeListProps;
 	
@@ -16,26 +16,33 @@ export default class extends React.PureComponent {
 		currentSwipeable: null
 	};
 	
+	constructor( props ) {
+		super( props );
+	}
 	
 	render() {
 		return <FlatList
 			style={[ config.styles.flex ]}
 			scrollEnabled={!this.state.isSwiping}
-			onScroll={this.onScroll.bind( this )}
-			keyExtractor={( item, index ) => index.toString()}
+			onScroll={this.onScroll}
+			keyExtractor={this.keyExtractor}
 			{...this.props}
-			renderItem={this.renderItem.bind( this )}
+			renderItem={this.renderItem}
 		/>;
 	}
 	
-	private onScroll() {
+	private onScroll = () => {
 		if (this.state.currentSwipeable) {
 			this.state.currentSwipeable.recenter();
 			this.setState( { currentSwipeable: null } );
 		}
-	}
+	};
 	
-	private renderItem( data ) {
+	private keyExtractor = ( item, index ) => {
+		return index.toString();
+	};
+	
+	private renderItem = ( data ) => {
 		const { leftContent, rightContent, leftButtons, rightButtons, leftActionActivationDistance, onLeftActionRelease, rightActionActivationDistance, onRightActionRelease, leftButtonWidth, rightButtonWidth } = this.props;
 		
 		const props = {

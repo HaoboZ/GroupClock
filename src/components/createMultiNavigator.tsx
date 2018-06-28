@@ -1,7 +1,7 @@
 import React from 'react';
 import { createStackNavigator } from 'react-navigation';
 
-export function StackModalNavigator2( routeConfigs, navigatorConfig ) {
+export default function StackModalNavigator( routeConfigs, navigatorConfig ) {
 	const { initialRouteName, ...modalNavigatorConfig } = navigatorConfig;
 	const { navigationOptions, ...cardNavigatorConfig } = navigatorConfig;
 	
@@ -22,32 +22,6 @@ export function StackModalNavigator2( routeConfigs, navigatorConfig ) {
 		}, {
 			mode: 'modal',
 			...modalNavigatorConfig
-		}
-	);
-}
-
-export default function StackModalNavigator( routeConfig, navigatorConfig ) {
-	const { initialRouteName, ...modalNavigatorConfig } = navigatorConfig;
-	const { ...cardNavigatorConfig } = navigatorConfig;
-	
-	const modalRouteConfig = {};
-	Object.keys( routeConfig ).forEach( routeName => {
-		modalRouteConfig[ `${routeName}Modal` ] = routeConfig[ routeName ];
-	} );
-	
-	const CardStackNavigator = createStackNavigator( modalRouteConfig, {
-		// navigationOptions: { header: null },
-		mode: 'modal',
-		...modalNavigatorConfig
-	} );
-	
-	return createStackNavigator(
-		{
-			CardStackNavigator: { screen: CardStackNavigator },
-			...routeConfig
-		}, {
-			// mode: 'modal',
-			...cardNavigatorConfig
 		}
 	);
 }
