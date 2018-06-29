@@ -3,30 +3,34 @@ import { FlatList, Text, View } from 'react-native';
 import { ListItem, SearchBar } from 'react-native-elements';
 import moment from 'moment-timezone';
 
-import config, { colors } from '../config';
+import { colors } from '../config';
+import { color } from '../styles';
 
 export default class TimezonePicker extends React.PureComponent {
 	
 	props: {
-		tz,
-		changeTZ
+		tz: string,
+		setTZ: ( string ) => void,
+		timeout?: number
+	};
+	
+	static defaultProps = {
+		timeout: 250
 	};
 	
 	state = {
-		text:          '',
-		searchTimeout: 0,
-		searchTZ:      []
+		text:     '',
+		timeout:  0,
+		searchTZ: []
 	};
 	
-	private tzs: Array<string> = moment.tz.names();
-	
-	private setText = text => {
-		if (this.state.searchTimeout)
-			clearTimeout( this.state.searchTimeout );
-		
-		this.setState(
-			{
-				searchTimeout: setTimeout( () => {
+	private set = {
+		text: ( text ) => {
+			if (this.state.timeout)
+				clearTimeout( this.state.timeout );
+			
+			this.setState( {
+				timeout: setTimeout( () => {
 					let searchTZ = [];
 					if (text.length) {
 						searchTZ =
@@ -36,30 +40,34 @@ export default class TimezonePicker extends React.PureComponent {
 								 .slice( 0, 10 );
 					}
 					this.setState( { text, searchTZ } );
-				}, 250 )
-			}
-		);
+				}, this.props.timeout )
+			} );
+		}
 	};
+	
+	private tzs: Array<string> = moment.tz.names();
 	
 	render() {
 		return <View>
-			<Text style={[ config.colors.text, {
-				fontSize:    18,
-				paddingLeft: 10,
-				height:      36
-			} ]}>{this.props.tz}</Text>
+			<ListItem
+				containerStyle={[ color.background ]}
+				titleStyle={[ color.foreground ]}
+				title={this.props.tz}
+				rightElement={
+					<Text style={[ color.foreground ]}>{this.getTZ( this.props.tz )}</Text>}
+			/>
 			<SearchBar
 				platform="ios"
-				onChangeText={this.setText}
+				onChangeText={this.set.text}
 				clearIcon={null}
 				clearButtonMode='always'
 				cancelButtonTitle=''
 				value={this.state.text}
-				containerStyle={[ config.colors.background ]}
-				inputContainerStyle={[ config.colors.navigation ]}
-				inputStyle={[ config.colors.text ]}
+				containerStyle={[ color.background ]}
+				inputContainerStyle={[ color.navigation ]}
+				inputStyle={[ color.foreground ]}
 				placeholder='Search'
-				placeholderTextColor={colors.item}
+				placeholderTextColor={colors.contrast}
 			/>
 			<FlatList
 				renderItem={this.renderItem}
@@ -72,16 +80,20 @@ export default class TimezonePicker extends React.PureComponent {
 	private renderItem = ( tz ) => {
 		return <ListItem
 			title={tz.item}
-			onPress={() => this.props.changeTZ( tz.item )}
-			containerStyle={[ config.colors.item, { borderBottomWidth: 0.5 } ]}
-			titleStyle={[ config.colors.text ]}
+			onPress={() => this.props.setTZ( tz.item )}
+			containerStyle={[ color.listItem ]}
+			titleStyle={[ color.foreground ]}
 			rightElement={
-				<Text style={[ config.colors.text ]}>{'UTC' + moment.tz( "2013-11-18 11:55", tz.item ).format( 'Z' )}</Text>}
+				<Text style={[ color.foreground ]}>{this.getTZ( tz.item )}</Text>}
 		/>;
 	};
 	
 	private keyExtractor = ( item, index ) => {
 		return index.toString();
 	};
+	
+	private getTZ = ( tz: string ) => {
+		return 'UTC' + moment.tz( "1997-03-07 11:55", tz ).format( 'Z' );
+	}
 	
 }

@@ -1,10 +1,11 @@
 import React from 'react';
 import { Platform } from 'react-native';
-import { Button, Icon as _Icon } from 'react-native-elements';
+import { Button, Icon } from 'react-native-elements';
 
-import config from '../config';
+import { style } from '../styles';
+import { colors } from '../config';
 
-export default class Icon extends React.PureComponent {
+export default class NativeIcon extends React.PureComponent {
 	
 	props: {
 		name: string,
@@ -13,12 +14,16 @@ export default class Icon extends React.PureComponent {
 		outline?: boolean
 	};
 	
+	static defaultProps = {
+		color: colors.highlight
+	};
+	
 	render() {
 		let iconName = ( Platform.OS === 'android' ? 'md-' : 'ios-' ) + `${this.props.name}`;
 		if (Platform.OS === 'ios' && this.props.outline)
 			iconName = `${iconName}-outline`;
 		
-		return <_Icon type='ionicon' name={iconName} size={this.props.size} color={this.props.color}/>;
+		return <Icon type='ionicon' name={iconName} size={this.props.size} color={this.props.color}/>;
 	}
 	
 }
@@ -38,9 +43,9 @@ export class IconButton extends React.PureComponent {
 		
 		return <Button
 			clear
-			style={config.styles.buttonPadding}
+			style={style.buttonPadding}
 			title=''
-			icon={<Icon {...props}/>}
+			icon={<NativeIcon {...props}/>}
 			onPress={onPress}
 		/>
 	}

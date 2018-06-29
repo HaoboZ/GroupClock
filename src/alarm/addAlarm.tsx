@@ -5,7 +5,8 @@ import { ButtonGroup, Input, ListItem } from 'react-native-elements';
 import moment from 'moment-timezone';
 import TimezonePicker from '../components/timezonePicker';
 
-import config, { colors } from '../config';
+import { colors } from '../config';
+import { color, style } from '../styles';
 
 export default class AddAlarm extends React.PureComponent {
 	
@@ -65,8 +66,8 @@ export default class AddAlarm extends React.PureComponent {
 	render() {
 		return <ScrollView
 			style={[
-				config.styles.flex,
-				config.colors.background
+				style.flex,
+				color.background
 			]}
 			// scrollEnabled={false}
 		>
@@ -93,13 +94,13 @@ export default class AddAlarm extends React.PureComponent {
 		return <ListItem
 			containerStyle={[ styles.Item ]}
 			title='Label'
-			titleStyle={[ config.colors.text ]}
+			titleStyle={[ color.foreground ]}
 			rightElement={<Input
-				containerStyle={[ config.colors.background, {
+				containerStyle={[ color.background, {
 					width:  210,
 					margin: 0
 				} ]}
-				inputStyle={[ config.colors.text ]}
+				inputStyle={[ color.foreground ]}
 				onChangeText={this.setLabel}
 				value={this.state.label}
 				maxLength={16}
@@ -109,19 +110,19 @@ export default class AddAlarm extends React.PureComponent {
 	
 	protected typeSelect() {
 		return <View
-			style={[ styles.Item, config.styles.center ]}
+			style={[ styles.Item, style.center ]}
 		>
 			<ButtonGroup
 				buttons={[ 'Alarm', 'Group' ]}
 				selectedIndex={this.state.type}
 				onPress={this.setType}
-				containerStyle={[ config.colors.background, {
+				containerStyle={[ color.background, {
 					width:  210,
 					margin: 0
 				} ]}
 				selectedButtonStyle={{ backgroundColor: '#ffffff' }}
 				selectedTextStyle={{ color: '#000000' }}
-				textStyle={[ config.colors.text, { fontSize: 14 } ]}
+				textStyle={[ color.foreground, { fontSize: 14 } ]}
 			/>
 		</View>;
 	}
@@ -148,18 +149,18 @@ export default class AddAlarm extends React.PureComponent {
 				paddingRight: 0
 			} ]}
 			title='Repeat'
-			titleStyle={[ config.colors.text ]}
+			titleStyle={[ color.foreground ]}
 			rightElement={<ButtonGroup
 				buttons={[ 'Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa' ]}
 				selectMultiple
 				selectedIndex={null}
 				selectedIndexes={this.state.repeat}
 				onPress={this.setRepeat}
-				containerStyle={[ config.colors.background, {
+				containerStyle={[ color.background, {
 					width:  210,
 					margin: 0
 				} ]}
-				textStyle={[ config.colors.text ]}
+				textStyle={[ color.foreground ]}
 				selectedButtonStyle={{ backgroundColor: '#ffffff' }}
 				selectedTextStyle={{ color: '#000000' }}
 			/>}
@@ -167,7 +168,7 @@ export default class AddAlarm extends React.PureComponent {
 	}
 	
 	protected timezone() {
-		return <TimezonePicker tz={this.state.groupTZ} changeTZ={this.setTZ}/>;
+		return <TimezonePicker tz={this.state.groupTZ} setTZ={this.setTZ}/>;
 	}
 	
 }

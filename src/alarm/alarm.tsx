@@ -1,34 +1,34 @@
 import React from 'react';
 import { Text, View } from 'react-native';
-import { createStackNavigator, NavigationInjectedProps, NavigationScreenOptions } from 'react-navigation';
-import Icon, { IconButton } from '../components/nativeIcon';
+import createNavigator from '../components/createNavigator';
+import NavComponent from '../components/navComponent';
+import { IconButton } from '../components/nativeIcon';
 import SwipeList from '../components/swipeList';
 import moment from 'moment-timezone';
 
 import addAlarm from './addAlarm';
-import config, { colors } from '../config';
 
-class Alarm extends React.PureComponent {
-	
-	props: NavigationInjectedProps;
+import { colors } from '../config';
+import { color } from '../styles';
+
+class Alarm extends NavComponent {
 	
 	state = {
 		data: []
 	};
 	
-	static navigationOptions( { navigation }: NavigationInjectedProps ): NavigationScreenOptions {
+	static navigationOptions( { navigation } ) {
 		const title = navigation.getParam( 'title', 'Alarm' ),
 				tz    = navigation.getParam( 'tz', moment.tz.guess() );
 		
 		return {
 			title,
-			headerBackTitle: 'Back',
-			headerRight:     <IconButton
-									  name='add'
-									  onPress={() => navigation.navigate( 'addAlarm', { tz } )}
-									  size={40}
-									  color={colors.highlight}
-								  />
+			headerRight:
+				<IconButton
+					name='add'
+					onPress={() => navigation.navigate( 'addAlarm', { tz } )}
+					size={40}
+				/>
 		};
 	}
 	
@@ -39,7 +39,7 @@ class Alarm extends React.PureComponent {
 	
 	render() {
 		return <SwipeList
-			style={[ config.colors.background ]}
+			style={[ color.background ]}
 			data={this.state.data}
 			renderItem={this.renderItem}
 			rightButtons={[ {
@@ -66,31 +66,17 @@ class Alarm extends React.PureComponent {
 				height:            50
 			}}
 		>
-			<Text style={[ config.colors.text ]}>I am {item.text} in a SwipeListView</Text>
+			<Text style={[ color.foreground ]}>
+				I am {item.text} in a SwipeListView
+			</Text>
 		</View>
 	};
 	
 }
 
-//TODO: Change stack navigator to include modal view to addAlarm
-export default createStackNavigator(
+export default createNavigator(
 	{
-		Alarm:    Alarm,
-		addAlarm: addAlarm
-	},
-	{
-		initialRouteName:  'Alarm',
-		navigationOptions: {
-			headerStyle:          [ config.colors.navigation ],
-			headerTitleStyle:     [ config.colors.text ],
-			headerBackTitleStyle: [ config.colors.highlight ],
-			headerBackImage:      <View style={config.styles.buttonPadding}>
-											 <Icon
-												 name='arrow-back'
-												 color={colors.highlight}
-												 size={30}
-											 />
-										 </View>
-		}
+		Alarm,
+		addAlarm
 	}
 );

@@ -1,15 +1,17 @@
 import React from 'react';
 import { Text, View } from 'react-native';
-import { SwipeListView } from 'react-native-swipe-list-view';
-import { createStackNavigator, NavigationInjectedProps, NavigationScreenOptions } from 'react-navigation';
+import { NavigationInjectedProps, NavigationScreenOptions } from 'react-navigation';
+import createNavigator from './components/createNavigator';
+import NavComponent from './components/navComponent';
 
-import config from './config';
+import { color, style } from './styles';
 
-class Settings extends React.PureComponent {
+class Settings extends NavComponent {
 	
 	props: NavigationInjectedProps;
 	
 	static navigationOptions( { navigation }: NavigationInjectedProps ): NavigationScreenOptions {
+		
 		return {
 			title: 'Settings'
 		};
@@ -17,11 +19,11 @@ class Settings extends React.PureComponent {
 	
 	render() {
 		return <View style={[
-			config.styles.flex,
-			config.styles.center,
-			{ backgroundColor: config.colors.background }
+			style.flex,
+			style.center,
+			color.background
 		]}>
-			<Text style={[ { color: config.colors.text } ]}>
+			<Text style={[ color.foreground ]}>
 				Settings
 			</Text>
 		</View>;
@@ -29,19 +31,8 @@ class Settings extends React.PureComponent {
 	
 }
 
-export default createStackNavigator(
+export default createNavigator(
 	{
-		Settings: Settings
-	},
-	{
-		initialRouteName:  'Settings',
-		navigationOptions: {
-			headerStyle:      {
-				backgroundColor: config.colors.background,
-			},
-			headerTitleStyle: {
-				color: config.colors.text
-			},
-		}
+		Settings
 	}
 );

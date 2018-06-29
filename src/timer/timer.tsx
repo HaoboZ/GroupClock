@@ -1,35 +1,37 @@
 import React from 'react';
 import { Text, View } from 'react-native';
-import { SwipeListView } from 'react-native-swipe-list-view';
-import { createStackNavigator, NavigationInjectedProps, NavigationScreenOptions } from 'react-navigation';
-
+import { NavigationInjectedProps, NavigationScreenOptions } from 'react-navigation';
+import createNavigator from '../components/createNavigator';
+import NavComponent from '../components/navComponent';
 import { IconButton } from '../components/nativeIcon';
 
-import config from '../config';
+import { color, style } from '../styles';
 
-class Timer extends React.PureComponent {
+class Timer extends NavComponent {
 	
 	props: NavigationInjectedProps;
 	
 	static navigationOptions( { navigation }: NavigationInjectedProps ): NavigationScreenOptions {
+		const title = navigation.getParam( 'title', 'Timer' );
+		
 		return {
-			title:       'Timer',
-			headerRight: <IconButton
-								 name='add'
-								 onPress={() => navigation.navigate( 'addTimer' )}
-								 size={40}
-								 color={config.colors.highlight}
-							 />
+			title,
+			headerRight:
+				<IconButton
+					name='add'
+					onPress={() => navigation.navigate( 'addTimer' )}
+					size={40}
+				/>
 		};
 	}
 	
 	render() {
 		return <View style={[
-			config.styles.flex,
-			config.styles.center,
-			{ backgroundColor: config.colors.background }
+			style.flex,
+			style.center,
+			color.background
 		]}>
-			<Text style={[ { color: config.colors.text } ]}>
+			<Text style={[ color.foreground ]}>
 				Timer
 			</Text>
 		</View>;
@@ -37,19 +39,8 @@ class Timer extends React.PureComponent {
 	
 }
 
-export default createStackNavigator(
+export default createNavigator(
 	{
-		Timer: Timer
-	},
-	{
-		initialRouteName:  'Timer',
-		navigationOptions: {
-			headerStyle:      {
-				backgroundColor: config.colors.background,
-			},
-			headerTitleStyle: {
-				color: config.colors.text
-			},
-		}
+		Timer
 	}
 );
