@@ -10,6 +10,13 @@ import Settings from './settings';
 import { colors } from './config';
 import { color } from './styles';
 
+const routeIcons = {
+	Alarm:     'alarm',
+	Stopwatch: 'stopwatch',
+	Timer:     'timer',
+	Settings:  'settings'
+};
+
 const MainNav = createBottomTabNavigator(
 	{
 		Alarm:     Alarm,
@@ -25,7 +32,7 @@ const MainNav = createBottomTabNavigator(
 			return {
 				tabBarIcon( { focused, tintColor } ) {
 					let iconName = routeIcons[ routeName ] || 'square';
-					if (!iconName)
+					if ( !iconName )
 						return null;
 					
 					return <NativeIcon
@@ -42,12 +49,5 @@ const MainNav = createBottomTabNavigator(
 		}
 	}
 );
-
-const routeIcons = {
-	Alarm:     'alarm',
-	Stopwatch: 'stopwatch',
-	Timer:     'timer',
-	Settings:  'settings'
-};
 
 export default MainNav;

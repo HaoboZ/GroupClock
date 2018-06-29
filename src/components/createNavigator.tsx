@@ -15,6 +15,7 @@ export default function createNavigator( routeConfig: NavigationRouteConfigMap )
 				headerStyle:          [ color.navigation ],
 				headerTitleStyle:     [ color.foreground ],
 				headerBackTitleStyle: [ color.highlight ],
+				// Changes back arrow to be custom colored
 				headerBackImage:      <View style={style.buttonPadding}>
 												 <NativeIcon
 													 name='arrow-back'

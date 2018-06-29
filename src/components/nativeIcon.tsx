@@ -20,7 +20,7 @@ export default class NativeIcon extends React.PureComponent {
 	
 	render() {
 		let iconName = ( Platform.OS === 'android' ? 'md-' : 'ios-' ) + `${this.props.name}`;
-		if (Platform.OS === 'ios' && this.props.outline)
+		if ( Platform.OS === 'ios' && this.props.outline )
 			iconName = `${iconName}-outline`;
 		
 		return <Icon type='ionicon' name={iconName} size={this.props.size} color={this.props.color}/>;

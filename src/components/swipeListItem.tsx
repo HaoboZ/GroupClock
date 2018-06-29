@@ -58,7 +58,7 @@ export default class SwipeListItem extends React.PureComponent {
 			const { parent } = this.props,
 					{ state }  = parent;
 			parent.setState( { isSwiping: true } );
-			if (state.currentSwipeable && state.currentSwipeable !== this.state.swipeable) {
+			if ( state.currentSwipeable && state.currentSwipeable !== this.state.swipeable ) {
 				state.currentSwipeable.recenter();
 			}
 			parent.setState( { currentSwipeable: this.state.swipeable } );

@@ -26,18 +26,18 @@ export default class TimezonePicker extends React.PureComponent {
 	
 	private set = {
 		text: ( text ) => {
-			if (this.state.timeout)
+			if ( this.state.timeout )
 				clearTimeout( this.state.timeout );
 			
 			this.setState( {
 				timeout: setTimeout( () => {
 					let searchTZ = [];
-					if (text.length) {
+					if ( text.length ) {
 						searchTZ =
 							this.tzs
-								 .map( tz => tz.includes( text ) ? tz : null )
-								 .filter( tz => tz != null )
-								 .slice( 0, 10 );
+								.map( tz => tz.includes( text ) ? tz : null )
+								.filter( tz => tz != null )
+								.slice( 0, 10 );
 					}
 					this.setState( { text, searchTZ } );
 				}, this.props.timeout )
@@ -54,7 +54,7 @@ export default class TimezonePicker extends React.PureComponent {
 				titleStyle={[ color.foreground ]}
 				title={this.props.tz}
 				rightElement={
-					<Text style={[ color.foreground ]}>{this.getTZ( this.props.tz )}</Text>}
+					<Text style={[ color.foreground ]}>{this.search.getTZ( this.props.tz )}</Text>}
 			/>
 			<SearchBar
 				platform="ios"
@@ -70,30 +70,30 @@ export default class TimezonePicker extends React.PureComponent {
 				placeholderTextColor={colors.contrast}
 			/>
 			<FlatList
-				renderItem={this.renderItem}
+				renderItem={this.search.renderItem}
 				data={this.state.searchTZ}
-				keyExtractor={this.keyExtractor}
+				keyExtractor={this.search.keyExtractor}
 			/>
 		</View>;
 	}
 	
-	private renderItem = ( tz ) => {
-		return <ListItem
-			title={tz.item}
-			onPress={() => this.props.setTZ( tz.item )}
-			containerStyle={[ color.listItem ]}
-			titleStyle={[ color.foreground ]}
-			rightElement={
-				<Text style={[ color.foreground ]}>{this.getTZ( tz.item )}</Text>}
-		/>;
+	private search = {
+		renderItem:   ( tz ) => {
+			return <ListItem
+				title={tz.item}
+				onPress={() => this.props.setTZ( tz.item )}
+				containerStyle={[ color.listItem ]}
+				titleStyle={[ color.foreground ]}
+				rightElement={
+					<Text style={[ color.foreground ]}>{this.search.getTZ( tz.item )}</Text>}
+			/>;
+		},
+		keyExtractor: ( item, index ) => {
+			return index.toString();
+		},
+		getTZ:        ( tz: string ) => {
+			return 'UTC' + moment.tz( "1997-03-07 11:55", tz ).format( 'Z' );
+		}
 	};
-	
-	private keyExtractor = ( item, index ) => {
-		return index.toString();
-	};
-	
-	private getTZ = ( tz: string ) => {
-		return 'UTC' + moment.tz( "1997-03-07 11:55", tz ).format( 'Z' );
-	}
 	
 }

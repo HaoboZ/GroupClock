@@ -1,6 +1,5 @@
 import React from 'react';
 import { Text, View } from 'react-native';
-import { NavigationInjectedProps, NavigationScreenOptions } from 'react-navigation';
 import createNavigator from './components/createNavigator';
 import NavComponent from './components/navComponent';
 
@@ -8,9 +7,7 @@ import { color, style } from './styles';
 
 class Settings extends NavComponent {
 	
-	props: NavigationInjectedProps;
-	
-	static navigationOptions( { navigation }: NavigationInjectedProps ): NavigationScreenOptions {
+	static navigationOptions( { navigation } ) {
 		
 		return {
 			title: 'Settings'

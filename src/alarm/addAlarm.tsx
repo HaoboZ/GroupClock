@@ -1,38 +1,39 @@
 import React from 'react';
 import { Button, DatePickerIOS, ScrollView, StyleSheet, View } from 'react-native';
-import { NavigationInjectedProps, NavigationScreenOptions } from 'react-navigation';
 import { ButtonGroup, Input, ListItem } from 'react-native-elements';
 import moment from 'moment-timezone';
 import TimezonePicker from '../components/timezonePicker';
 
 import { colors } from '../config';
 import { color, style } from '../styles';
+import NavComponent from "../components/navComponent";
 
-export default class AddAlarm extends React.PureComponent {
+export default class AddAlarm extends NavComponent {
 	
 	//TODO: Input timezone from group instead
-	public props: NavigationInjectedProps;
 	
 	public state = {
-		label:       'Alarm',
-		type:        0,
-		_changeDate: false,
-		date:        null,
-		repeat:      [],
-		tz:          '',
-		tzoffset:    0,
-		groupTZ:     ''
+		label:      'Alarm',
+		type:       0,
+		changeDate: false,
+		date:       null,
+		repeat:     [],
+		tz:         '',
+		tzoffset:   0,
+		groupTZ:    ''
 	};
 	
-	private setLabel = label => this.setState( { label } );
-	private setType = type => {
-		this.props.navigation.setParams( { title: type ? ' Group' : '' } );
-		this.setState( { type } )
+	private set = {
+		label:      label => this.setState( { label } ),
+		type:       type => {
+			this.props.navigation.setParams( { title: type ? ' Group' : '' } );
+			this.setState( { type } )
+		},
+		changeDate: () => this.setState( { changeDate: !this.state.changeDate } ),
+		date:       date => this.setState( { date } ),
+		repeat:     repeat => this.setState( { repeat } ),
+		groupTZ:    groupTZ => this.setState( { groupTZ } )
 	};
-	private setChangeDate = () => this.setState( { _changeDate: !this.state._changeDate } );
-	private setDate = date => this.setState( { date } );
-	private setRepeat = repeat => this.setState( { repeat } );
-	private setTZ = groupTZ => this.setState( { groupTZ } );
 	
 	constructor( props ) {
 		super( props );
@@ -45,7 +46,7 @@ export default class AddAlarm extends React.PureComponent {
 		this.state.date = date;
 	}
 	
-	static navigationOptions( { navigation }: NavigationInjectedProps ): NavigationScreenOptions {
+	static navigationOptions( { navigation } ) {
 		let title = navigation.getParam( 'title', '' );
 		
 		return {
@@ -65,11 +66,7 @@ export default class AddAlarm extends React.PureComponent {
 	
 	render() {
 		return <ScrollView
-			style={[
-				style.flex,
-				color.background
-			]}
-			// scrollEnabled={false}
+			style={[ style.flex, color.background ]}
 		>
 			{this.label()}
 			{this.typeSelect()}
@@ -78,14 +75,14 @@ export default class AddAlarm extends React.PureComponent {
 	}
 	
 	protected type = () => {
-		if (!this.state.type) {
+		if ( !this.state.type ) {
 			return <View>
 				{this.pickDate()}
 				{this.repeat()}
 			</View>
 		} else {
 			return <View>
-				{this.timezone()}
+				<TimezonePicker tz={this.state.groupTZ} setTZ={this.set.groupTZ}/>
 			</View>;
 		}
 	};
@@ -96,12 +93,9 @@ export default class AddAlarm extends React.PureComponent {
 			title='Label'
 			titleStyle={[ color.foreground ]}
 			rightElement={<Input
-				containerStyle={[ color.background, {
-					width:  210,
-					margin: 0
-				} ]}
+				containerStyle={[ color.background, styles.rightItem ]}
 				inputStyle={[ color.foreground ]}
-				onChangeText={this.setLabel}
+				onChangeText={this.set.label}
 				value={this.state.label}
 				maxLength={16}
 			/>}
@@ -115,11 +109,8 @@ export default class AddAlarm extends React.PureComponent {
 			<ButtonGroup
 				buttons={[ 'Alarm', 'Group' ]}
 				selectedIndex={this.state.type}
-				onPress={this.setType}
-				containerStyle={[ color.background, {
-					width:  210,
-					margin: 0
-				} ]}
+				onPress={this.set.type}
+				containerStyle={[ color.background, styles.rightItem ]}
 				selectedButtonStyle={{ backgroundColor: '#ffffff' }}
 				selectedTextStyle={{ color: '#000000' }}
 				textStyle={[ color.foreground, { fontSize: 14 } ]}
@@ -130,13 +121,13 @@ export default class AddAlarm extends React.PureComponent {
 	protected pickDate() {
 		return <View>
 			<Button
-				onPress={this.setChangeDate}
+				onPress={this.set.changeDate}
 				title={this.state.date.toTimeString()}
 				color={colors.highlight}
 			/>
-			{this.state._changeDate ? <DatePickerIOS
+			{this.state.changeDate ? <DatePickerIOS
 				date={this.state.date}
-				onDateChange={this.setDate}
+				onDateChange={this.set.date}
 				mode='time'
 				style={{ backgroundColor: '#ffffff' }}
 			/> : null}
@@ -155,33 +146,30 @@ export default class AddAlarm extends React.PureComponent {
 				selectMultiple
 				selectedIndex={null}
 				selectedIndexes={this.state.repeat}
-				onPress={this.setRepeat}
-				containerStyle={[ color.background, {
-					width:  210,
-					margin: 0
-				} ]}
+				onPress={this.set.repeat}
+				containerStyle={[ color.background, styles.rightItem ]}
 				textStyle={[ color.foreground ]}
-				selectedButtonStyle={{ backgroundColor: '#ffffff' }}
-				selectedTextStyle={{ color: '#000000' }}
+				selectedButtonStyle={{ backgroundColor: colors.foreground }}
+				selectedTextStyle={{ color: colors.background }}
 			/>}
 		/>;
-	}
-	
-	protected timezone() {
-		return <TimezonePicker tz={this.state.groupTZ} setTZ={this.setTZ}/>;
 	}
 	
 }
 
 const styles = StyleSheet.create(
 	{
-		Item: {
+		Item:      {
 			height:          65,
 			paddingTop:      0,
 			paddingBottom:   0,
 			paddingLeft:     20,
 			paddingRight:    20,
 			backgroundColor: colors.background
+		},
+		rightItem: {
+			width:  210,
+			margin: 0
 		}
 	}
 );

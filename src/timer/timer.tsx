@@ -1,6 +1,5 @@
 import React from 'react';
 import { Text, View } from 'react-native';
-import { NavigationInjectedProps, NavigationScreenOptions } from 'react-navigation';
 import createNavigator from '../components/createNavigator';
 import NavComponent from '../components/navComponent';
 import { IconButton } from '../components/nativeIcon';
@@ -9,9 +8,7 @@ import { color, style } from '../styles';
 
 class Timer extends NavComponent {
 	
-	props: NavigationInjectedProps;
-	
-	static navigationOptions( { navigation }: NavigationInjectedProps ): NavigationScreenOptions {
+	static navigationOptions( { navigation } ) {
 		const title = navigation.getParam( 'title', 'Timer' );
 		
 		return {

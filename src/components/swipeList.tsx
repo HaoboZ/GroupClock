@@ -26,7 +26,7 @@ export default class SwipeList extends React.PureComponent {
 	
 	private list = {
 		onScroll:     () => {
-			if (this.state.currentSwipeable) {
+			if ( this.state.currentSwipeable ) {
 				this.state.currentSwipeable.recenter();
 				this.setState( { currentSwipeable: null } );
 			}
