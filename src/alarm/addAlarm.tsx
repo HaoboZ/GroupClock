@@ -1,175 +1,145 @@
 import React from 'react';
-import { Button, DatePickerIOS, ScrollView, StyleSheet, View } from 'react-native';
-import { ButtonGroup, Input, ListItem } from 'react-native-elements';
-import moment from 'moment-timezone';
+import { AsyncStorage, Button, ScrollView, View } from 'react-native';
+import NavComponent from '../components/navComponent';
+import * as moment from 'moment-timezone';
 import TimezonePicker from '../components/timezonePicker';
+import Label from './components/label';
+import Type from './components/type';
+import PickDate from './components/pickDate';
+import Repeat from './components/repeat';
+import Storage from '../extend/storage';
 
 import { colors } from '../config';
 import { color, style } from '../styles';
-import NavComponent from "../components/navComponent";
 
 export default class AddAlarm extends NavComponent {
 	
-	//TODO: Input timezone from group instead
-	
 	public state = {
-		label:      'Alarm',
-		type:       0,
-		changeDate: false,
-		date:       null,
-		repeat:     [],
-		tz:         '',
-		tzoffset:   0,
-		groupTZ:    ''
+		label:    'Alarm',
+		type:     0,
+		viewDate: false,
+		time:     null,
+		repeat:   [],
+		tz:       '',
+		tzOffset: 0
 	};
 	
+	/**
+	 * Set state functions.
+	 */
 	private set = {
-		label:      label => this.setState( { label } ),
-		type:       type => {
-			this.props.navigation.setParams( { title: type ? ' Group' : '' } );
+		label:    label => this.setState( { label } ),
+		type:     type => {
+			this.props.navigation.setParams( { title: type == 'Group' ? ' Group' : '' } );
 			this.setState( { type } )
 		},
-		changeDate: () => this.setState( { changeDate: !this.state.changeDate } ),
-		date:       date => this.setState( { date } ),
-		repeat:     repeat => this.setState( { repeat } ),
-		groupTZ:    groupTZ => this.setState( { groupTZ } )
+		viewDate: () => this.setState( { viewDate: !this.state.viewDate } ),
+		time:     time => this.setState( { time } ),
+		repeat:   repeat => {
+			console.log( repeat );
+			this.setState( { repeat } )
+		},
+		tz:       tz => this.setState( { tz } )
 	};
 	
+	/**
+	 * Initializes timezone and time.
+	 *
+	 * @param props
+	 */
 	constructor( props ) {
 		super( props );
+		// Loads timezone
+		this.state.tz = this.props.navigation.getParam( 'tz' );
+		this.state.tzOffset = moment.tz.zone( this.state.tz ).utcOffset( Date.now() );
 		
-		this.state.groupTZ = this.state.tz = this.props.navigation.getParam( 'tz' );
-		this.state.tzoffset = moment.tz.zone( this.state.tz ).utcOffset( Date.now() );
-		
-		let date = new Date( Date.now() );
-		date.setTime( date.getTime() + ( date.getTimezoneOffset() - this.state.tzoffset + 1 ) * 60 * 1000 );
-		this.state.date = date;
+		// Loads time that will be changed to timezone
+		let time = new Date( Date.now() );
+		time.setTime( time.getTime() + ( time.getTimezoneOffset() - this.state.tzOffset + 1 ) * 60 * 1000 );
+		this.state.time = time;
 	}
 	
 	static navigationOptions( { navigation } ) {
-		let title = navigation.getParam( 'title', '' );
+		let state     = navigation.getParam( 'state' ),
+			 title     = navigation.getParam( 'title', '' ),
+			 parentKey = navigation.getParam( 'key' );
+		
+		const save = async () => {
+			// generate random key
+			let key = Math.random().toString( 36 ).substring( 2, 12 );
+			// Stores new alarm
+			let data: any = {};
+			data.label = state.label;
+			if ( state.type == 'Group' ) {
+				data.type = 1;
+				data.tz = state.tz;
+			} else {
+				data.type = 0;
+				data.time = state.time;
+				data.repeat = state.repeat;
+			}
+			await Storage.setItem( key, data );
+			
+			// Retrieves parent info from storage
+			data = await Storage.getItem( parentKey );
+			if ( !data ) {
+				alert('An error has occurred');
+				return;
+			}
+			
+			// Adds new alarm to list
+			data.alarms.push( key );
+			await Storage.setItem( parentKey, data );
+			
+			navigation.goBack();
+		};
 		
 		return {
 			title:           'Add Alarm' + title,
 			headerBackTitle: 'Cancel',
-			headerRight:     <Button
-									  title='Save'
-									  onPress={() => {
-										  //TODO: Verify some info
-										  //TODO: Save to data
-										  navigation.goBack();
-									  }}
-									  color={colors.highlight}
-								  />
+			headerRight:     parentKey ? <Button
+				title='Save'
+				onPress={save}
+				color={colors.highlight}
+			/> : null
 		};
+	}
+	
+	componentDidMount() {
+		if ( !this.props.navigation.getParam( 'key' ) )
+			alert( 'An error has occurred' );
+		
+		this.props.navigation.setParams( { state: this.state } );
 	}
 	
 	render() {
 		return <ScrollView
 			style={[ style.flex, color.background ]}
 		>
-			{this.label()}
-			{this.typeSelect()}
+			<Label label={this.state.label} change={this.set.label}/>
+			<Type type={this.state.type} change={this.set.type}/>
 			{this.type()}
 		</ScrollView>;
 	}
 	
-	protected type = () => {
+	/**
+	 * Changes components based on the type that is selected.
+	 * @returns {any}
+	 */
+	private type = () => {
 		if ( !this.state.type ) {
 			return <View>
-				{this.pickDate()}
-				{this.repeat()}
+				<PickDate
+					time={this.state.time}
+					view={this.state.viewDate}
+					change={this.set.time}
+					changeView={this.set.viewDate}
+				/>
+				<Repeat repeat={this.state.repeat} change={this.set.repeat}/>
 			</View>
 		} else {
-			return <View>
-				<TimezonePicker tz={this.state.groupTZ} setTZ={this.set.groupTZ}/>
-			</View>;
+			return <TimezonePicker tz={this.state.tz} setTZ={this.set.tz}/>;
 		}
 	};
-	
-	protected label() {
-		return <ListItem
-			containerStyle={[ styles.Item ]}
-			title='Label'
-			titleStyle={[ color.foreground ]}
-			rightElement={<Input
-				containerStyle={[ color.background, styles.rightItem ]}
-				inputStyle={[ color.foreground ]}
-				onChangeText={this.set.label}
-				value={this.state.label}
-				maxLength={16}
-			/>}
-		/>;
-	};
-	
-	protected typeSelect() {
-		return <View
-			style={[ styles.Item, style.center ]}
-		>
-			<ButtonGroup
-				buttons={[ 'Alarm', 'Group' ]}
-				selectedIndex={this.state.type}
-				onPress={this.set.type}
-				containerStyle={[ color.background, styles.rightItem ]}
-				selectedButtonStyle={{ backgroundColor: '#ffffff' }}
-				selectedTextStyle={{ color: '#000000' }}
-				textStyle={[ color.foreground, { fontSize: 14 } ]}
-			/>
-		</View>;
-	}
-	
-	protected pickDate() {
-		return <View>
-			<Button
-				onPress={this.set.changeDate}
-				title={this.state.date.toTimeString()}
-				color={colors.highlight}
-			/>
-			{this.state.changeDate ? <DatePickerIOS
-				date={this.state.date}
-				onDateChange={this.set.date}
-				mode='time'
-				style={{ backgroundColor: '#ffffff' }}
-			/> : null}
-		</View>
-	};
-	
-	protected repeat() {
-		return <ListItem
-			containerStyle={[ styles.Item, {
-				paddingRight: 0
-			} ]}
-			title='Repeat'
-			titleStyle={[ color.foreground ]}
-			rightElement={<ButtonGroup
-				buttons={[ 'Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa' ]}
-				selectMultiple
-				selectedIndex={null}
-				selectedIndexes={this.state.repeat}
-				onPress={this.set.repeat}
-				containerStyle={[ color.background, styles.rightItem ]}
-				textStyle={[ color.foreground ]}
-				selectedButtonStyle={{ backgroundColor: colors.foreground }}
-				selectedTextStyle={{ color: colors.background }}
-			/>}
-		/>;
-	}
 	
 }
-
-const styles = StyleSheet.create(
-	{
-		Item:      {
-			height:          65,
-			paddingTop:      0,
-			paddingBottom:   0,
-			paddingLeft:     20,
-			paddingRight:    20,
-			backgroundColor: colors.background
-		},
-		rightItem: {
-			width:  210,
-			margin: 0
-		}
-	}
-);

@@ -22,12 +22,13 @@ export type SwipeListItemProps = {
 export default class SwipeListItem extends React.PureComponent {
 	
 	props: SwipeListItemProps & {
-		item,
-		parent: SwipeList,
-		renderItem
+		parent?: SwipeList,
+		item: any,
+		renderItem: ( any ) => void
 	};
 	
 	static defaultProps = {
+		parent:           null,
 		leftButtons:      [],
 		rightButtons:     [],
 		leftButtonWidth:  75,
@@ -47,7 +48,7 @@ export default class SwipeListItem extends React.PureComponent {
 			onRef={this.swipeable.onRef}
 			leftButtons={this.swipeable.map( leftButtons )}
 			rightButtons={this.swipeable.map( rightButtons, true )}
-			{...props}
+		
 		>
 			{renderItem( item )}
 		</Swipeable>
@@ -55,8 +56,11 @@ export default class SwipeListItem extends React.PureComponent {
 	
 	private swipeable = {
 		onSwipeStart:   () => {
-			const { parent } = this.props,
-					{ state }  = parent;
+			const { parent } = this.props;
+			if ( !parent )
+				return;
+			const { state } = parent;
+			
 			parent.setState( { isSwiping: true } );
 			if ( state.currentSwipeable && state.currentSwipeable !== this.state.swipeable ) {
 				state.currentSwipeable.recenter();
@@ -64,13 +68,15 @@ export default class SwipeListItem extends React.PureComponent {
 			parent.setState( { currentSwipeable: this.state.swipeable } );
 		},
 		onSwipeRelease: () => {
+			if ( !this.props.parent )
+				return;
 			this.props.parent.setState( { isSwiping: false } );
 		},
-		onRef:          ( ref ) => {
-			this.setState( { swipeable: ref } );
+		onRef:          ( swipeable ) => {
+			this.setState( { swipeable } );
 		},
 		map:            ( buttons: Array<{ text?: string, color?: string, onPress?: () => void }>, right = false ) => {
-			buttons.map(
+			return buttons.map(
 				button =>
 					<TouchableOpacity
 						style={[ style.flex, style.center, {

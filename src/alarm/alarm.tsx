@@ -5,8 +5,8 @@ import NavComponent from '../components/navComponent';
 import { IconButton } from '../components/nativeIcon';
 import SwipeList from '../components/swipeList';
 import moment from 'moment-timezone';
-
 import addAlarm from './addAlarm';
+import Storage from '../extend/storage';
 
 import { colors } from '../config';
 import { color } from '../styles';
@@ -14,33 +14,68 @@ import { color } from '../styles';
 class Alarm extends NavComponent {
 	
 	state = {
-		data: []
+		label: '',
+		tz:    '',
+		data:  []
 	};
+	
+	static tz: string;
 	
 	static navigationOptions( { navigation } ) {
 		const title = navigation.getParam( 'title', 'Alarm' ),
-				tz    = navigation.getParam( 'tz', moment.tz.guess() );
+				key   = navigation.getParam( 'key', 'AlarmMain' );
 		
 		return {
 			title,
 			headerRight:
 				<IconButton
 					name='add'
-					onPress={() => navigation.navigate( 'addAlarm', { tz } )}
+					onPress={() => {
+						navigation.navigate( 'addAlarm',
+							{ tz: Alarm.tz, key } )
+					}}
 					size={40}
 				/>
 		};
 	}
 	
 	componentDidMount() {
-		//TODO: Load data from asyncStorage to state.data
-		this.setState( { data: Array( 3 ).fill( '' ).map( ( _, i ) => ( { text: `item #${i}` } ) ) } );
+		this.getData();
+	}
+	
+	private async getData() {
+		const key = this.props.navigation.getParam( 'key', 'AlarmMain' );
+		let data = await Storage.getItem( key );
+		if ( data == undefined ) {
+			alert( 'An error has occurred' );
+			return;
+		}
+		
+		if ( !data ) {
+			// First instance of app
+			data = { label: 'Alarm', tz: moment.tz.guess(), alarms: [] };
+			await Storage.setItem( key, data );
+		}
+		this.props.navigation.setParams( { title: data.label } );
+		Alarm.tz = data.tz;
+		this.setState( { label: data.label, tz: data.tz } );
+		this.setData( data.alarms );
+	}
+	
+	private async setData( data ) {
+		let result = data.map( key => {
+			Storage.getItem( key ).then( ( res ) => {
+				return res;
+			} );
+		} );
+		this.setState( { data: result } );
 	}
 	
 	render() {
+		console.log( this.state );
 		return <SwipeList
 			style={[ color.background ]}
-			data={this.state.data}
+			data={[]}
 			renderItem={this.renderItem}
 			rightButtons={[ {
 				text: 'Pop', color: 'blue', onPress: () => {
@@ -50,14 +85,15 @@ class Alarm extends NavComponent {
 				text: 'Push', color: 'red', onPress: () => {
 					this.props.navigation.push( 'Alarm', {
 						title: 'Next Alarm',
-						tz:    this.props.navigation.getParam( 'tz' )
+						tz:    this.state.tz
 					} );
 				}
 			} ]}
 		/>;
 	}
 	
-	private renderItem = ( item ) => {
+	private
+	renderItem = ( item ) => {
 		//TODO: Render each alarm
 		return <View
 			style={{

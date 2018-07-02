@@ -1,6 +1,5 @@
 import React from 'react';
 import { StatusBar, View } from 'react-native';
-
 import MainNav from './navigator';
 
 import { style } from './styles';
