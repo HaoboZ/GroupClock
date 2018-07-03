@@ -60,29 +60,41 @@ export default class AddAlarm extends NavComponent {
 	}
 	
 	static navigationOptions( { navigation } ) {
-		let state     = navigation.getParam( 'state' ),
-			 title     = navigation.getParam( 'title', '' ),
-			 parentKey = navigation.getParam( 'key' );
-		
+		let title     = navigation.getParam( 'title', '' ),
+			 parentKey = navigation.getParam( 'key' ),
+			 reload    = navigation.getParam( 'reload' );
 		
 		return {
 			title:           'Add Alarm' + title,
 			headerBackTitle: 'Cancel',
 			headerRight:     parentKey ? <Button
 				title='Save'
-				onPress={() => this.saveData( state, parentKey ).then( () => navigation.goBack() )}
+				onPress={() => {
+					let state = navigation.getParam( 'state' )();
+					AddAlarm.saveData( state, parentKey ).then( () => {
+						reload();
+						navigation.goBack();
+					} )
+				}}
 				color={colors.highlight}
 			/> : null
 		};
 	}
 	
+	/**
+	 * Saves data to ASyncStorage.
+	 *
+	 * @param state
+	 * @param {string} parentKey
+	 * @returns {Promise<void>}
+	 */
 	private static async saveData( state: any, parentKey: string ) {
 		// generate random key
 		let key = Math.random().toString( 36 ).substring( 2, 12 );
 		// Stores new alarm
 		let data: any = {};
 		data.label = state.label;
-		if ( state.type === 'Group' ) {
+		if ( state.type === 1 ) {
 			data.type = 1;
 			data.tz = state.tz;
 		} else {
@@ -108,7 +120,7 @@ export default class AddAlarm extends NavComponent {
 		if ( !this.props.navigation.getParam( 'key' ) )
 			alert( 'An error has occurred' );
 		
-		this.props.navigation.setParams( { state: this.state } );
+		this.props.navigation.setParams( { state: () => this.state } );
 	}
 	
 	render() {

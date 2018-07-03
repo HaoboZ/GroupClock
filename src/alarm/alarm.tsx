@@ -19,6 +19,10 @@ class Alarm extends NavComponent {
 		data:  []
 	};
 	
+	constructor( props ) {
+		super( props );
+	}
+	
 	static navigationOptions( { navigation } ) {
 		const title  = navigation.getParam( 'title', 'Alarm' ),
 				tz     = navigation.getParam( 'tz' ),
@@ -32,7 +36,7 @@ class Alarm extends NavComponent {
 					name='add'
 					onPress={() => {
 						navigation.navigate( 'addAlarm',
-							{ tz, key } )
+							{ tz, key, reload } )
 					}}
 					size={40}
 				/>
@@ -69,36 +73,49 @@ class Alarm extends NavComponent {
 		return <SwipeList
 			style={[ color.background ]}
 			data={this.state.data}
-			renderItem={this.renderItem}
-			rightButtons={[ {
-				text: 'Pop', color: 'blue', onPress: () => {
-					this.props.navigation.pop();
-				}
-			}, {
-				text: 'Push', color: 'red', onPress: () => {
-					this.props.navigation.push( 'Alarm', {
-						title: 'Next Alarm',
-						tz:    this.state.tz
-					} );
-				}
-			} ]}
+			renderItem={this.list.renderItem}
+			rightButtons={this.list.rightButtons}
 		/>;
 	}
 	
-	private renderItem = ( item ) => {
-		//TODO: Render each alarm
-		return <View
-			style={{
-				borderColor:       colors.navigation,
-				borderBottomWidth: 1,
-				height:            50
-			}}
-		>
-			<Text style={[ color.foreground ]}>
-				{item.type ? 'Group' : 'Alarm'}
-			</Text>
-		</View>
-	};
+	private list = {
+		renderItem:   ( item ) => {
+			//TODO: Render each alarm
+			return <View
+				style={{
+					borderColor:       colors.navigation,
+					borderBottomWidth: 1,
+					height:            50
+				}}
+			>
+				<Text style={[ color.foreground ]}>
+					{item.type ? 'Group' : 'Alarm'}
+				</Text>
+			</View>
+		},
+		rightButtons: ( item ) => {
+			if ( item.type == 1 ) {
+				return [ {
+					text: 'Pop', color: 'blue', onPress: () => {
+						this.props.navigation.pop();
+					}
+				}, {
+					text: 'Push', color: 'red', onPress: () => {
+						this.props.navigation.push( 'Alarm', {
+							title: 'Next Alarm',
+							tz:    this.state.tz
+						} );
+					}
+				} ];
+			} else {
+				return [ {
+					text: 'Edit', color: 'red', onPress: () => {
+					
+					}
+				} ]
+			}
+		}
+	}
 	
 }
 

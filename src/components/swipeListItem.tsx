@@ -9,8 +9,8 @@ import { color, style } from '../styles';
 export type SwipeListItemProps = {
 	leftContent?: React.ReactElement<any>,
 	rightContent?: React.ReactElement<any>,
-	leftButtons?: Array<{ text?: string, color?: string, onPress?: () => void }>,
-	rightButtons?: Array<{ text?: string, color?: string, onPress?: () => void }>,
+	leftButtons?: ( item: any ) => Array<{ text?: string, color?: string, onPress?: () => void }> | Array<{ text?: string, color?: string, onPress?: () => void }>,
+	rightButtons?: ( item: any ) => Array<{ text?: string, color?: string, onPress?: () => void }> | Array<{ text?: string, color?: string, onPress?: () => void }>,
 	leftActionActivationDistance?: number,
 	onLeftActionRelease?: () => void,
 	rightActionActivationDistance?: number,
@@ -40,14 +40,19 @@ export default class SwipeListItem extends React.PureComponent {
 	};
 	
 	render() {
-		const { item, parent, renderItem, leftButtons, rightButtons, ...props } = this.props;
+		let { item, parent, renderItem, leftButtons, rightButtons, ...props } = this.props;
+		
+		if ( typeof leftButtons === 'function' )
+			leftButtons = leftButtons( item ) as any;
+		if ( typeof rightButtons === 'function' )
+			rightButtons = rightButtons( item ) as any;
 		
 		return <Swipeable
 			onSwipeStart={this.swipeable.onSwipeStart}
 			onSwipeRelease={this.swipeable.onSwipeRelease}
 			onRef={this.swipeable.onRef}
-			leftButtons={this.swipeable.map( leftButtons )}
-			rightButtons={this.swipeable.map( rightButtons, true )}
+			leftButtons={this.swipeable.map( leftButtons as any )}
+			rightButtons={this.swipeable.map( rightButtons as any, true )}
 		
 		>
 			{renderItem( item )}
