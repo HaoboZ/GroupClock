@@ -19,11 +19,11 @@ class Alarm extends NavComponent {
 		data:  []
 	};
 	
-	static tz: string;
-	
 	static navigationOptions( { navigation } ) {
-		const title = navigation.getParam( 'title', 'Alarm' ),
-				key   = navigation.getParam( 'key', 'AlarmMain' );
+		const title  = navigation.getParam( 'title', 'Alarm' ),
+				tz     = navigation.getParam( 'tz' ),
+				key    = navigation.getParam( 'key', 'AlarmMain' ),
+				reload = navigation.getParam( 'reload' );
 		
 		return {
 			title,
@@ -32,7 +32,7 @@ class Alarm extends NavComponent {
 					name='add'
 					onPress={() => {
 						navigation.navigate( 'addAlarm',
-							{ tz: Alarm.tz, key } )
+							{ tz, key } )
 					}}
 					size={40}
 				/>
@@ -40,13 +40,14 @@ class Alarm extends NavComponent {
 	}
 	
 	componentDidMount() {
-		this.getData();
+		this.getData().then();
+		this.props.navigation.setParams( { reload: this.getData.bind( this ) } );
 	}
 	
-	private async getData() {
+	public async getData() {
 		const key = this.props.navigation.getParam( 'key', 'AlarmMain' );
 		let data = await Storage.getItem( key );
-		if ( data == undefined ) {
+		if ( data === undefined ) {
 			alert( 'An error has occurred' );
 			return;
 		}
@@ -56,26 +57,18 @@ class Alarm extends NavComponent {
 			data = { label: 'Alarm', tz: moment.tz.guess(), alarms: [] };
 			await Storage.setItem( key, data );
 		}
-		this.props.navigation.setParams( { title: data.label } );
-		Alarm.tz = data.tz;
+		this.props.navigation.setParams( { title: data.label, tz: data.tz } );
+		
 		this.setState( { label: data.label, tz: data.tz } );
-		this.setData( data.alarms );
-	}
-	
-	private async setData( data ) {
-		let result = data.map( key => {
-			Storage.getItem( key ).then( ( res ) => {
-				return res;
-			} );
-		} );
-		this.setState( { data: result } );
+		Promise.all( data.alarms.map( async key => {
+			return await Storage.getItem( key );
+		} ) ).then( data => this.setState( { data } ) );
 	}
 	
 	render() {
-		console.log( this.state );
 		return <SwipeList
 			style={[ color.background ]}
-			data={[]}
+			data={this.state.data}
 			renderItem={this.renderItem}
 			rightButtons={[ {
 				text: 'Pop', color: 'blue', onPress: () => {
@@ -92,8 +85,7 @@ class Alarm extends NavComponent {
 		/>;
 	}
 	
-	private
-	renderItem = ( item ) => {
+	private renderItem = ( item ) => {
 		//TODO: Render each alarm
 		return <View
 			style={{
@@ -103,7 +95,7 @@ class Alarm extends NavComponent {
 			}}
 		>
 			<Text style={[ color.foreground ]}>
-				I am {item.text} in a SwipeListView
+				{item.type ? 'Group' : 'Alarm'}
 			</Text>
 		</View>
 	};

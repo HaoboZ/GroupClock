@@ -1,5 +1,5 @@
 import React from 'react';
-import { AsyncStorage, Button, ScrollView, View } from 'react-native';
+import { Button, ScrollView, View } from 'react-native';
 import NavComponent from '../components/navComponent';
 import * as moment from 'moment-timezone';
 import TimezonePicker from '../components/timezonePicker';
@@ -30,7 +30,7 @@ export default class AddAlarm extends NavComponent {
 	private set = {
 		label:    label => this.setState( { label } ),
 		type:     type => {
-			this.props.navigation.setParams( { title: type == 'Group' ? ' Group' : '' } );
+			this.props.navigation.setParams( { title: type === 'Group' ? ' Group' : '' } );
 			this.setState( { type } )
 		},
 		viewDate: () => this.setState( { viewDate: !this.state.viewDate } ),
@@ -64,45 +64,44 @@ export default class AddAlarm extends NavComponent {
 			 title     = navigation.getParam( 'title', '' ),
 			 parentKey = navigation.getParam( 'key' );
 		
-		const save = async () => {
-			// generate random key
-			let key = Math.random().toString( 36 ).substring( 2, 12 );
-			// Stores new alarm
-			let data: any = {};
-			data.label = state.label;
-			if ( state.type == 'Group' ) {
-				data.type = 1;
-				data.tz = state.tz;
-			} else {
-				data.type = 0;
-				data.time = state.time;
-				data.repeat = state.repeat;
-			}
-			await Storage.setItem( key, data );
-			
-			// Retrieves parent info from storage
-			data = await Storage.getItem( parentKey );
-			if ( !data ) {
-				alert('An error has occurred');
-				return;
-			}
-			
-			// Adds new alarm to list
-			data.alarms.push( key );
-			await Storage.setItem( parentKey, data );
-			
-			navigation.goBack();
-		};
 		
 		return {
 			title:           'Add Alarm' + title,
 			headerBackTitle: 'Cancel',
 			headerRight:     parentKey ? <Button
 				title='Save'
-				onPress={save}
+				onPress={() => this.saveData( state, parentKey ).then( () => navigation.goBack() )}
 				color={colors.highlight}
 			/> : null
 		};
+	}
+	
+	private static async saveData( state: any, parentKey: string ) {
+		// generate random key
+		let key = Math.random().toString( 36 ).substring( 2, 12 );
+		// Stores new alarm
+		let data: any = {};
+		data.label = state.label;
+		if ( state.type === 'Group' ) {
+			data.type = 1;
+			data.tz = state.tz;
+		} else {
+			data.type = 0;
+			data.time = state.time.getHours() + ':' + ( '0' + state.time.getMinutes() ).slice( -2 );
+			data.repeat = state.repeat;
+		}
+		await Storage.setItem( key, data );
+		
+		// Retrieves parent info from storage
+		data = await Storage.getItem( parentKey );
+		if ( !data ) {
+			alert( 'An error has occurred' );
+			return;
+		}
+		
+		// Adds new alarm to list
+		data.alarms.push( key );
+		await Storage.setItem( parentKey, data );
 	}
 	
 	componentDidMount() {
