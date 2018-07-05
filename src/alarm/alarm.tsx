@@ -97,7 +97,7 @@ class Alarm extends NavComponent {
 	}
 	
 	private list = {
-		renderItem:   ( { item }: ListRenderItemInfo<AlarmData> ): React.ReactElement<any> => {
+		renderItem:   ( { item }: ListRenderItemInfo<AlarmData> ) => {
 			if ( item.type === itemType.Alarm ) {
 				return <View
 					style={{
@@ -107,7 +107,7 @@ class Alarm extends NavComponent {
 					}}
 				>
 					<Text style={[ color.foreground ]}>
-						Alarm: {item.label}, {item.time}, {item.repeat.toString()}
+						Alarm: {item.label}, {item.time}, {item.alarms.toString()}
 					</Text>
 				</View>
 			} else {
