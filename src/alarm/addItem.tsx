@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button, ScrollView, View } from 'react-native';
 import NavComponent from '../components/navComponent';
+import { AlarmData, itemType } from './alarm';
 import * as moment from 'moment-timezone';
 import TimezonePicker from '../components/timezonePicker';
 import Label from './components/label';
@@ -12,11 +13,11 @@ import Storage from '../extend/storage';
 import { colors } from '../config';
 import { color, style } from '../styles';
 
-export default class AddAlarm extends NavComponent {
+export default class AddItem extends NavComponent {
 	
 	public state = {
 		label:    'Alarm',
-		type:     0,
+		type:     itemType.Alarm,
 		viewDate: false,
 		time:     null,
 		repeat:   [],
@@ -36,7 +37,6 @@ export default class AddAlarm extends NavComponent {
 		viewDate: () => this.setState( { viewDate: !this.state.viewDate } ),
 		time:     time => this.setState( { time } ),
 		repeat:   repeat => {
-			console.log( repeat );
 			this.setState( { repeat } )
 		},
 		tz:       tz => this.setState( { tz } )
@@ -61,8 +61,7 @@ export default class AddAlarm extends NavComponent {
 	
 	static navigationOptions( { navigation } ) {
 		let title     = navigation.getParam( 'title', '' ),
-			 parentKey = navigation.getParam( 'key' ),
-			 reload    = navigation.getParam( 'reload' );
+			 parentKey = navigation.getParam( 'key' );
 		
 		return {
 			title:           'Add Alarm' + title,
@@ -70,8 +69,9 @@ export default class AddAlarm extends NavComponent {
 			headerRight:     parentKey ? <Button
 				title='Save'
 				onPress={() => {
-					let state = navigation.getParam( 'state' )();
-					AddAlarm.saveData( state, parentKey ).then( () => {
+					const reload = navigation.getParam( 'reload' ),
+							state  = navigation.getParam( 'state' )();
+					AddItem.saveData( state, parentKey ).then( () => {
 						reload();
 						navigation.goBack();
 					} )
@@ -92,15 +92,15 @@ export default class AddAlarm extends NavComponent {
 		// generate random key
 		let key = Math.random().toString( 36 ).substring( 2, 12 );
 		// Stores new alarm
-		let data: any = {};
+		let data: AlarmData = {} as any;
 		data.label = state.label;
-		if ( state.type === 1 ) {
-			data.type = 1;
-			data.tz = state.tz;
-		} else {
-			data.type = 0;
+		if ( state.type == itemType.Alarm ) {
+			data.type = itemType.Alarm;
 			data.time = state.time.getHours() + ':' + ( '0' + state.time.getMinutes() ).slice( -2 );
 			data.repeat = state.repeat;
+		} else {
+			data.type = itemType.Group;
+			data.tz = state.tz;
 		}
 		await Storage.setItem( key, data );
 		
@@ -138,7 +138,7 @@ export default class AddAlarm extends NavComponent {
 	 * @returns {any}
 	 */
 	private type = () => {
-		if ( !this.state.type ) {
+		if ( this.state.type == itemType.Alarm ) {
 			return <View>
 				<PickDate
 					time={this.state.time}

@@ -50,7 +50,7 @@ export default class SwipeList extends React.PureComponent {
 				rightButtonWidth
 			};
 			
-			return <SwipeListItem parent={this} item={data.item} renderItem={this.props.renderItem} {...props}/>;
+			return <SwipeListItem parent={this} data={data} renderItem={this.props.renderItem} {...props}/>;
 		}
 	}
 	

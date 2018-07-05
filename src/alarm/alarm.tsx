@@ -1,15 +1,29 @@
 import React from 'react';
-import { Text, View } from 'react-native';
+import { ListRenderItemInfo, Text, View } from 'react-native';
 import createNavigator from '../components/createNavigator';
 import NavComponent from '../components/navComponent';
 import { IconButton } from '../components/nativeIcon';
 import SwipeList from '../components/swipeList';
 import moment from 'moment-timezone';
-import addAlarm from './addAlarm';
+import AddItem from './addItem';
 import Storage from '../extend/storage';
 
 import { colors } from '../config';
 import { color } from '../styles';
+
+export type AlarmData = {
+	label: string,
+	type: number,
+	tz?: string,
+	time?: string,
+	repeat?: Array<string>,
+	alarms?: Array<string>
+};
+
+export const itemType = {
+	Alarm: 0,
+	Group: 1
+};
 
 class Alarm extends NavComponent {
 	
@@ -24,10 +38,7 @@ class Alarm extends NavComponent {
 	}
 	
 	static navigationOptions( { navigation } ) {
-		const title  = navigation.getParam( 'title', 'Alarm' ),
-				tz     = navigation.getParam( 'tz' ),
-				key    = navigation.getParam( 'key', 'AlarmMain' ),
-				reload = navigation.getParam( 'reload' );
+		const title = navigation.getParam( 'title' );
 		
 		return {
 			title,
@@ -35,7 +46,10 @@ class Alarm extends NavComponent {
 				<IconButton
 					name='add'
 					onPress={() => {
-						navigation.navigate( 'addAlarm',
+						const tz     = navigation.getParam( 'tz' ),
+								key    = navigation.getParam( 'key', 'AlarmMain' ),
+								reload = navigation.getParam( 'reload' );
+						navigation.navigate( 'AddItem',
 							{ tz, key, reload } )
 					}}
 					size={40}
@@ -44,8 +58,13 @@ class Alarm extends NavComponent {
 	}
 	
 	componentDidMount() {
-		this.getData().then();
-		this.props.navigation.setParams( { reload: this.getData.bind( this ) } );
+		this.getData().then( () => {
+			this.props.navigation.setParams( {
+				title:  this.state.label,
+				tz:     this.state.tz,
+				reload: this.getData.bind( this )
+			} );
+		} );
 	}
 	
 	public async getData() {
@@ -61,7 +80,6 @@ class Alarm extends NavComponent {
 			data = { label: 'Alarm', tz: moment.tz.guess(), alarms: [] };
 			await Storage.setItem( key, data );
 		}
-		this.props.navigation.setParams( { title: data.label, tz: data.tz } );
 		
 		this.setState( { label: data.label, tz: data.tz } );
 		Promise.all( data.alarms.map( async key => {
@@ -79,42 +97,60 @@ class Alarm extends NavComponent {
 	}
 	
 	private list = {
-		renderItem:   ( item ) => {
-			//TODO: Render each alarm
-			return <View
-				style={{
-					borderColor:       colors.navigation,
-					borderBottomWidth: 1,
-					height:            50
-				}}
-			>
-				<Text style={[ color.foreground ]}>
-					{item.type ? 'Group' : 'Alarm'}
-				</Text>
-			</View>
+		renderItem:   ( { item }: ListRenderItemInfo<AlarmData> ): React.ReactElement<any> => {
+			if ( item.type === itemType.Alarm ) {
+				return <View
+					style={{
+						borderColor:       colors.navigation,
+						borderBottomWidth: 1,
+						height:            64
+					}}
+				>
+					<Text style={[ color.foreground ]}>
+						Alarm: {item.label}, {item.time}, {item.repeat.toString()}
+					</Text>
+				</View>
+			} else {
+				return <View
+					style={{
+						borderColor:       colors.navigation,
+						borderBottomWidth: 1,
+						height:            64
+					}}
+				>
+					<Text style={[ color.foreground ]}>
+						Group: {item.label}, {item.tz}
+					</Text>
+				</View>
+			}
 		},
-		rightButtons: ( item ) => {
-			if ( item.type == 1 ) {
+		rightButtons: ( { item, index }: ListRenderItemInfo<AlarmData> ) => {
+			if ( item.type === itemType.Alarm ) {
 				return [ {
-					text: 'Pop', color: 'blue', onPress: () => {
-						this.props.navigation.pop();
+					text: 'Delete', color: '#ff0000', onPress: () => {
+						this.removeItem( index );
 					}
 				}, {
-					text: 'Push', color: 'red', onPress: () => {
-						this.props.navigation.push( 'Alarm', {
-							title: 'Next Alarm',
-							tz:    this.state.tz
-						} );
+					text: 'Edit', color: '#0000ff', onPress: () => {
+						alert( 'not implemented' );
 					}
 				} ];
 			} else {
 				return [ {
-					text: 'Edit', color: 'red', onPress: () => {
-					
+					text: 'Delete', color: '#ff0000', onPress: () => {
+						this.removeItem( index );
 					}
-				} ]
+				}, {
+					text: 'Edit', color: '#0000ff', onPress: () => {
+						alert( 'not implemented' );
+					}
+				} ];
 			}
 		}
+	};
+	
+	private removeItem( index: number ) {
+	
 	}
 	
 }
@@ -122,6 +158,6 @@ class Alarm extends NavComponent {
 export default createNavigator(
 	{
 		Alarm,
-		addAlarm
+		AddItem
 	}
 );

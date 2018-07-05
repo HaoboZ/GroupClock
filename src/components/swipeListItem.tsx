@@ -9,8 +9,10 @@ import { color, style } from '../styles';
 export type SwipeListItemProps = {
 	leftContent?: React.ReactElement<any>,
 	rightContent?: React.ReactElement<any>,
-	leftButtons?: ( item: any ) => Array<{ text?: string, color?: string, onPress?: () => void }> | Array<{ text?: string, color?: string, onPress?: () => void }>,
-	rightButtons?: ( item: any ) => Array<{ text?: string, color?: string, onPress?: () => void }> | Array<{ text?: string, color?: string, onPress?: () => void }>,
+	leftButtons?: ( ( item: any ) => Array<{ text?: string, color?: string, onPress?: () => void }> )
+		| Array<{ text?: string, color?: string, onPress?: () => void }>,
+	rightButtons?: ( ( item: any ) => Array<{ text?: string, color?: string, onPress?: () => void }> )
+		| Array<{ text?: string, color?: string, onPress?: () => void }>,
 	leftActionActivationDistance?: number,
 	onLeftActionRelease?: () => void,
 	rightActionActivationDistance?: number,
@@ -23,7 +25,7 @@ export default class SwipeListItem extends React.PureComponent {
 	
 	props: SwipeListItemProps & {
 		parent?: SwipeList,
-		item: any,
+		data: any,
 		renderItem: ( any ) => void
 	};
 	
@@ -40,12 +42,12 @@ export default class SwipeListItem extends React.PureComponent {
 	};
 	
 	render() {
-		let { item, parent, renderItem, leftButtons, rightButtons, ...props } = this.props;
+		let { data, parent, renderItem, leftButtons, rightButtons, ...props } = this.props;
 		
 		if ( typeof leftButtons === 'function' )
-			leftButtons = leftButtons( item ) as any;
+			leftButtons = leftButtons( data ) as any;
 		if ( typeof rightButtons === 'function' )
-			rightButtons = rightButtons( item ) as any;
+			rightButtons = rightButtons( data ) as any;
 		
 		return <Swipeable
 			onSwipeStart={this.swipeable.onSwipeStart}
@@ -53,9 +55,9 @@ export default class SwipeListItem extends React.PureComponent {
 			onRef={this.swipeable.onRef}
 			leftButtons={this.swipeable.map( leftButtons as any )}
 			rightButtons={this.swipeable.map( rightButtons as any, true )}
-		
+			{...props}
 		>
-			{renderItem( item )}
+			{renderItem( data )}
 		</Swipeable>
 	}
 	
