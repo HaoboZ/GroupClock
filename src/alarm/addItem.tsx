@@ -1,17 +1,23 @@
 import React from 'react';
-import { Button, ScrollView, View } from 'react-native';
+import { Button, Group, ScrollView, View } from 'react-native';
 import NavComponent from '../components/navComponent';
-import { AlarmData, itemType } from './alarm';
 import * as moment from 'moment-timezone';
 import TimezonePicker from '../components/timezonePicker';
+
+import AlarmItem from './items/alarmItem';
+import GroupItem from './items/groupItem';
 import Label from './components/label';
 import Type from './components/type';
-import PickDate from './components/pickDate';
+import PickTime from './components/pickTime';
 import Repeat from './components/repeat';
-import Storage from '../extend/storage';
 
 import { colors } from '../config';
 import { color, style } from '../styles';
+
+const itemType = {
+	Alarm: 0,
+	Group: 1
+};
 
 export default class AddItem extends NavComponent {
 	
@@ -31,8 +37,8 @@ export default class AddItem extends NavComponent {
 	private set = {
 		label:    label => this.setState( { label } ),
 		type:     type => {
-			this.props.navigation.setParams( { title: type === 'Group' ? ' Group' : '' } );
-			this.setState( { type } )
+			this.props.navigation.setParams( { title: type === itemType.Group ? ' Group' : '' } );
+			this.setState( { type } );
 		},
 		viewDate: () => this.setState( { viewDate: !this.state.viewDate } ),
 		time:     time => this.setState( { time } ),
@@ -51,6 +57,7 @@ export default class AddItem extends NavComponent {
 		super( props );
 		// Loads timezone
 		this.state.tz = this.props.navigation.getParam( 'tz' );
+		// calculates timezone 1 time so that tz will be used for new group
 		this.state.tzOffset = moment.tz.zone( this.state.tz ).utcOffset( Date.now() );
 		
 		// Loads time that will be changed to timezone
@@ -59,9 +66,20 @@ export default class AddItem extends NavComponent {
 		this.state.time = time;
 	}
 	
+	/**
+	 *
+	 * @param {NavigationScreenProp<NavigationState>} navigation
+	 * @navParam tz
+	 * @navParam key
+	 * @navParam reload
+	 * @returns {{title: string, headerBackTitle: string, headerRight: null}}
+	 */
 	static navigationOptions( { navigation } ) {
 		let title     = navigation.getParam( 'title', '' ),
 			 parentKey = navigation.getParam( 'key' );
+		
+		if ( !parentKey )
+			alert( 'An error has occurred' );
 		
 		return {
 			title:           'Add Alarm' + title,
@@ -82,44 +100,40 @@ export default class AddItem extends NavComponent {
 	}
 	
 	/**
-	 * Saves data to ASyncStorage.
+	 * Creates a new item and adds it to parent.
 	 *
 	 * @param state
 	 * @param {string} parentKey
 	 * @returns {Promise<void>}
 	 */
 	private static async saveData( state: any, parentKey: string ) {
-		// generate random key
-		let key = Math.random().toString( 36 ).substring( 2, 12 );
-		// Stores new alarm
-		let data: AlarmData = {} as any;
-		data.label = state.label;
-		if ( state.type == itemType.Alarm ) {
-			data.type = itemType.Alarm;
-			data.time = state.time.getHours() + ':' + ( '0' + state.time.getMinutes() ).slice( -2 );
-			data.repeat = state.repeat;
+		let item: AlarmItem | GroupItem;
+		
+		if ( state.type === itemType.Alarm ) {
+			item = await AlarmItem.create(
+				null,
+				state.label,
+				AlarmItem.dateToTime( state.time ),
+				AlarmItem.fillArray( state.repeat )
+			);
 		} else {
-			data.type = itemType.Group;
-			data.tz = state.tz;
+			item = await GroupItem.create(
+				null,
+				state.label,
+				state.tz,
+				[]
+			);
 		}
-		await Storage.setItem( key, data );
 		
 		// Retrieves parent info from storage
-		data = await Storage.getItem( parentKey );
-		if ( !data ) {
-			alert( 'An error has occurred' );
-			return;
-		}
-		
-		// Adds new alarm to list
-		data.alarms.push( key );
-		await Storage.setItem( parentKey, data );
+		let parent = new GroupItem( { k: parentKey } );
+		await parent.load( true );
+		// adds key to items
+		parent.state.items.push( item.key );
+		await parent.save().catch( () => alert( 'An error has occurred' ) );
 	}
 	
 	componentDidMount() {
-		if ( !this.props.navigation.getParam( 'key' ) )
-			alert( 'An error has occurred' );
-		
 		this.props.navigation.setParams( { state: () => this.state } );
 	}
 	
@@ -140,7 +154,7 @@ export default class AddItem extends NavComponent {
 	private type = () => {
 		if ( this.state.type == itemType.Alarm ) {
 			return <View>
-				<PickDate
+				<PickTime
 					time={this.state.time}
 					view={this.state.viewDate}
 					change={this.set.time}

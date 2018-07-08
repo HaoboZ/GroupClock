@@ -31,9 +31,7 @@ export default class SwipeList extends React.PureComponent {
 				this.setState( { currentSwipeable: null } );
 			}
 		},
-		keyExtractor: ( item, index ) => {
-			return index.toString();
-		},
+		keyExtractor: ( item, index ) => index.toString(),
 		renderItem:   ( data ) => {
 			const { leftContent, rightContent, leftButtons, rightButtons, leftActionActivationDistance, onLeftActionRelease, rightActionActivationDistance, onRightActionRelease, leftButtonWidth, rightButtonWidth } = this.props;
 			

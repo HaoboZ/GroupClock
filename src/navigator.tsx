@@ -2,7 +2,7 @@ import React from 'react';
 import { createBottomTabNavigator } from 'react-navigation';
 import NativeIcon from './components/nativeIcon';
 
-import Alarm from './alarm/alarm';
+import Alarm from './alarm/alarmList';
 import Timer from './timer/timer';
 import Stopwatch from './stopwatch/stopwatch';
 import Settings from './settings';

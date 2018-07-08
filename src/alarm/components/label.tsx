@@ -20,7 +20,7 @@ export default class Label extends React.PureComponent {
 				inputStyle={[ color.foreground ]}
 				onChangeText={this.props.change}
 				value={this.props.label}
-				maxLength={16}
+				maxLength={10}
 			/>}
 		/>;
 	}

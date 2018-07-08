@@ -1,8 +1,10 @@
 import React from 'react';
-import { colors } from '../../config';
 import { Button, DatePickerIOS, View } from 'react-native';
+import AlarmItem from '../items/alarmItem';
 
-export default class PickDate extends React.PureComponent {
+import { colors } from '../../config';
+
+export default class PickTime extends React.PureComponent {
 	
 	props: {
 		time: Date,
@@ -15,7 +17,7 @@ export default class PickDate extends React.PureComponent {
 		return <View>
 			<Button
 				onPress={this.props.changeView}
-				title={this.props.time.toTimeString()}
+				title={AlarmItem.dateToTime( this.props.time )}
 				color={colors.highlight}
 			/>
 			{this.props.view ? <DatePickerIOS

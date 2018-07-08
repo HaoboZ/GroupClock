@@ -23,9 +23,6 @@ export const color = StyleSheet.create(
 		background: { backgroundColor: colors.background },
 		foreground: { color: colors.foreground },
 		highlight:  { color: colors.highlight },
-		listItem:   {
-			backgroundColor:   colors.contrast,
-			borderBottomWidth: 0.5
-		}
+		listItem:   { backgroundColor: colors.contrast }
 	}
 );

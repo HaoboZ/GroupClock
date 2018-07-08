@@ -85,12 +85,12 @@ export default class TimezonePicker extends React.PureComponent {
 				containerStyle={[ color.listItem ]}
 				titleStyle={[ color.foreground ]}
 				rightElement={
-					<Text style={[ color.foreground ]}>{this.search.getTZ( tz.item )}</Text>}
+					<Text style={[ color.foreground ]}>{this.search.getTZ( tz.item )}</Text>
+				}
+				bottomDivider
 			/>;
 		},
-		keyExtractor: ( item, index ) => {
-			return index.toString();
-		},
+		keyExtractor: ( item, index ) => index.toString(),
 		getTZ:        ( tz: string ) => {
 			return 'UTC' + moment.tz( "1997-03-07 11:55", tz ).format( 'Z' );
 		}

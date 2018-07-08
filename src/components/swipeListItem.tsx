@@ -38,7 +38,7 @@ export default class SwipeListItem extends React.PureComponent {
 	};
 	
 	state = {
-		swipeable: null
+		swipeable: null,
 	};
 	
 	render() {
@@ -69,15 +69,16 @@ export default class SwipeListItem extends React.PureComponent {
 			const { state } = parent;
 			
 			parent.setState( { isSwiping: true } );
-			if ( state.currentSwipeable && state.currentSwipeable !== this.state.swipeable ) {
+			if ( state.currentSwipeable && state.currentSwipeable !== this.state.swipeable )
 				state.currentSwipeable.recenter();
-			}
+			
 			parent.setState( { currentSwipeable: this.state.swipeable } );
 		},
 		onSwipeRelease: () => {
-			if ( !this.props.parent )
+			const { parent } = this.props;
+			if ( !parent )
 				return;
-			this.props.parent.setState( { isSwiping: false } );
+			parent.setState( { isSwiping: false } );
 		},
 		onRef:          ( swipeable ) => {
 			this.setState( { swipeable } );
