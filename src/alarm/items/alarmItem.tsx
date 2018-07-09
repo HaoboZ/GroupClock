@@ -85,6 +85,12 @@ export default class AlarmItem extends React.PureComponent {
 		return date.getHours() + ':' + ( '0' + date.getMinutes() ).slice( -2 );
 	}
 	
+	public static timeTo12Hour( time: string ): string {
+		let parts = time.split( ':' );
+		let hour = parseInt( parts[ 0 ] );
+		return ( hour + 11 ) % 12 + 1 + parts[ 1 ] + ( hour >= 12 ? 'PM' : 'AM' );
+	}
+	
 	public static fillArray( array ): Array<boolean> {
 		let res = [];
 		for ( let i = 0; i < 7; ++i )
