@@ -14,7 +14,8 @@ export default class AlarmItem extends React.PureComponent {
 		label:  '',
 		time:   '',
 		repeat: [],
-		active: false
+		active: false,
+		save:   undefined
 	};
 	
 	key: string;
@@ -65,30 +66,35 @@ export default class AlarmItem extends React.PureComponent {
 	}
 	
 	render() {
+		if ( !this.state.type.length )
+			return null;
+		
 		return <ListItem
 			containerStyle={[ color.listItem ]}
+			topDivider
 			bottomDivider
 			title={this.state.label}
 			titleStyle={[ color.foreground, { fontSize: 42 } ]}
-			subtitle={this.state.time}
+			subtitle={AlarmItem.timeTo12Hour( this.state.time )}
 			subtitleStyle={[ color.foreground ]}
 			switch={{
 				value:         this.state.active,
 				onValueChange: ( value ) => {
 					this.state.active = value;
+					this.save();
 				}
 			}}
 		/>
 	}
 	
 	public static dateToTime( date: Date ): string {
-		return date.getHours() + ':' + ( '0' + date.getMinutes() ).slice( -2 );
+		return `${date.getHours()}:${( `0${date.getMinutes()}` ).slice( -2 )}`;
 	}
 	
 	public static timeTo12Hour( time: string ): string {
 		let parts = time.split( ':' );
 		let hour = parseInt( parts[ 0 ] );
-		return ( hour + 11 ) % 12 + 1 + parts[ 1 ] + ( hour >= 12 ? 'PM' : 'AM' );
+		return `${( hour + 11 ) % 12 + 1}:${parts[ 1 ]} ${( hour >= 12 ? 'PM' : 'AM' )}`;
 	}
 	
 	public static fillArray( array ): Array<boolean> {

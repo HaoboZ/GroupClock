@@ -6,9 +6,18 @@ export const style = StyleSheet.create(
 		flex:          {
 			flex: 1
 		},
+		row:           {
+			flexDirection: 'row'
+		},
+		column:        {
+			flexDirection: 'column'
+		},
 		center:        {
 			justifyContent: 'center',
 			alignItems:     'center'
+		},
+		centerSelf:    {
+			alignSelf: 'center'
 		},
 		buttonPadding: {
 			paddingLeft:  10,

@@ -57,7 +57,7 @@ export default class TimezonePicker extends React.PureComponent {
 					<Text style={[ color.foreground ]}>{this.search.getTZ( this.props.tz )}</Text>}
 			/>
 			<SearchBar
-				platform="ios"
+				platform='ios'
 				onChangeText={this.set.text}
 				clearIcon={null}
 				clearButtonMode='always'
@@ -92,7 +92,7 @@ export default class TimezonePicker extends React.PureComponent {
 		},
 		keyExtractor: ( item, index ) => index.toString(),
 		getTZ:        ( tz: string ) => {
-			return 'UTC' + moment.tz( "1997-03-07 11:55", tz ).format( 'Z' );
+			return `UTC${moment.tz( '1997-03-07 11:55', tz ).format( 'Z' )}`;
 		}
 	};
 	

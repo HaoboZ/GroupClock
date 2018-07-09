@@ -63,8 +63,12 @@ export default class GroupItem extends React.PureComponent {
 	}
 	
 	render() {
+		if ( !this.state.type.length )
+			return null;
+		
 		return <ListItem
 			containerStyle={[ color.listItem ]}
+			topDivider
 			bottomDivider
 			title={this.state.label}
 			titleStyle={[ color.foreground, { fontSize: 42 } ]}

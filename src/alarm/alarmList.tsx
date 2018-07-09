@@ -1,15 +1,18 @@
 import React from 'react';
-import { FlatList, ListRenderItemInfo } from 'react-native';
+import { FlatList, ListRenderItemInfo, Text } from 'react-native';
 import * as moment from 'moment-timezone';
 
 import createNavigator from '../components/createNavigator';
 import NavComponent from '../components/navComponent';
 import { IconButton } from '../components/nativeIcon';
-import AddItem from './addItem';
-import GroupItem from './items/groupItem';
-import load from './items/item';
 
-import { color } from '../styles';
+import ListTitle from './components/listTitle';
+import AddItem from './addItem';
+import EditGroup from './editGroup';
+import { load } from './items/item';
+import GroupItem from './items/groupItem';
+
+import { color, style } from '../styles';
 
 class AlarmList extends NavComponent {
 	
@@ -19,22 +22,25 @@ class AlarmList extends NavComponent {
 	};
 	
 	static navigationOptions( { navigation } ) {
-		const title = navigation.getParam( 'title' );
-		// TODO: make title a component and add clickable icon to the left
+		const group  = navigation.getParam( 'group' ),
+				reload = navigation.getParam( 'reload' );
+		if ( !group )
+			return null;
+		
 		return {
-			title,
+			title:       group.state.label,
+			headerTitle: <ListTitle onPress={() => {
+				navigation.push( 'EditGroup', { group, reload } );
+			}}>{group.state.label}</ListTitle>,
 			headerRight:
-				<IconButton
-					name='add'
-					onPress={() => {
-						const tz     = navigation.getParam( 'tz' ),
-								key    = navigation.getParam( 'key', 'AlarmMain' ),
-								reload = navigation.getParam( 'reload' );
-						navigation.navigate( 'AddItem',
-							{ tz, key, reload } )
-					}}
-					size={40}
-				/>
+							 <IconButton
+								 name='add'
+								 onPress={() => {
+									 navigation.navigate( 'AddItem',
+										 { group, reload } )
+								 }}
+								 size={40}
+							 />
 		};
 	}
 	
@@ -51,8 +57,8 @@ class AlarmList extends NavComponent {
 		
 		// first time to load group
 		let needNew = false;
-		await group.load( true, ( g ) => {
-			if ( !g )
+		await group.load( true, group => {
+			if ( !group )
 				needNew = true;
 		} );
 		if ( needNew )
@@ -66,16 +72,19 @@ class AlarmList extends NavComponent {
 			return await load( key );
 		} ) ).then( list => this.setState( { list } ) );
 		this.props.navigation.setParams( {
-			title:  group.state.label,
-			tz:     group.state.tz,
+			group,
 			reload: this.getData.bind( this )
 		} );
 	}
 	
 	render() {
+		if ( !this.state.group )
+			return null;
+		
 		return <FlatList
 			style={[ color.background ]}
-			data={this.state.list}
+			data={[ <Text style={[ style.centerSelf, color.foreground ]}>{this.state.group.state.tz}</Text>,
+				...this.state.list ]}
 			renderItem={this.list.renderItem}
 			keyExtractor={this.list.keyExtractor}
 		/>;
@@ -91,6 +100,7 @@ class AlarmList extends NavComponent {
 export default createNavigator(
 	{
 		AlarmList,
-		AddItem
+		AddItem,
+		EditGroup
 	}
 );

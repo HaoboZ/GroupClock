@@ -4,7 +4,6 @@ import NavComponent from '../components/navComponent';
 import * as moment from 'moment-timezone';
 import TimezonePicker from '../components/timezonePicker';
 
-import AlarmItem from './items/alarmItem';
 import GroupItem from './items/groupItem';
 import Label from './components/label';
 import Type from './components/type';
@@ -13,11 +12,7 @@ import Repeat from './components/repeat';
 
 import { colors } from '../config';
 import { color, style } from '../styles';
-
-const itemType = {
-	Alarm: 0,
-	Group: 1
-};
+import { itemType, save } from './items/item';
 
 export default class AddItem extends NavComponent {
 	
@@ -55,8 +50,9 @@ export default class AddItem extends NavComponent {
 	 */
 	constructor( props ) {
 		super( props );
+		const group: GroupItem = this.props.navigation.getParam( 'group' );
 		// Loads timezone
-		this.state.tz = this.props.navigation.getParam( 'tz' );
+		this.state.tz = group.state.tz;
 		// calculates timezone 1 time so that tz will be used for new group
 		this.state.tzOffset = moment.tz.zone( this.state.tz ).utcOffset( Date.now() );
 		
@@ -67,7 +63,6 @@ export default class AddItem extends NavComponent {
 	}
 	
 	/**
-	 *
 	 * @param {NavigationScreenProp<NavigationState>} navigation
 	 * @navParam tz
 	 * @navParam key
@@ -75,21 +70,21 @@ export default class AddItem extends NavComponent {
 	 * @returns {{title: string, headerBackTitle: string, headerRight: null}}
 	 */
 	static navigationOptions( { navigation } ) {
-		let title     = navigation.getParam( 'title', '' ),
-			 parentKey = navigation.getParam( 'key' );
-		
-		if ( !parentKey )
+		const title            = navigation.getParam( 'title', '' ),
+				group: GroupItem = navigation.getParam( 'group' );
+		if ( !group )
 			alert( 'An error has occurred' );
+		let parentKey = group.key;
 		
 		return {
-			title:           'Add Alarm' + title,
+			title:           `Add Alarm${title}`,
 			headerBackTitle: 'Cancel',
 			headerRight:     parentKey ? <Button
 				title='Save'
 				onPress={() => {
 					const reload = navigation.getParam( 'reload' ),
 							state  = navigation.getParam( 'state' )();
-					AddItem.saveData( state, parentKey ).then( () => {
+					save( state, parentKey ).then( () => {
 						reload();
 						navigation.goBack();
 					} )
@@ -97,40 +92,6 @@ export default class AddItem extends NavComponent {
 				color={colors.highlight}
 			/> : null
 		};
-	}
-	
-	/**
-	 * Creates a new item and adds it to parent.
-	 *
-	 * @param state
-	 * @param {string} parentKey
-	 * @returns {Promise<void>}
-	 */
-	private static async saveData( state: any, parentKey: string ) {
-		let item: AlarmItem | GroupItem;
-		
-		if ( state.type === itemType.Alarm ) {
-			item = await AlarmItem.create(
-				null,
-				state.label,
-				AlarmItem.dateToTime( state.time ),
-				AlarmItem.fillArray( state.repeat )
-			);
-		} else {
-			item = await GroupItem.create(
-				null,
-				state.label,
-				state.tz,
-				[]
-			);
-		}
-		
-		// Retrieves parent info from storage
-		let parent = new GroupItem( { k: parentKey } );
-		await parent.load( true );
-		// adds key to items
-		parent.state.items.push( item.key );
-		await parent.save().catch( () => alert( 'An error has occurred' ) );
 	}
 	
 	componentDidMount() {
