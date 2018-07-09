@@ -1,8 +1,8 @@
 import React from 'react';
 import { Text, View } from 'react-native';
-import createNavigator from '../components/createNavigator';
-import NavComponent from '../components/navComponent';
-import { IconButton } from '../components/nativeIcon';
+import createNavigator from '../extend/createNavigator';
+import NavComponent from '../extend/navComponent';
+import { IconButton } from '../extend/nativeIcon';
 
 import { color, style } from '../styles';
 

@@ -1,26 +1,26 @@
 import React from 'react';
 import { Button, Group, ScrollView, View } from 'react-native';
-import NavComponent from '../components/navComponent';
+import NavComponent from '../../extend/navComponent';
 import * as moment from 'moment-timezone';
-import TimezonePicker from '../components/timezonePicker';
+import TimezonePicker from '../../components/timezonePicker';
 
-import GroupItem from './items/groupItem';
-import Label from './components/label';
-import Type from './components/type';
-import PickTime from './components/pickTime';
-import Repeat from './components/repeat';
+import GroupItem from '../items/groupItem';
+import Label from '../components/label';
+import Type from '../components/type';
+import PickTime from '../components/pickTime';
+import Repeat from '../components/repeat';
 
-import { colors } from '../config';
-import { color, style } from '../styles';
-import { itemType, save } from './items/item';
+import { colors } from '../../config';
+import { color, style } from '../../styles';
+import { itemType, save } from '../items/item';
 
 export default class AddItem extends NavComponent {
 	
 	public state = {
 		label:    'Alarm',
 		type:     itemType.Alarm,
-		viewDate: false,
 		time:     null,
+		viewDate: false,
 		repeat:   [],
 		tz:       '',
 		tzOffset: 0
@@ -113,7 +113,7 @@ export default class AddItem extends NavComponent {
 	 * @returns {any}
 	 */
 	private type = () => {
-		if ( this.state.type == itemType.Alarm ) {
+		if ( this.state.type === itemType.Alarm ) {
 			return <View>
 				<PickTime
 					time={this.state.time}

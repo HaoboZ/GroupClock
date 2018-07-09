@@ -2,13 +2,14 @@ import React from 'react';
 import { FlatList, ListRenderItemInfo, Text } from 'react-native';
 import * as moment from 'moment-timezone';
 
-import createNavigator from '../components/createNavigator';
-import NavComponent from '../components/navComponent';
-import { IconButton } from '../components/nativeIcon';
+import createNavigator from '../extend/createNavigator';
+import NavComponent from '../extend/navComponent';
+import { IconButton } from '../extend/nativeIcon';
 
 import ListTitle from './components/listTitle';
-import AddItem from './addItem';
-import EditGroup from './editGroup';
+import AddItem from './modify/addItem';
+import EditGroup from './modify/editGroup';
+import EditAlarm from './modify/editAlarm';
 import { load } from './items/item';
 import GroupItem from './items/groupItem';
 
@@ -101,6 +102,7 @@ export default createNavigator(
 	{
 		AlarmList,
 		AddItem,
-		EditGroup
+		EditGroup,
+		EditAlarm
 	}
 );

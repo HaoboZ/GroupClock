@@ -1,18 +1,17 @@
 import React from 'react';
 import { Button, ScrollView } from 'react-native';
-import NavComponent from '../components/navComponent';
-import TimezonePicker from '../components/timezonePicker';
+import NavComponent from '../../extend/navComponent';
+import TimezonePicker from '../../components/timezonePicker';
 
-import GroupItem from './items/groupItem';
-import Label from './components/label';
+import GroupItem from '../items/groupItem';
+import Label from '../components/label';
 
-import { colors } from '../config';
-import { color, style } from '../styles';
+import { colors } from '../../config';
+import { color, style } from '../../styles';
 
 export default class EditGroup extends NavComponent {
 	
 	public state = {
-		key:   '',
 		label: '',
 		tz:    ''
 	};
@@ -28,7 +27,8 @@ export default class EditGroup extends NavComponent {
 	constructor( props ) {
 		super( props );
 		const group: GroupItem = this.props.navigation.getParam( 'group' );
-		this.state = { key: group.key, label: group.state.label, tz: group.state.tz };
+		this.state.label = group.state.label;
+		this.state.tz = group.state.tz;
 	}
 	
 	static navigationOptions( { navigation } ) {
@@ -37,7 +37,7 @@ export default class EditGroup extends NavComponent {
 			alert( 'An error has occurred' );
 		
 		return {
-			title:           `Edit Alarm ${group.state.label}`,
+			title:           `Edit Group ${group.state.label}`,
 			headerBackTitle: 'Cancel',
 			headerRight:     group.key ? <Button
 				title='Save'

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text, View } from 'react-native';
-import { IconButton } from '../../components/nativeIcon';
+import { IconButton } from '../../extend/nativeIcon';
 
 import { color, style } from '../../styles';
 

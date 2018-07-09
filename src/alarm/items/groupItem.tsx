@@ -3,6 +3,8 @@ import Storage from '../../extend/storage';
 import { Group } from 'react-native';
 import { color } from '../../styles';
 import { ListItem } from 'react-native-elements';
+import { load } from "./item";
+import AlarmItem from "./alarmItem";
 
 export default class GroupItem extends React.PureComponent {
 	
@@ -60,6 +62,13 @@ export default class GroupItem extends React.PureComponent {
 				tz:    this.state.tz,
 				items: this.state.items
 			} );
+	}
+	
+	public async delete(): Promise<void> {
+		for ( let item of this.state.items ) {
+			await ( await load( item, true ) as AlarmItem | GroupItem ).delete();
+		}
+		await Storage.removeItem( this.key );
 	}
 	
 	render() {

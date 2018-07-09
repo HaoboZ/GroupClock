@@ -1,6 +1,6 @@
 import React from 'react';
 import { createBottomTabNavigator } from 'react-navigation';
-import NativeIcon from './components/nativeIcon';
+import NativeIcon from './extend/nativeIcon';
 
 import Alarm from './alarm/alarmList';
 import Timer from './timer/timer';

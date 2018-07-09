@@ -24,4 +24,8 @@ export default class Storage {
 		await AsyncStorage.mergeItem( key, value, callback );
 	}
 	
+	static async removeItem( key: string, callback?: ( error?: Error ) => void ) {
+		return AsyncStorage.removeItem( key, callback );
+	}
+	
 }

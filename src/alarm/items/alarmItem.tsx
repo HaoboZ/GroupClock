@@ -14,8 +14,7 @@ export default class AlarmItem extends React.PureComponent {
 		label:  '',
 		time:   '',
 		repeat: [],
-		active: false,
-		save:   undefined
+		active: false
 	};
 	
 	key: string;
@@ -65,6 +64,10 @@ export default class AlarmItem extends React.PureComponent {
 			} );
 	}
 	
+	public async delete(): Promise<void> {
+		await Storage.removeItem( this.key );
+	}
+	
 	render() {
 		if ( !this.state.type.length )
 			return null;
@@ -81,7 +84,7 @@ export default class AlarmItem extends React.PureComponent {
 				value:         this.state.active,
 				onValueChange: ( value ) => {
 					this.state.active = value;
-					this.save();
+					this.save().then();
 				}
 			}}
 		/>
