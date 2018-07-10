@@ -16,10 +16,12 @@ export default class Label extends React.PureComponent {
 			title='Label'
 			titleStyle={[ color.foreground ]}
 			rightElement={<Input
+				keyboardAppearance='dark'
 				containerStyle={[ color.background, styles.innerItem ]}
 				inputStyle={[ color.foreground ]}
 				onChangeText={this.props.change}
 				value={this.props.label}
+				selectTextOnFocus
 				maxLength={10}
 			/>}
 		/>;

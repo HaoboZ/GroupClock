@@ -64,6 +64,7 @@ export default class TimezonePicker extends React.PureComponent {
 				clearButtonMode='always'
 				cancelButtonTitle=''
 				value={this.state.text}
+				keyboardAppearance='dark'
 				containerStyle={[ color.background ]}
 				inputContainerStyle={[ color.navigation ]}
 				inputStyle={[ color.foreground ]}

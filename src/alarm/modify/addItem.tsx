@@ -84,7 +84,7 @@ export default class AddItem extends NavComponent {
 							state  = navigation.getParam( 'state' )();
 					save( state, parentKey ).then( () => {
 						reload();
-						navigation.goBack();
+						navigation.pop();
 					} )
 				}}
 				color={colors.highlight}

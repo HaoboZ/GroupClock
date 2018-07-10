@@ -66,7 +66,9 @@ export default class GroupItem extends React.PureComponent {
 	
 	public async delete(): Promise<void> {
 		for ( let item of this.state.items ) {
-			await ( await load( item, true ) as AlarmItem | GroupItem ).delete();
+			let i = await load( item, true ) as AlarmItem | GroupItem;
+			if ( i )
+				i.delete().then();
 		}
 		await Storage.removeItem( this.key );
 	}
@@ -80,7 +82,7 @@ export default class GroupItem extends React.PureComponent {
 			topDivider
 			bottomDivider
 			title={this.state.label}
-			titleStyle={[ color.foreground, { fontSize: 42 } ]}
+			titleStyle={[ color.foreground, { fontSize: 36 } ]}
 			subtitle={this.state.tz}
 			subtitleStyle={[ color.foreground ]}
 			onPress={this.onPress}
@@ -89,8 +91,6 @@ export default class GroupItem extends React.PureComponent {
 		/>
 	}
 	
-	onPress = () => {
-		this.props.onPress( this );
-	}
+	onPress = () => this.props.onPress( this )
 	
 }

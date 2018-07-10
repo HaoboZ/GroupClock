@@ -1,17 +1,19 @@
 import React from 'react';
-import { Button, ScrollView } from 'react-native';
+import { Button, View } from 'react-native';
 import NavComponent from '../../extend/navComponent';
 import TimezonePicker from '../../components/timezonePicker';
 
 import GroupItem from '../items/groupItem';
 import Label from '../components/label';
+import Delete from '../components/delete';
 
 import { colors } from '../../config';
 import { color, style } from '../../styles';
 
 export default class EditGroup extends NavComponent {
 	
-	public state = {
+	public state: { group: GroupItem, label: string, tz: string } = {
+		group: null,
 		label: '',
 		tz:    ''
 	};
@@ -26,9 +28,9 @@ export default class EditGroup extends NavComponent {
 	
 	constructor( props ) {
 		super( props );
-		const group: GroupItem = this.props.navigation.getParam( 'group' );
-		this.state.label = group.state.label;
-		this.state.tz = group.state.tz;
+		this.state.group = this.props.navigation.getParam( 'group' );
+		this.state.label = this.state.group.state.label;
+		this.state.tz = this.state.group.state.tz;
 	}
 	
 	static navigationOptions( { navigation } ) {
@@ -48,7 +50,7 @@ export default class EditGroup extends NavComponent {
 					group.state.tz = state.tz;
 					group.save().then( () => {
 						reload();
-						navigation.goBack();
+						navigation.pop();
 					} )
 				}}
 				color={colors.highlight}
@@ -61,12 +63,16 @@ export default class EditGroup extends NavComponent {
 	}
 	
 	render() {
-		return <ScrollView
+		return <View
 			style={[ style.flex, color.background ]}
 		>
+			<Delete onPress={() => this.state.group.delete().then( () => {
+				this.props.navigation.getParam( 'reload' )();
+				this.props.navigation.pop( 2 );
+			} )}/>
 			<Label label={this.state.label} change={this.set.label}/>
 			<TimezonePicker tz={this.state.tz} setTZ={this.set.tz}/>
-		</ScrollView>;
+		</View>;
 	}
 	
 }

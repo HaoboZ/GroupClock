@@ -30,15 +30,18 @@ class AlarmList extends NavComponent {
 		
 		return {
 			title:       group.state.label,
-			headerTitle: <ListTitle onPress={() => {
-				navigation.navigate( 'EditGroup', { group, reload } );
-			}}>{group.state.label}</ListTitle>,
+			headerTitle: <ListTitle onPress={() => navigation.navigate(
+				'EditGroup',
+				{ group, reload }
+			)}>{group.state.label}</ListTitle>,
 			headerRight:
 							 <IconButton
 								 name='add'
 								 onPress={() => {
-									 navigation.navigate( 'AddItem',
-										 { group, reload } )
+									 navigation.navigate(
+										 'AddItem',
+										 { group, reload }
+									 )
 								 }}
 								 size={40}
 							 />
@@ -61,11 +64,15 @@ class AlarmList extends NavComponent {
 			if ( !group )
 				needNew = true;
 		} );
-		if ( needNew )
+		if ( needNew ) {
+			if ( group.key !== 'AlarmMain' ) {
+				this.props.navigation.getParam( 'reloadParent' )();
+				return;
+			}
 			group = await (
 				await GroupItem.create( 'AlarmMain', 'Alarm', moment.tz.guess(), [] )
 			).load( true );
-		
+		}
 		
 		// save to state
 		this.setState( { group } );
@@ -80,7 +87,7 @@ class AlarmList extends NavComponent {
 					if ( canClick ) {
 						canClick = false;
 						this.props.navigation.push( 'AlarmList',
-							{ group, reload } );
+							{ group, reloadParent: reload } );
 					}
 					setTimeout( () => canClick = true, 500 );
 				}

@@ -1,7 +1,8 @@
 import React from 'react';
 import Storage from '../../extend/storage';
-import { color } from '../../styles';
+import { color, style } from '../../styles';
 import { ListItem } from 'react-native-elements';
+import { Text, View } from "react-native";
 
 export default class AlarmItem extends React.PureComponent {
 	
@@ -78,9 +79,8 @@ export default class AlarmItem extends React.PureComponent {
 			topDivider
 			bottomDivider
 			title={this.state.label}
-			titleStyle={[ color.foreground, { fontSize: 42 } ]}
-			subtitle={AlarmItem.timeTo12Hour( this.state.time )}
-			subtitleStyle={[ color.foreground ]}
+			titleStyle={[ color.foreground, { fontSize: 36 } ]}
+			subtitle={this.subtitle()}
 			onPress={this.onPress}
 			switch={{
 				value:         this.state.active,
@@ -92,9 +92,24 @@ export default class AlarmItem extends React.PureComponent {
 		/>
 	}
 	
-	onPress = () => {
-		this.props.onPress( this );
+	subtitle = () => {
+		const days = 'SMTWTFS';
+		let repeat = [];
+		for ( let i = 0; i < 7; ++i ) {
+			repeat[ i ] = <Text key={i} style={[
+				this.state.repeat[ i ] ? color.highlight : color.foreground
+			]}> {days[ i ]}</Text>;
+		}
+		
+		return <View style={[ style.flex, style.row, style.space ]}>
+			<Text style={[ color.foreground, {
+				fontSize: 16
+			} ]}>{AlarmItem.timeTo12Hour( this.state.time )}</Text>
+			<Text style={{ fontSize: 16 }}>{repeat}</Text>
+		</View>;
 	};
+	
+	onPress = () => this.props.onPress( this );
 	
 	public static dateToTime( date: Date ): string {
 		return `${date.getHours()}:${( `0${date.getMinutes()}` ).slice( -2 )}`;

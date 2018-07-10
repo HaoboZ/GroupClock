@@ -1,18 +1,20 @@
 import React from 'react';
-import { Button, ScrollView } from 'react-native';
+import { Button, View } from 'react-native';
 import NavComponent from '../../extend/navComponent';
 
 import AlarmItem from '../items/alarmItem';
 import Label from '../components/label';
 import PickTime from '../components/pickTime';
 import Repeat from '../components/repeat';
+import Delete from '../components/delete';
 
 import { colors } from '../../config';
 import { color, style } from '../../styles';
 
 export default class EditAlarm extends NavComponent {
 	
-	public state = {
+	public state: { alarm: AlarmItem, label: string, time: Date, viewDate: boolean, repeat: Array<number> } = {
+		alarm:    null,
 		label:    '',
 		time:     null,
 		viewDate: false,
@@ -31,10 +33,10 @@ export default class EditAlarm extends NavComponent {
 	
 	constructor( props ) {
 		super( props );
-		const alarm: AlarmItem = this.props.navigation.getParam( 'alarm' );
-		this.state.label = alarm.state.label;
-		this.state.time = new Date( `07 Mar 1997 ${alarm.state.time}:00` );
-		this.state.repeat = AlarmItem.emptyArray( alarm.state.repeat );
+		this.state.alarm = this.props.navigation.getParam( 'alarm' );
+		this.state.label = this.state.alarm.state.label;
+		this.state.time = new Date( `07 Mar 1997 ${this.state.alarm.state.time}:00` );
+		this.state.repeat = AlarmItem.emptyArray( this.state.alarm.state.repeat );
 	}
 	
 	static navigationOptions( { navigation } ) {
@@ -55,7 +57,7 @@ export default class EditAlarm extends NavComponent {
 					alarm.state.repeat = AlarmItem.fillArray( state.repeat );
 					alarm.save().then( () => {
 						reload();
-						navigation.goBack();
+						navigation.pop();
 					} )
 				}}
 				color={colors.highlight}
@@ -68,9 +70,13 @@ export default class EditAlarm extends NavComponent {
 	}
 	
 	render() {
-		return <ScrollView
+		return <View
 			style={[ style.flex, color.background ]}
 		>
+			<Delete onPress={() => this.state.alarm.delete().then( () => {
+				this.props.navigation.getParam( 'reload' )();
+				this.props.navigation.pop();
+			} )}/>
 			<Label label={this.state.label} change={this.set.label}/>
 			<PickTime
 				time={this.state.time}
@@ -79,7 +85,7 @@ export default class EditAlarm extends NavComponent {
 				changeView={this.set.viewDate}
 			/>
 			<Repeat repeat={this.state.repeat} change={this.set.repeat}/>
-		</ScrollView>;
+		</View>;
 	}
 	
 }

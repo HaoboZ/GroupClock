@@ -19,6 +19,9 @@ export const style = StyleSheet.create(
 		centerSelf:    {
 			alignSelf: 'center'
 		},
+		space:         {
+			justifyContent: 'space-between'
+		},
 		buttonPadding: {
 			paddingLeft:  10,
 			paddingRight: 10
