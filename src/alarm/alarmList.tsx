@@ -31,7 +31,7 @@ class AlarmList extends NavComponent {
 		return {
 			title:       group.state.label,
 			headerTitle: <ListTitle onPress={() => {
-				navigation.push( 'EditGroup', { group, reload } );
+				navigation.navigate( 'EditGroup', { group, reload } );
 			}}>{group.state.label}</ListTitle>,
 			headerRight:
 							 <IconButton
@@ -53,10 +53,9 @@ class AlarmList extends NavComponent {
 	}
 	
 	public async getData() {
-		const key = this.props.navigation.getParam( 'key', 'AlarmMain' );
-		let group = new GroupItem( { k: key } );
+		let group: GroupItem = this.props.navigation.getParam( 'group', null );
 		
-		// first time to load group
+		group = new GroupItem( { k: group ? group.key : 'AlarmMain' } );
 		let needNew = false;
 		await group.load( true, group => {
 			if ( !group )
@@ -64,18 +63,30 @@ class AlarmList extends NavComponent {
 		} );
 		if ( needNew )
 			group = await (
-				await GroupItem.create( key, 'Alarm', moment.tz.guess(), [] )
+				await GroupItem.create( 'AlarmMain', 'Alarm', moment.tz.guess(), [] )
 			).load( true );
+		
 		
 		// save to state
 		this.setState( { group } );
+		const reload = this.getData.bind( this );
+		let canClick = true;
 		Promise.all( group.state.items.map( async key => {
-			return await load( key );
+			return await load( key, false, {
+				onPress: alarm => this.props.navigation.navigate( 'EditAlarm',
+					{ alarm, reload } )
+			}, {
+				onPress: group => {
+					if ( canClick ) {
+						canClick = false;
+						this.props.navigation.push( 'AlarmList',
+							{ group, reload } );
+					}
+					setTimeout( () => canClick = true, 500 );
+				}
+			} );
 		} ) ).then( list => this.setState( { list } ) );
-		this.props.navigation.setParams( {
-			group,
-			reload: this.getData.bind( this )
-		} );
+		this.props.navigation.setParams( { group, reload } );
 	}
 	
 	render() {
@@ -85,7 +96,7 @@ class AlarmList extends NavComponent {
 		return <FlatList
 			style={[ color.background ]}
 			data={[ <Text style={[ style.centerSelf, color.foreground ]}>{this.state.group.state.tz}</Text>,
-				...this.state.list ]}
+					  ...this.state.list ]}
 			renderItem={this.list.renderItem}
 			keyExtractor={this.list.keyExtractor}
 		/>;

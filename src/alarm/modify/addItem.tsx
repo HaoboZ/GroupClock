@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Group, ScrollView, View } from 'react-native';
+import { Button, Group, View } from 'react-native';
 import NavComponent from '../../extend/navComponent';
 import * as moment from 'moment-timezone';
 import TimezonePicker from '../../components/timezonePicker';
@@ -35,11 +35,9 @@ export default class AddItem extends NavComponent {
 			this.props.navigation.setParams( { title: type === itemType.Group ? ' Group' : '' } );
 			this.setState( { type } );
 		},
-		viewDate: () => this.setState( { viewDate: !this.state.viewDate } ),
 		time:     time => this.setState( { time } ),
-		repeat:   repeat => {
-			this.setState( { repeat } )
-		},
+		viewDate: () => this.setState( { viewDate: !this.state.viewDate } ),
+		repeat:   repeat => this.setState( { repeat } ),
 		tz:       tz => this.setState( { tz } )
 	};
 	
@@ -99,13 +97,13 @@ export default class AddItem extends NavComponent {
 	}
 	
 	render() {
-		return <ScrollView
+		return <View
 			style={[ style.flex, color.background ]}
 		>
 			<Label label={this.state.label} change={this.set.label}/>
 			<Type type={this.state.type} change={this.set.type}/>
 			{this.type()}
-		</ScrollView>;
+		</View>;
 	}
 	
 	/**

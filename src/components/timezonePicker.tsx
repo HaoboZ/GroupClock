@@ -4,7 +4,7 @@ import { ListItem, SearchBar } from 'react-native-elements';
 import moment from 'moment-timezone';
 
 import { colors } from '../config';
-import { color } from '../styles';
+import { color, style } from '../styles';
 
 export default class TimezonePicker extends React.PureComponent {
 	
@@ -25,7 +25,7 @@ export default class TimezonePicker extends React.PureComponent {
 	};
 	
 	private set = {
-		text: ( text ) => {
+		text:        ( text ) => {
 			if ( this.state.timeout )
 				clearTimeout( this.state.timeout );
 			
@@ -42,20 +42,21 @@ export default class TimezonePicker extends React.PureComponent {
 					this.setState( { text, searchTZ } );
 				}, this.props.timeout )
 			} );
-		}
+		},
+		searchReset: () => this.setState( { searchTZ: [] } )
 	};
 	
 	private tzs: Array<string> = moment.tz.names();
 	
 	render() {
-		return <View>
-			<ListItem
+		return <View style={[ style.flex ]}>
+			{this.state.searchTZ.length ? null : <ListItem
 				containerStyle={[ color.background ]}
 				titleStyle={[ color.foreground ]}
 				title={this.props.tz}
 				rightElement={
 					<Text style={[ color.foreground ]}>{this.search.getTZ( this.props.tz )}</Text>}
-			/>
+			/>}
 			<SearchBar
 				platform='ios'
 				onChangeText={this.set.text}
@@ -81,7 +82,10 @@ export default class TimezonePicker extends React.PureComponent {
 		renderItem:   ( tz ) => {
 			return <ListItem
 				title={tz.item}
-				onPress={() => this.props.setTZ( tz.item )}
+				onPress={() => {
+					this.props.setTZ( tz.item );
+					this.set.searchReset();
+				}}
 				containerStyle={[ color.listItem ]}
 				titleStyle={[ color.foreground ]}
 				rightElement={

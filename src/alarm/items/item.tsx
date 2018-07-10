@@ -9,24 +9,24 @@ export const itemType = {
 	Group: 1
 };
 
-export async function load( key, obj = false ): Promise<AlarmItem | GroupItem | JSX.Element> {
+export async function load( key, obj = false, alarmProps = {}, groupProps = {} ): Promise<AlarmItem | GroupItem | JSX.Element> {
 	return await Storage.getItem( key ).then( async data => {
 		if ( !data )
 			return null;
 		
 		switch ( data.type ) {
-			case 'Alarm':
-				if ( obj )
-					return new AlarmItem( { key } );
-				else
-					return <AlarmItem k={key}/>;
-			case 'Group':
-				if ( obj )
-					return new GroupItem( { key } );
-				else
-					return <GroupItem k={key}/>;
-			default:
-				return null;
+		case 'Alarm':
+			if ( obj )
+				return new AlarmItem( { key } );
+			else
+				return <AlarmItem k={key} {...alarmProps}/>;
+		case 'Group':
+			if ( obj )
+				return new GroupItem( { key } );
+			else
+				return <GroupItem k={key} {...groupProps}/>;
+		default:
+			return null;
 		}
 	} );
 }

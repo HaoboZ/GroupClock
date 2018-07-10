@@ -3,14 +3,14 @@ import Storage from '../../extend/storage';
 import { Group } from 'react-native';
 import { color } from '../../styles';
 import { ListItem } from 'react-native-elements';
-import { load } from "./item";
-import AlarmItem from "./alarmItem";
+import { load } from './item';
+import AlarmItem from './alarmItem';
 
 export default class GroupItem extends React.PureComponent {
 	
 	props: {
 		k: string,
-		onRetrieved?: ( any ) => void
+		onPress?: ( GroupItem ) => void
 	};
 	
 	state = {
@@ -83,9 +83,14 @@ export default class GroupItem extends React.PureComponent {
 			titleStyle={[ color.foreground, { fontSize: 42 } ]}
 			subtitle={this.state.tz}
 			subtitleStyle={[ color.foreground ]}
+			onPress={this.onPress}
 			switch={{}}
 			chevron
 		/>
+	}
+	
+	onPress = () => {
+		this.props.onPress( this );
 	}
 	
 }

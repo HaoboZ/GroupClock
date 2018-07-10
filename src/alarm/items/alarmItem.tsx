@@ -6,7 +6,8 @@ import { ListItem } from 'react-native-elements';
 export default class AlarmItem extends React.PureComponent {
 	
 	props: {
-		k: string
+		k: string,
+		onPress?: ( AlarmItem ) => void
 	};
 	
 	state = {
@@ -80,6 +81,7 @@ export default class AlarmItem extends React.PureComponent {
 			titleStyle={[ color.foreground, { fontSize: 42 } ]}
 			subtitle={AlarmItem.timeTo12Hour( this.state.time )}
 			subtitleStyle={[ color.foreground ]}
+			onPress={this.onPress}
 			switch={{
 				value:         this.state.active,
 				onValueChange: ( value ) => {
@@ -89,6 +91,10 @@ export default class AlarmItem extends React.PureComponent {
 			}}
 		/>
 	}
+	
+	onPress = () => {
+		this.props.onPress( this );
+	};
 	
 	public static dateToTime( date: Date ): string {
 		return `${date.getHours()}:${( `0${date.getMinutes()}` ).slice( -2 )}`;
@@ -100,10 +106,18 @@ export default class AlarmItem extends React.PureComponent {
 		return `${( hour + 11 ) % 12 + 1}:${parts[ 1 ]} ${( hour >= 12 ? 'PM' : 'AM' )}`;
 	}
 	
-	public static fillArray( array ): Array<boolean> {
+	public static fillArray( array: Array<number> ): Array<boolean> {
 		let res = [];
 		for ( let i = 0; i < 7; ++i )
 			res[ i ] = array.includes( i );
+		return res;
+	}
+	
+	public static emptyArray( array: Array<boolean> ): Array<number> {
+		let res = [];
+		for ( let i = 0; i < 7; ++i )
+			if ( array[ i ] )
+				res.push( i );
 		return res;
 	}
 	
