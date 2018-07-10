@@ -42,6 +42,7 @@ export default class SwipeListItem extends React.PureComponent {
 	};
 	
 	render() {
+		// noinspection JSUnusedLocalSymbols
 		let { data, parent, renderItem, leftButtons, rightButtons, ...props } = this.props;
 		
 		if ( typeof leftButtons === 'function' )

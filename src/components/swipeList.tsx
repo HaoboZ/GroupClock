@@ -35,6 +35,7 @@ export default class SwipeList extends React.PureComponent {
 		renderItem:   ( data ) => {
 			const { leftContent, rightContent, leftButtons, rightButtons, leftActionActivationDistance, onLeftActionRelease, rightActionActivationDistance, onRightActionRelease, leftButtonWidth, rightButtonWidth } = this.props;
 			
+			// noinspection JSUnusedGlobalSymbols
 			const props = {
 				leftContent,
 				rightContent,
