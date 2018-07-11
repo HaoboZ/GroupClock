@@ -50,10 +50,10 @@ export default class AddItem extends NavComponent {
 	 */
 	constructor( props ) {
 		super( props );
-		const parent: AlarmList = this.props.navigation.getParam( 'parent' );
+		const list: AlarmList = this.props.navigation.getParam( 'list' );
 		
 		// Loads timezone
-		this.state.tz = parent.state.group.state.tz;
+		this.state.tz = list.state.group.state.tz;
 		// calculates timezone 1 time so that tz will be used for new group
 		this.state.tzOffset = moment.tz.zone( this.state.tz ).utcOffset( Date.now() );
 		
@@ -69,11 +69,11 @@ export default class AddItem extends NavComponent {
 	 * @returns {NavigationScreenOptions}
 	 */
 	static navigationOptions( { navigation } ) {
-		const title             = navigation.getParam( 'title', '' ),
-				parent: AlarmList = navigation.getParam( 'parent' );
-		if ( !parent )
+		const title           = navigation.getParam( 'title', '' ),
+				list: AlarmList = navigation.getParam( 'list' );
+		if ( !list )
 			alert( 'An error has occurred' );
-		let parentKey = parent.state.group.key;
+		let parentKey = list.state.group.key;
 		
 		return {
 			title:           `Add Alarm${title}`,
@@ -83,7 +83,13 @@ export default class AddItem extends NavComponent {
 				onPress={() => {
 					const state = navigation.getParam( 'state' )();
 					save( state, parentKey ).then( () => {
-						parent.setState( { dirty: true } );
+						list.setState( { dirty: true } );
+						
+						// TODO: reset parent group correctly
+						let parent: AlarmList = list.props.navigation.getParam( 'parent', null );
+						if ( parent )
+							parent.setState( { dirty: true } );
+						
 						navigation.pop();
 					} )
 				}}

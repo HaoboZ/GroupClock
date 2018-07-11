@@ -59,7 +59,7 @@ export async function save( state: any, parentKey: string ) {
 	
 	// Retrieves parent info from storage
 	let parent = new GroupItem( { k: parentKey } );
-	await parent.load( true );
+	await parent.load();
 	// adds key to items
 	parent.state.items.push( item.key );
 	await parent.save().catch( () => alert( 'An error has occurred' ) );

@@ -1,5 +1,5 @@
 import React from 'react';
-import { FlatList, ListRenderItemInfo, Text } from 'react-native';
+import { FlatList, ListRenderItemInfo, Text, View } from 'react-native';
 import * as moment from 'moment-timezone';
 
 import createNavigator from '../extend/createNavigator';
@@ -17,7 +17,7 @@ import { color, style } from '../styles';
 
 export class AlarmList extends NavComponent {
 	
-	state = {
+	state: { group: GroupItem, dirty: boolean, list: Array<JSX.Element> } = {
 		group: null,
 		dirty: false,
 		list:  []
@@ -36,7 +36,7 @@ export class AlarmList extends NavComponent {
 				
 				return navigation.navigate(
 					'EditGroup',
-					{ parent: current }
+					{ list: current }
 				);
 			}}>{group.state.label}</ListTitle>,
 			headerRight:
@@ -45,7 +45,7 @@ export class AlarmList extends NavComponent {
 								 onPress={() => {
 									 navigation.navigate(
 										 'AddItem',
-										 { parent: current }
+										 { list: current }
 									 )
 								 }}
 								 size={40}
@@ -53,12 +53,17 @@ export class AlarmList extends NavComponent {
 		};
 	}
 	
-	/**
-	 * Load data from storage.
-	 */
+	mounted = false;
+	
 	componentDidMount() {
+		this.mounted = true;
+		// load data from storage
 		this.getData().then();
 		this.props.navigation.setParams( { current: this } );
+	}
+	
+	componentWillUnmount() {
+		this.mounted = false;
 	}
 	
 	public async getData() {
@@ -66,7 +71,7 @@ export class AlarmList extends NavComponent {
 		
 		group = new GroupItem( { k: group ? group.key : 'AlarmMain' } );
 		let needNew = false;
-		await group.load( true, group => {
+		await group.load( group => {
 			if ( !group )
 				needNew = true;
 		} );
@@ -75,17 +80,16 @@ export class AlarmList extends NavComponent {
 				return;
 			group = await (
 				await GroupItem.create( 'AlarmMain', 'Alarm', moment.tz.guess(), [] )
-			).load( true );
+			).load();
 		}
 		
 		// save to state
-		this.setState( { group } );
 		let canClick = true;
 		Promise.all( group.state.items.map( async key => {
 			return await load( key, false, {
 				list:    this,
 				onPress: alarm => this.props.navigation.navigate( 'EditAlarm',
-					{ alarm, parent: this } )
+					{ alarm, list: this } )
 			}, {
 				list:    this,
 				onPress: group => {
@@ -97,7 +101,7 @@ export class AlarmList extends NavComponent {
 					setTimeout( () => canClick = true, 500 );
 				}
 			} );
-		} ) ).then( list => this.setState( { list } ) );
+		} ) ).then( list => this.setState( { group, list } ) );
 		this.props.navigation.setParams( { group } );
 	}
 	
@@ -106,22 +110,25 @@ export class AlarmList extends NavComponent {
 	// TODO: allow extracting items to parent group before deleting
 	// TODO: allow dragging items into another group to place in
 	render() {
+		const group = this.state.group;
+		if ( !group )
+			return null;
+		
 		if ( this.state.dirty ) {
 			this.state.dirty = false;
-			this.getData().then();
+			group.reloadActive( this.props.navigation.getParam( 'parent', null ) )
+				.then( async () => await this.getData() );
 			return null;
 		}
 		
-		if ( !this.state.group )
-			return null;
-		
-		return <FlatList
-			style={[ color.background ]}
-			data={[ <Text style={[ style.centerSelf, color.foreground ]}>{this.state.group.state.tz}</Text>,
-					  ...this.state.list ]}
-			renderItem={this.list.renderItem}
-			keyExtractor={this.list.keyExtractor}
-		/>;
+		return <View style={[ color.background, style.flex ]}>
+			<Text style={[ style.centerSelf, color.foreground ]}>{group.state.tz}</Text>
+			<FlatList
+				data={this.state.list}
+				renderItem={this.list.renderItem}
+				keyExtractor={this.list.keyExtractor}
+			/>
+		</View>;
 	}
 	
 	private list = {

@@ -29,17 +29,17 @@ export default class EditGroup extends NavComponent {
 	
 	constructor( props ) {
 		super( props );
-		let parent: AlarmList = this.props.navigation.getParam( 'parent' );
+		let parent: AlarmList = this.props.navigation.getParam( 'list' );
 		this.state.group = parent.state.group;
 		this.state.label = this.state.group.state.label;
 		this.state.tz = this.state.group.state.tz;
 	}
 	
 	static navigationOptions( { navigation } ) {
-		const parent: AlarmList = navigation.getParam( 'parent' );
-		if ( !parent )
+		const list: AlarmList = navigation.getParam( 'list' );
+		if ( !list )
 			alert( 'An error has occurred' );
-		const group: GroupItem = parent.state.group;
+		const group: GroupItem = list.state.group;
 		
 		return {
 			title:           `Edit Group ${group.state.label}`,
@@ -47,12 +47,11 @@ export default class EditGroup extends NavComponent {
 			headerRight:     group.key ? <Button
 				title='Save'
 				onPress={() => {
-					const parent: AlarmList = navigation.getParam( 'parent' ),
-							state             = navigation.getParam( 'state' )();
+					const state = navigation.getParam( 'state' )();
 					group.state.label = state.label;
 					group.state.tz = state.tz;
 					group.save().then( () => {
-						parent.setState( { dirty: true } );
+						list.setState( { dirty: true } );
 						navigation.pop();
 					} )
 				}}
@@ -70,13 +69,18 @@ export default class EditGroup extends NavComponent {
 			style={[ style.flex, color.background ]}
 		>
 			<Delete onPress={() => this.state.group.delete().then( () => {
-				let parent: AlarmList = this.props.navigation.getParam( 'parent' );
-				let gParent: AlarmList = parent.props.navigation.getParam( 'parent', null );
-				if ( gParent )
-					gParent.setState( { dirty: true } );
-				else
-					parent.setState( { dirty: true } );
-				this.props.navigation.pop( 2 );
+				let list: AlarmList = this.props.navigation.getParam( 'list' );
+				let items = list.state.group.state.items;
+				items.splice( items.indexOf( this.state.group.key ), 1 );
+				list.state.group.save().then( () => {
+					list.setState( { dirty: true } );
+
+					let parent: AlarmList = list.props.navigation.getParam( 'parent', null );
+					if ( parent )
+						parent.setState( { dirty: true } );
+					
+					this.props.navigation.pop( 2 );
+				} );
 			} )}/>
 			<Label label={this.state.label} change={this.set.label}/>
 			<TimezonePicker tz={this.state.tz} setTZ={this.set.tz}/>

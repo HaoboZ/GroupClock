@@ -51,13 +51,13 @@ export default class EditAlarm extends NavComponent {
 			headerRight:     alarm.key ? <Button
 				title='Save'
 				onPress={() => {
-					const parent: AlarmList = navigation.getParam( 'parent' ),
-							state             = navigation.getParam( 'state' )();
+					const list: AlarmList = navigation.getParam( 'list' ),
+							state           = navigation.getParam( 'state' )();
 					alarm.state.label = state.label;
 					alarm.state.time = AlarmItem.dateToTime( state.time );
 					alarm.state.repeat = AlarmItem.fillArray( state.repeat );
 					alarm.save().then( () => {
-						parent.setState( { dirty: true } );
+						list.setState( { dirty: true } );
 						navigation.pop();
 					} )
 				}}
@@ -74,9 +74,19 @@ export default class EditAlarm extends NavComponent {
 		return <View
 			style={[ style.flex, color.background ]}
 		>
-			<Delete onPress={() => this.state.alarm.delete().then( () => {
-				const parent: AlarmList = this.props.navigation.getParam( 'parent' );
-				parent.setState( { dirty: true } );
+			<Delete onPress={() => this.state.alarm.delete().then( async () => {
+				const list: AlarmList = this.props.navigation.getParam( 'list' );
+				
+				let items = list.state.group.state.items;
+				items.splice( items.indexOf( this.state.alarm.key ), 1 );
+				await list.state.group.save();
+				
+				list.setState( { dirty: true } );
+				
+				let parent: AlarmList = list.props.navigation.getParam( 'parent', null );
+				if ( parent )
+					parent.setState( { dirty: true } );
+				
 				this.props.navigation.pop();
 			} )}/>
 			<Label label={this.state.label} change={this.set.label}/>

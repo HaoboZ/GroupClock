@@ -24,32 +24,37 @@ export default class AlarmItem extends React.PureComponent {
 	};
 	
 	key: string;
+	mounted = false;
 	
 	constructor( props ) {
 		super( props );
-		
 		this.key = props.k;
 	}
 	
 	componentDidMount() {
+		this.mounted = true;
 		this.load().then();
 	}
 	
+	componentWillUnmount() {
+		this.mounted = false;
+	}
+	
 	public static async create( key, label, time, repeat ): Promise<AlarmItem> {
-		if ( key === null )
+		if ( !key )
 			key = Math.random().toString( 36 ).substring( 2, 12 );
 		let data = { type: 'Alarm', label, time, repeat, active: false };
 		await Storage.setItem( key, data );
 		return new AlarmItem( { k: key } );
 	}
 	
-	public async load( direct = false ) {
+	public async load() {
 		await Storage.getItem( this.key ).then( data => {
 			if ( data ) {
-				if ( direct )
-					this.state = data;
-				else
+				if ( this.mounted )
 					this.setState( data );
+				else
+					this.state = data;
 			}
 		} );
 		return this;
@@ -60,8 +65,8 @@ export default class AlarmItem extends React.PureComponent {
 	 * TODO: turn on notifications here
 	 * @returns {Promise<void>}
 	 */
-	public save(): Promise<void> {
-		return Storage.mergeItem( this.key,
+	public async save(): Promise<void> {
+		await Storage.mergeItem( this.key,
 			{
 				label:  this.state.label,
 				time:   this.state.time,
@@ -90,9 +95,11 @@ export default class AlarmItem extends React.PureComponent {
 				value:         this.state.active,
 				onValueChange: ( active ) => {
 					this.setState( { active }, () => {
-						this.save().then( () => {
-						
-						} );
+						this.save().then( () =>
+							this.props.list.state.group.reloadActive(
+								this.props.list.props.navigation.getParam( 'parent', null )
+							).then()
+						);
 					} );
 				}
 			}}
