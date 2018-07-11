@@ -17,12 +17,12 @@ export async function load( key, obj = false, alarmProps = {}, groupProps = {} )
 		switch ( data.type ) {
 		case 'Alarm':
 			if ( obj )
-				return new AlarmItem( { key } );
+				return new AlarmItem( { k: key } );
 			else
 				return <AlarmItem k={key} {...alarmProps}/>;
 		case 'Group':
 			if ( obj )
-				return new GroupItem( { key } );
+				return new GroupItem( { k: key } );
 			else
 				return <GroupItem k={key} {...groupProps}/>;
 		default:
