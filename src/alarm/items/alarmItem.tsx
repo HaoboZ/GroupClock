@@ -1,13 +1,17 @@
 import React from 'react';
-import Storage from '../../extend/storage';
-import { color, style } from '../../styles';
+import { Text, View } from 'react-native';
 import { ListItem } from 'react-native-elements';
-import { Text, View } from "react-native";
+import Storage from '../../extend/storage';
+
+import { AlarmList } from '../alarmList';
+
+import { color, style } from '../../styles';
 
 export default class AlarmItem extends React.PureComponent {
 	
 	props: {
 		k: string,
+		list?: AlarmList,
 		onPress?: ( AlarmItem ) => void
 	};
 	
@@ -84,9 +88,12 @@ export default class AlarmItem extends React.PureComponent {
 			onPress={this.onPress}
 			switch={{
 				value:         this.state.active,
-				onValueChange: ( value ) => {
-					this.state.active = value;
-					this.save().then();
+				onValueChange: ( active ) => {
+					this.setState( { active }, () => {
+						this.save().then( () => {
+						
+						} );
+					} );
 				}
 			}}
 		/>

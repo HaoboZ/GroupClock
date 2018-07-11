@@ -15,32 +15,37 @@ import GroupItem from './items/groupItem';
 
 import { color, style } from '../styles';
 
-class AlarmList extends NavComponent {
+export class AlarmList extends NavComponent {
 	
 	state = {
 		group: null,
+		dirty: false,
 		list:  []
 	};
 	
 	static navigationOptions( { navigation } ) {
-		const group  = navigation.getParam( 'group' ),
-				reload = navigation.getParam( 'reload' );
+		const group = navigation.getParam( 'group' );
+		const current = navigation.getParam( 'current' );
 		if ( !group )
 			return null;
 		
+		
 		return {
 			title:       group.state.label,
-			headerTitle: <ListTitle onPress={() => navigation.navigate(
-				'EditGroup',
-				{ group, reload }
-			)}>{group.state.label}</ListTitle>,
+			headerTitle: <ListTitle onPress={() => {
+				
+				return navigation.navigate(
+					'EditGroup',
+					{ parent: current }
+				);
+			}}>{group.state.label}</ListTitle>,
 			headerRight:
 							 <IconButton
 								 name='add'
 								 onPress={() => {
 									 navigation.navigate(
 										 'AddItem',
-										 { group, reload }
+										 { parent: current }
 									 )
 								 }}
 								 size={40}
@@ -53,6 +58,7 @@ class AlarmList extends NavComponent {
 	 */
 	componentDidMount() {
 		this.getData().then();
+		this.props.navigation.setParams( { current: this } );
 	}
 	
 	public async getData() {
@@ -65,10 +71,8 @@ class AlarmList extends NavComponent {
 				needNew = true;
 		} );
 		if ( needNew ) {
-			if ( group.key !== 'AlarmMain' ) {
-				this.props.navigation.getParam( 'reloadParent' )();
+			if ( group.key !== 'AlarmMain' )
 				return;
-			}
 			group = await (
 				await GroupItem.create( 'AlarmMain', 'Alarm', moment.tz.guess(), [] )
 			).load( true );
@@ -76,27 +80,38 @@ class AlarmList extends NavComponent {
 		
 		// save to state
 		this.setState( { group } );
-		const reload = this.getData.bind( this );
 		let canClick = true;
 		Promise.all( group.state.items.map( async key => {
 			return await load( key, false, {
+				list:    this,
 				onPress: alarm => this.props.navigation.navigate( 'EditAlarm',
-					{ alarm, reload } )
+					{ alarm, parent: this } )
 			}, {
+				list:    this,
 				onPress: group => {
 					if ( canClick ) {
 						canClick = false;
 						this.props.navigation.push( 'AlarmList',
-							{ group, reloadParent: reload } );
+							{ group, parent: this } );
 					}
 					setTimeout( () => canClick = true, 500 );
 				}
 			} );
 		} ) ).then( list => this.setState( { list } ) );
-		this.props.navigation.setParams( { group, reload } );
+		this.props.navigation.setParams( { group } );
 	}
 	
+	// TODO: add text if there is no item in list
+	// TODO: allow moving items by dragging an icon on left side
+	// TODO: allow extracting items to parent group before deleting
+	// TODO: allow dragging items into another group to place in
 	render() {
+		if ( this.state.dirty ) {
+			this.state.dirty = false;
+			this.getData().then();
+			return null;
+		}
+		
 		if ( !this.state.group )
 			return null;
 		

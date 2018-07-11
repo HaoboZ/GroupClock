@@ -1,23 +1,28 @@
 import React from 'react';
-import Storage from '../../extend/storage';
 import { Group } from 'react-native';
-import { color } from '../../styles';
 import { ListItem } from 'react-native-elements';
+import Storage from '../../extend/storage';
+
+import { AlarmList } from '../alarmList';
 import { load } from './item';
 import AlarmItem from './alarmItem';
+
+import { color } from '../../styles';
 
 export default class GroupItem extends React.PureComponent {
 	
 	props: {
 		k: string,
+		list?: AlarmList,
 		onPress?: ( GroupItem ) => void
 	};
 	
 	state = {
-		type:  '',
-		label: '',
-		tz:    '',
-		items: []
+		type:   '',
+		label:  '',
+		tz:     '',
+		items:  [],
+		active: 0
 	};
 	
 	key: string;
@@ -46,9 +51,10 @@ export default class GroupItem extends React.PureComponent {
 				if ( direct )
 					this.state = data;
 				else
-					this.setState( data );
-				if ( callback )
-					callback( this );
+					this.setState( data, () => {
+						if ( callback )
+							callback( this );
+					} );
 			} else if ( callback )
 				callback( null );
 		} );
@@ -86,8 +92,14 @@ export default class GroupItem extends React.PureComponent {
 			subtitle={this.state.tz}
 			subtitleStyle={[ color.foreground ]}
 			onPress={this.onPress}
-			switch={{}}
-			chevron
+			switch={{
+				value:         this.state.active > 0,
+				onValueChange: ( active ) => {
+					this.setState( { active }, () => {
+					
+					} );
+				}
+			}}
 		/>
 	}
 	

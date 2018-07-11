@@ -10,6 +10,7 @@ import Delete from '../components/delete';
 
 import { colors } from '../../config';
 import { color, style } from '../../styles';
+import { AlarmList } from '../alarmList';
 
 export default class EditAlarm extends NavComponent {
 	
@@ -50,13 +51,13 @@ export default class EditAlarm extends NavComponent {
 			headerRight:     alarm.key ? <Button
 				title='Save'
 				onPress={() => {
-					const reload = navigation.getParam( 'reload' ),
-							state  = navigation.getParam( 'state' )();
+					const parent: AlarmList = navigation.getParam( 'parent' ),
+							state             = navigation.getParam( 'state' )();
 					alarm.state.label = state.label;
 					alarm.state.time = AlarmItem.dateToTime( state.time );
 					alarm.state.repeat = AlarmItem.fillArray( state.repeat );
 					alarm.save().then( () => {
-						reload();
+						parent.setState( { dirty: true } );
 						navigation.pop();
 					} )
 				}}
@@ -74,7 +75,8 @@ export default class EditAlarm extends NavComponent {
 			style={[ style.flex, color.background ]}
 		>
 			<Delete onPress={() => this.state.alarm.delete().then( () => {
-				this.props.navigation.getParam( 'reload' )();
+				const parent: AlarmList = this.props.navigation.getParam( 'parent' );
+				parent.setState( { dirty: true } );
 				this.props.navigation.pop();
 			} )}/>
 			<Label label={this.state.label} change={this.set.label}/>

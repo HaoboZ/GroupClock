@@ -19,12 +19,12 @@ export async function load( key, obj = false, alarmProps = {}, groupProps = {} )
 			if ( obj )
 				return new AlarmItem( { k: key } );
 			else
-				return <AlarmItem k={key} {...alarmProps}/>;
+				return <AlarmItem key={key} k={key} {...alarmProps}/>;
 		case 'Group':
 			if ( obj )
 				return new GroupItem( { k: key } );
 			else
-				return <GroupItem k={key} {...groupProps}/>;
+				return <GroupItem key={key} k={key} {...groupProps}/>;
 		default:
 			return null;
 		}
@@ -44,14 +44,14 @@ export async function save( state: any, parentKey: string ) {
 	if ( state.type === itemType.Alarm ) {
 		item = await AlarmItem.create(
 			null,
-			state.label,
+			state.alarmLabel,
 			AlarmItem.dateToTime( state.time ),
 			AlarmItem.fillArray( state.repeat )
 		);
 	} else {
 		item = await GroupItem.create(
 			null,
-			state.label,
+			state.groupLabel,
 			state.tz,
 			[]
 		);
