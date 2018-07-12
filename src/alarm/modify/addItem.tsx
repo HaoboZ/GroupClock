@@ -82,14 +82,8 @@ export default class AddItem extends NavComponent {
 				title='Save'
 				onPress={() => {
 					const state = navigation.getParam( 'state' )();
-					save( state, parentKey ).then( () => {
+					save( state, list ).then( () => {
 						list.setState( { dirty: true } );
-						
-						// TODO: reset parent group correctly
-						let parent: AlarmList = list.props.navigation.getParam( 'parent', null );
-						if ( parent )
-							parent.setState( { dirty: true } );
-						
 						navigation.pop();
 					} )
 				}}

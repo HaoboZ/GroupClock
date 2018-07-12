@@ -43,6 +43,7 @@ export default class AlarmItem extends React.PureComponent {
 	public static async create( key, label, time, repeat ): Promise<AlarmItem> {
 		if ( !key )
 			key = Math.random().toString( 36 ).substring( 2, 12 );
+		
 		let data = { type: 'Alarm', label, time, repeat, active: false };
 		await Storage.setItem( key, data );
 		return new AlarmItem( { k: key } );

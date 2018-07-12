@@ -82,11 +82,6 @@ export default class EditAlarm extends NavComponent {
 				await list.state.group.save();
 				
 				list.setState( { dirty: true } );
-				
-				let parent: AlarmList = list.props.navigation.getParam( 'parent', null );
-				if ( parent )
-					parent.setState( { dirty: true } );
-				
 				this.props.navigation.pop();
 			} )}/>
 			<Label label={this.state.label} change={this.set.label}/>

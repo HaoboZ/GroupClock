@@ -1,6 +1,7 @@
 import React from 'react';
 
 import Storage from '../../extend/storage';
+import { AlarmList } from '../alarmList';
 import AlarmItem from './alarmItem';
 import GroupItem from './groupItem';
 
@@ -35,10 +36,10 @@ export async function load( key, obj = false, alarmProps = {}, groupProps = {} )
  * Creates a new item and adds it to parent.
  *
  * @param state
- * @param {string} parentKey
- * @returns {Promise<void>}
+ * @param parent
+ * @returns {Promise<GroupItem>}
  */
-export async function save( state: any, parentKey: string ) {
+export async function save( state: any, parent: AlarmList ) {
 	let item: AlarmItem | GroupItem;
 	
 	if ( state.type === itemType.Alarm ) {
@@ -57,10 +58,8 @@ export async function save( state: any, parentKey: string ) {
 		);
 	}
 	
-	// Retrieves parent info from storage
-	let parent = new GroupItem( { k: parentKey } );
-	await parent.load();
 	// adds key to items
-	parent.state.items.push( item.key );
-	await parent.save().catch( () => alert( 'An error has occurred' ) );
+	parent.state.group.state.items.push( item.key );
+	await parent.state.group.save();
+	return parent;
 }
