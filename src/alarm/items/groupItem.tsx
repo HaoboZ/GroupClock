@@ -4,7 +4,8 @@ import { ListItem } from 'react-native-elements';
 import Storage from '../../extend/storage';
 
 import { AlarmList } from '../alarmList';
-import { load } from './item';
+import Item from './item';
+import { itemType } from '../modify/addItem';
 import AlarmItem from './alarmItem';
 
 import { color } from '../../styles';
@@ -15,13 +16,7 @@ export const SwitchState = {
 	partial: 2
 };
 
-export default class GroupItem extends React.PureComponent {
-	
-	props: {
-		k: string,
-		list?: AlarmList,
-		onPress?: ( GroupItem ) => void
-	};
+export default class GroupItem extends Item {
 	
 	state = {
 		type:   '',
@@ -31,45 +26,9 @@ export default class GroupItem extends React.PureComponent {
 		active: 0
 	};
 	
-	key: string;
-	mounted = false;
-	
-	constructor( props ) {
-		super( props );
-		this.key = props.k;
-	}
-	
-	componentDidMount(): void {
-		this.mounted = true;
-		this.load().then();
-	}
-	
-	componentWillUnmount(): void {
-		this.mounted = false;
-	}
-	
 	public static async create( key: string, label: string, tz: string, items: Array<boolean> ): Promise<GroupItem> {
-		if ( !key )
-			key = Math.random().toString( 36 ).substring( 2, 12 );
 		let data = { type: 'Group', label, tz, items, active: SwitchState.off };
-		await Storage.setItem( key, data );
-		return new GroupItem( { k: key } );
-	}
-	
-	public async load( callback?: ( GroupItem ) => void ): Promise<this> {
-		await Storage.getItem( this.key ).then( data => {
-			if ( data ) {
-				if ( this.mounted )
-					this.setState( data, () => {
-						if ( callback )
-							callback( this );
-					} );
-				else
-					this.state = data;
-			} else if ( callback )
-				callback( null );
-		} );
-		return this;
+		return super._create<GroupItem>( key, data, GroupItem );
 	}
 	
 	public async save(): Promise<void> {
@@ -84,19 +43,19 @@ export default class GroupItem extends React.PureComponent {
 	
 	public async delete(): Promise<void> {
 		for ( let _item of this.state.items ) {
-			let item = await load( _item, true ) as AlarmItem | GroupItem;
+			let item = await GroupItem.getNew( _item, true ) as Item;
 			if ( !item )
 				continue;
 			await item.delete();
 		}
-		await Storage.removeItem( this.key );
+		await super.delete();
 	}
 	
 	public async getActive(): Promise<number> {
 		let state = SwitchState.off,
 			 first = true;
 		for ( let _item of this.state.items ) {
-			let item = await load( _item, true ) as AlarmItem | GroupItem;
+			let item = await GroupItem.getNew( _item, true ) as Item;
 			if ( !item )
 				continue;
 			await item.load();
@@ -126,21 +85,19 @@ export default class GroupItem extends React.PureComponent {
 	
 	public async activate( active: boolean ): Promise<void> {
 		for ( let _item of this.state.items ) {
-			let item = await load( _item, true ) as AlarmItem | GroupItem;
+			let item = await GroupItem.getNew( _item, true ) as Item;
 			if ( !item )
 				continue;
 			await item.load();
 			item.activate( active ).then();
 		}
-		this.state.active = active ? 1 : 0;
-		await this.save();
+		await super.activate( active ? 1 : 0 );
 	}
 	
 	render(): JSX.Element {
 		if ( !this.state.type.length )
 			return null;
 		
-		// TODO: pull down reload
 		return <ListItem
 			containerStyle={[ color.listItem ]}
 			topDivider
@@ -165,6 +122,26 @@ export default class GroupItem extends React.PureComponent {
 		/>
 	}
 	
-	onPress: () => void = () => this.props.onPress( this )
+	static async getNew( key, obj = false, alarmProps = {}, groupProps = {} ): Promise<Item | JSX.Element> {
+		return await Storage.getItem( key ).then( async data => {
+			if ( !data )
+				return null;
+			
+			switch ( data.type ) {
+			case 'Alarm':
+				if ( obj )
+					return new AlarmItem( { k: key } );
+				else
+					return <AlarmItem key={key} k={key} {...alarmProps}/>;
+			case 'Group':
+				if ( obj )
+					return new GroupItem( { k: key } );
+				else
+					return <GroupItem key={key} k={key} {...groupProps}/>;
+			default:
+				return null;
+			}
+		} );
+	}
 	
 }

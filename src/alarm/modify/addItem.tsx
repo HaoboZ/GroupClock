@@ -12,7 +12,11 @@ import Repeat from '../components/repeat';
 
 import { colors } from '../../config';
 import { color, style } from '../../styles';
-import { itemType, save } from '../items/item';
+
+export const itemType = {
+	Alarm: 0,
+	Group: 1
+};
 
 export default class AddItem extends NavComponent {
 	
@@ -71,21 +75,21 @@ export default class AddItem extends NavComponent {
 	static navigationOptions( { navigation } ): Options {
 		const title           = navigation.getParam( 'title', '' ),
 				list: AlarmList = navigation.getParam( 'list' );
-		if ( !list )
-			alert( 'An error has occurred' );
 		let parentKey = list.state.group.key;
 		
+		let canClick = true;
 		return {
 			title:           `Add Alarm${title}`,
 			headerBackTitle: 'Cancel',
 			headerRight:     parentKey ? <Button
 				title='Save'
 				onPress={() => {
+					if ( !canClick )
+						return;
+					canClick = false;
+					
 					const state = navigation.getParam( 'state' )();
-					save( state, list ).then( () => {
-						list.setState( { dirty: true } );
-						navigation.pop();
-					} )
+					list.addNew( state ).then( () => navigation.pop() );
 				}}
 				color={colors.highlight}
 			/> : null

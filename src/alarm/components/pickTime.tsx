@@ -17,7 +17,7 @@ export default class PickTime extends React.PureComponent {
 		return <View>
 			<Button
 				onPress={this.props.changeView}
-				title={AlarmItem.timeTo12Hour( AlarmItem.dateToTime( this.props.time ) )}
+				title={AlarmItem.convert.timeTo12Hour( AlarmItem.convert.dateToTime( this.props.time ) )}
 				color={colors.highlight}
 			/>
 			{this.props.view ? <DatePickerIOS

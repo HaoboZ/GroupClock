@@ -1,17 +1,18 @@
 import React from 'react';
 import { FlatList, ListRenderItemInfo, Text, View } from 'react-native';
-import * as moment from 'moment-timezone';
 
 import createNavigator from '../extend/createNavigator';
 import NavComponent, { Options } from '../extend/navComponent';
 import { IconButton } from '../extend/nativeIcon';
+import * as moment from 'moment-timezone';
 
 import ListTitle from './components/listTitle';
-import AddItem from './modify/addItem';
+import Item from './items/item';
+import AlarmItem from './items/alarmItem';
+import GroupItem from './items/groupItem';
+import AddItem, { itemType } from './modify/addItem';
 import EditGroup from './modify/editGroup';
 import EditAlarm from './modify/editAlarm';
-import { load } from './items/item';
-import GroupItem from './items/groupItem';
 
 import { color, style } from '../styles';
 
@@ -61,15 +62,20 @@ export class AlarmList extends NavComponent {
 		this.getData().then();
 		this.props.navigation.setParams( { current: this } );
 	}
-	
 	componentWillUnmount(): void {
 		this.mounted = false;
 	}
 	
+	/**
+	 * Retrieves data from storage and updates element.
+	 *
+	 * @returns {Promise<void>}
+	 */
 	public async getData(): Promise<void> {
 		let group: GroupItem = this.props.navigation.getParam( 'group', null );
-		
 		group = new GroupItem( { k: group ? group.key : 'AlarmMain' } );
+		
+		// checks if it needs to create a new starting group
 		let needNew = false;
 		await group.load( group => {
 			if ( !group )
@@ -83,44 +89,85 @@ export class AlarmList extends NavComponent {
 			).load();
 		}
 		
-		// save to state
 		let canClick = true;
+		// load each individual child and add to display list
 		Promise.all( group.state.items.map( async key => {
-			return await load( key, false, {
+			return await GroupItem.getNew( key, false, {
 				list:    this,
 				onPress: alarm => this.props.navigation.navigate( 'EditAlarm',
 					{ alarm, list: this } )
 			}, {
 				list:    this,
 				onPress: group => {
-					if ( canClick ) {
-						canClick = false;
-						this.props.navigation.push( 'AlarmList',
-							{ group, parent: this } );
-					}
+					if ( !canClick )
+						return;
+					canClick = false;
+					
+					this.props.navigation.push( 'AlarmList',
+						{ group, parent: this } );
+					
 					setTimeout( () => canClick = true, 500 );
 				}
 			} );
-		} ) ).then( list => this.setState( { group, list } ) );
+		} ) ).then( list => {
+			// currently a workaround, sometimes called when not mounted
+			if ( !this.mounted )
+				return;
+			this.setState( { group, list } );
+		} );
 		this.props.navigation.setParams( { group } );
 	}
 	
-	// TODO: add text if there is no item in list
-	// TODO: allow moving items by dragging an icon on left side
-	// TODO: allow extracting items to parent group before deleting
-	// TODO: allow dragging items into another group to place in
+	/**
+	 * Creates a new item and adds it to parent.
+	 *
+	 * @param {any} state
+	 * @returns {Promise<Item>}
+	 */
+	async addNew( state: any ): Promise<void> {
+		let item: Item;
+		
+		if ( state.type === itemType.Alarm ) {
+			item = await AlarmItem.create(
+				null,
+				state.alarmLabel,
+				AlarmItem.convert.dateToTime( state.time ),
+				AlarmItem.convert.fillArray( state.repeat )
+			);
+		} else {
+			item = await GroupItem.create(
+				null,
+				state.groupLabel,
+				state.tz,
+				[]
+			);
+		}
+		
+		// adds key to items
+		this.state.group.state.items.push( item.key );
+		await this.state.group.save();
+		this.setState( { dirty: true } );
+	}
+	
 	render(): JSX.Element {
 		const group = this.state.group;
 		if ( !group )
 			return null;
 		
+		// allows externally to reload
 		if ( this.state.dirty ) {
 			this.state.dirty = false;
+			// will check if active state has changed
 			group.reloadActive( this.props.navigation.getParam( 'parent', null ) )
 				.then( async () => await this.getData() );
 			return null;
 		}
 		
+		// TODO: add text if there is no item in list
+		// TODO: allow moving items by dragging an icon on left side
+		// TODO: allow extracting items to parent group before deleting
+		// TODO: allow dragging items into another group to place in
+		// TODO: pull down reload
 		return <View style={[ color.background, style.flex ]}>
 			<Text style={[ style.centerSelf, color.foreground ]}>{group.state.tz}</Text>
 			<FlatList

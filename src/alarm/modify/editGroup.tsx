@@ -37,8 +37,6 @@ export default class EditGroup extends NavComponent {
 	
 	static navigationOptions( { navigation } ): Options {
 		const list: AlarmList = navigation.getParam( 'list' );
-		if ( !list )
-			alert( 'An error has occurred' );
 		const group = list.state.group;
 		
 		return {
@@ -74,7 +72,7 @@ export default class EditGroup extends NavComponent {
 				items.splice( items.indexOf( this.state.group.key ), 1 );
 				list.state.group.save().then( () => {
 					list.setState( { dirty: true } );
-
+					
 					let parent: AlarmList = list.props.navigation.getParam( 'parent', null );
 					if ( parent )
 						parent.setState( { dirty: true } );

@@ -3,17 +3,11 @@ import { Text, View } from 'react-native';
 import { ListItem } from 'react-native-elements';
 import Storage from '../../extend/storage';
 
-import { AlarmList } from '../alarmList';
+import Item from './item';
 
 import { color, style } from '../../styles';
 
-export default class AlarmItem extends React.PureComponent {
-	
-	props: {
-		k: string,
-		list?: AlarmList,
-		onPress?: ( AlarmItem ) => void
-	};
+export default class AlarmItem extends Item {
 	
 	state = {
 		type:   '',
@@ -23,50 +17,26 @@ export default class AlarmItem extends React.PureComponent {
 		active: false
 	};
 	
-	key: string;
-	mounted = false;
-	
-	constructor( props ) {
-		super( props );
-		this.key = props.k;
-	}
-	
-	componentDidMount(): void {
-		this.mounted = true;
-		this.load().then();
-	}
-	
-	componentWillUnmount(): void {
-		this.mounted = false;
-	}
-	
-	public static async create( key, label, time, repeat ): Promise<AlarmItem> {
-		if ( !key )
-			key = Math.random().toString( 36 ).substring( 2, 12 );
-		
+	public static create( key, label, time, repeat ): Promise<AlarmItem> {
 		let data = { type: 'Alarm', label, time, repeat, active: false };
-		await Storage.setItem( key, data );
-		return new AlarmItem( { k: key } );
+		return super._create<AlarmItem>( key, data, AlarmItem );
 	}
 	
-	public async load(): Promise<this> {
-		await Storage.getItem( this.key ).then( data => {
-			if ( data ) {
-				if ( this.mounted )
-					this.setState( data );
-				else
-					this.state = data;
-			}
-		} );
-		return this;
-	}
-	
-	/**
-	 * Saves data.
-	 * TODO: turn on notifications here
-	 * @returns {Promise<void>}
-	 */
 	public async save(): Promise<void> {
+		// TODO: turn on notifications
+		if ( this.state.active === true ) {
+			// push to larger alarm tracker
+			
+			const isRepeat = () => {
+				for ( let r of this.state.repeat )
+					if ( r )
+						return true;
+				return false;
+			};
+			if ( !isRepeat() ) {
+				// push to different larger alarm tracker
+			}
+		}
 		await Storage.mergeItem( this.key,
 			{
 				label:  this.state.label,
@@ -74,15 +44,6 @@ export default class AlarmItem extends React.PureComponent {
 				repeat: this.state.repeat,
 				active: this.state.active
 			} );
-	}
-	
-	public async delete(): Promise<void> {
-		await Storage.removeItem( this.key );
-	}
-	
-	public async activate( active: boolean ): Promise<void> {
-		this.state.active = active;
-		await this.save();
 	}
 	
 	render(): JSX.Element {
@@ -113,6 +74,7 @@ export default class AlarmItem extends React.PureComponent {
 	}
 	
 	subtitle = () => {
+		// noinspection SpellCheckingInspection
 		const days = 'SMTWTFS';
 		let repeat = [];
 		for ( let i = 0; i < 7; ++i ) {
@@ -124,36 +86,33 @@ export default class AlarmItem extends React.PureComponent {
 		return <View style={[ style.flex, style.row, style.space ]}>
 			<Text style={[ color.foreground, {
 				fontSize: 16
-			} ]}>{AlarmItem.timeTo12Hour( this.state.time )}</Text>
+			} ]}>{AlarmItem.convert.timeTo12Hour( this.state.time )}</Text>
 			<Text style={{ fontSize: 16 }}>{repeat}</Text>
 		</View>;
 	};
 	
-	onPress = () => this.props.onPress( this );
-	
-	public static dateToTime( date: Date ): string {
-		return `${date.getHours()}:${( `0${date.getMinutes()}` ).slice( -2 )}`;
-	}
-	
-	public static timeTo12Hour( time: string ): string {
-		let parts = time.split( ':' );
-		let hour = parseInt( parts[ 0 ] );
-		return `${( hour + 11 ) % 12 + 1}:${parts[ 1 ]} ${( hour >= 12 ? 'PM' : 'AM' )}`;
-	}
-	
-	public static fillArray( array: Array<number> ): Array<boolean> {
-		let res = [];
-		for ( let i = 0; i < 7; ++i )
-			res[ i ] = array.includes( i );
-		return res;
-	}
-	
-	public static emptyArray( array: Array<boolean> ): Array<number> {
-		let res = [];
-		for ( let i = 0; i < 7; ++i )
-			if ( array[ i ] )
-				res.push( i );
-		return res;
-	}
+	public static convert = {
+		dateToTime( date: Date ): string {
+			return `${date.getHours()}:${( `0${date.getMinutes()}` ).slice( -2 )}`;
+		},
+		timeTo12Hour( time: string ): string {
+			let parts = time.split( ':' );
+			let hour = parseInt( parts[ 0 ] );
+			return `${( hour + 11 ) % 12 + 1}:${parts[ 1 ]} ${( hour >= 12 ? 'PM' : 'AM' )}`;
+		},
+		fillArray( array: Array<number> ): Array<boolean> {
+			let res = [];
+			for ( let i = 0; i < 7; ++i )
+				res[ i ] = array.includes( i );
+			return res;
+		},
+		emptyArray( array: Array<boolean> ): Array<number> {
+			let res = [];
+			for ( let i = 0; i < 7; ++i )
+				if ( array[ i ] )
+					res.push( i );
+			return res;
+		}
+	};
 	
 }

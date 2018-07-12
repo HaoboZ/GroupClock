@@ -2,64 +2,68 @@ import React from 'react';
 
 import Storage from '../../extend/storage';
 import { AlarmList } from '../alarmList';
-import AlarmItem from './alarmItem';
-import GroupItem from './groupItem';
 
-export const itemType = {
-	Alarm: 0,
-	Group: 1
-};
-
-export async function load( key, obj = false, alarmProps = {}, groupProps = {} ): Promise<AlarmItem | GroupItem | JSX.Element> {
-	return await Storage.getItem( key ).then( async data => {
-		if ( !data )
-			return null;
-		
-		switch ( data.type ) {
-		case 'Alarm':
-			if ( obj )
-				return new AlarmItem( { k: key } );
-			else
-				return <AlarmItem key={key} k={key} {...alarmProps}/>;
-		case 'Group':
-			if ( obj )
-				return new GroupItem( { k: key } );
-			else
-				return <GroupItem key={key} k={key} {...groupProps}/>;
-		default:
-			return null;
-		}
-	} );
-}
-
-/**
- * Creates a new item and adds it to parent.
- *
- * @param state
- * @param parent
- * @returns {Promise<GroupItem>}
- */
-export async function save( state: any, parent: AlarmList ): Promise<AlarmList> {
-	let item: AlarmItem | GroupItem;
+export default abstract class Item extends React.PureComponent {
 	
-	if ( state.type === itemType.Alarm ) {
-		item = await AlarmItem.create(
-			null,
-			state.alarmLabel,
-			AlarmItem.dateToTime( state.time ),
-			AlarmItem.fillArray( state.repeat )
-		);
-	} else {
-		item = await GroupItem.create(
-			null,
-			state.groupLabel,
-			state.tz,
-			[]
-		);
+	props: {
+		k: string,
+		list?: AlarmList,
+		onPress?: ( AlarmItem ) => void
+	};
+	
+	abstract state: any;
+	
+	key: string;
+	mounted = false;
+	
+	// noinspection TypeScriptAbstractClassConstructorCanBeMadeProtected
+	constructor( props ) {
+		super( props );
+		this.key = props.k;
 	}
 	
-	// adds key to items
-	parent.state.group.state.items.push( item.key );
-	await parent.state.group.save();
-	return parent;
+	protected static async _create<type>( key, data,type ): Promise<type> {
+		if ( !key )
+			key = Math.random().toString( 36 ).substring( 2, 12 );
+		await Storage.setItem( key, data );
+		return new type( { k: key } );
+	}
+	
+	componentDidMount(): void {
+		this.mounted = true;
+		this.load().then();
+	}
+	componentWillUnmount(): void {
+		this.mounted = false;
+	}
+	
+	public async load( callback?: ( Item ) => void ): Promise<this> {
+		await Storage.getItem( this.key ).then( data => {
+			if ( data ) {
+				if ( this.mounted )
+					this.setState( data, () => {
+						if ( callback )
+							callback( this );
+					} );
+				else
+					this.state = data;
+			} else if ( callback )
+				callback( null );
+		} );
+		return this;
+	}
+	
+	public abstract async save(): Promise<void>;
+	
+	public async delete(): Promise<void> {
+		await Storage.removeItem( this.key );
+	}
+	
+	public async activate( active ): Promise<void> {
+		this.state.active = active;
+		await this.save();
+	}
+	
+	onPress = () => this.props.onPress( this );
+	
 }

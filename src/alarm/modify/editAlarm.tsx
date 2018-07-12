@@ -2,6 +2,7 @@ import React from 'react';
 import { Button, View } from 'react-native';
 import NavComponent, { Options } from '../../extend/navComponent';
 
+import { AlarmList } from '../alarmList';
 import AlarmItem from '../items/alarmItem';
 import Label from '../components/label';
 import PickTime from '../components/pickTime';
@@ -10,7 +11,6 @@ import Delete from '../components/delete';
 
 import { colors } from '../../config';
 import { color, style } from '../../styles';
-import { AlarmList } from '../alarmList';
 
 export default class EditAlarm extends NavComponent {
 	
@@ -37,13 +37,11 @@ export default class EditAlarm extends NavComponent {
 		this.state.alarm = this.props.navigation.getParam( 'alarm' );
 		this.state.label = this.state.alarm.state.label;
 		this.state.time = new Date( `07 Mar 1997 ${this.state.alarm.state.time}:00` );
-		this.state.repeat = AlarmItem.emptyArray( this.state.alarm.state.repeat );
+		this.state.repeat = AlarmItem.convert.emptyArray( this.state.alarm.state.repeat );
 	}
 	
 	static navigationOptions( { navigation } ): Options {
 		const alarm: AlarmItem = navigation.getParam( 'alarm' );
-		if ( !alarm )
-			alert( 'An error has occurred' );
 		
 		return {
 			title:           `Edit Alarm ${alarm.state.label}`,
@@ -54,8 +52,8 @@ export default class EditAlarm extends NavComponent {
 					const list: AlarmList = navigation.getParam( 'list' ),
 							state           = navigation.getParam( 'state' )();
 					alarm.state.label = state.label;
-					alarm.state.time = AlarmItem.dateToTime( state.time );
-					alarm.state.repeat = AlarmItem.fillArray( state.repeat );
+					alarm.state.time = AlarmItem.convert.dateToTime( state.time );
+					alarm.state.repeat = AlarmItem.convert.fillArray( state.repeat );
 					alarm.save().then( () => {
 						list.setState( { dirty: true } );
 						navigation.pop();

@@ -7,6 +7,7 @@ export default abstract class NavComponent extends React.PureComponent {
 	
 	props: NavigationInjectedProps;
 	
+	// noinspection JSUnusedGlobalSymbols
 	navigationOptions?( { navigation }: NavigationInjectedProps ): NavigationScreenOptions;
 	
 }
