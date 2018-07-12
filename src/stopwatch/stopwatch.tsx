@@ -1,14 +1,14 @@
 import React from 'react';
 import { Text, View } from 'react-native';
 import createNavigator from '../extend/createNavigator';
-import NavComponent from '../extend/navComponent';
+import NavComponent, { Options } from '../extend/navComponent';
 import { IconButton } from '../extend/nativeIcon';
 
 import { color, style } from '../styles';
 
 class Stopwatch extends NavComponent {
 	
-	static navigationOptions( { navigation } ) {
+	static navigationOptions( { navigation } ): Options {
 		const title = navigation.getParam( 'title', 'Stopwatch' );
 		
 		return {
@@ -22,7 +22,7 @@ class Stopwatch extends NavComponent {
 		};
 	}
 	
-	render() {
+	render(): JSX.Element {
 		return <View style={[
 			style.flex,
 			style.center,

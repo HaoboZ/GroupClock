@@ -6,7 +6,7 @@ import { style } from './styles';
 
 export default class Main extends React.PureComponent {
 	
-	render() {
+	render(): JSX.Element {
 		return <View style={[ style.flex ]}>
 			{/*Makes status bar white*/}
 			<StatusBar barStyle='light-content'/>

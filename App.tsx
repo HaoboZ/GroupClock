@@ -3,7 +3,7 @@ import Main  from './src/main';
 
 // noinspection JSUnusedGlobalSymbols
 export default class App extends React.PureComponent {
-	render() {
+	render(): JSX.Element {
 		return <Main/>;
 	}
 }

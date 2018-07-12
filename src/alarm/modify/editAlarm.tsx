@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, View } from 'react-native';
-import NavComponent from '../../extend/navComponent';
+import NavComponent, { Options } from '../../extend/navComponent';
 
 import AlarmItem from '../items/alarmItem';
 import Label from '../components/label';
@@ -40,7 +40,7 @@ export default class EditAlarm extends NavComponent {
 		this.state.repeat = AlarmItem.emptyArray( this.state.alarm.state.repeat );
 	}
 	
-	static navigationOptions( { navigation } ) {
+	static navigationOptions( { navigation } ): Options {
 		const alarm: AlarmItem = navigation.getParam( 'alarm' );
 		if ( !alarm )
 			alert( 'An error has occurred' );
@@ -66,11 +66,11 @@ export default class EditAlarm extends NavComponent {
 		};
 	}
 	
-	componentDidMount() {
+	componentDidMount(): void {
 		this.props.navigation.setParams( { state: () => this.state } );
 	}
 	
-	render() {
+	render(): JSX.Element {
 		return <View
 			style={[ style.flex, color.background ]}
 		>

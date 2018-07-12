@@ -13,7 +13,7 @@ export default class PickTime extends React.PureComponent {
 		changeView: () => void
 	};
 	
-	render() {
+	render(): JSX.Element {
 		return <View>
 			<Button
 				onPress={this.props.changeView}

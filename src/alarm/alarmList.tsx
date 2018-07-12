@@ -3,7 +3,7 @@ import { FlatList, ListRenderItemInfo, Text, View } from 'react-native';
 import * as moment from 'moment-timezone';
 
 import createNavigator from '../extend/createNavigator';
-import NavComponent from '../extend/navComponent';
+import NavComponent, { Options } from '../extend/navComponent';
 import { IconButton } from '../extend/nativeIcon';
 
 import ListTitle from './components/listTitle';
@@ -23,7 +23,7 @@ export class AlarmList extends NavComponent {
 		list:  []
 	};
 	
-	static navigationOptions( { navigation } ) {
+	static navigationOptions( { navigation } ): Options {
 		const group = navigation.getParam( 'group' );
 		const current = navigation.getParam( 'current' );
 		if ( !group )
@@ -55,18 +55,18 @@ export class AlarmList extends NavComponent {
 	
 	mounted = false;
 	
-	componentDidMount() {
+	componentDidMount(): void {
 		this.mounted = true;
 		// load data from storage
 		this.getData().then();
 		this.props.navigation.setParams( { current: this } );
 	}
 	
-	componentWillUnmount() {
+	componentWillUnmount(): void {
 		this.mounted = false;
 	}
 	
-	public async getData() {
+	public async getData(): Promise<void> {
 		let group: GroupItem = this.props.navigation.getParam( 'group', null );
 		
 		group = new GroupItem( { k: group ? group.key : 'AlarmMain' } );
@@ -109,7 +109,7 @@ export class AlarmList extends NavComponent {
 	// TODO: allow moving items by dragging an icon on left side
 	// TODO: allow extracting items to parent group before deleting
 	// TODO: allow dragging items into another group to place in
-	render() {
+	render(): JSX.Element {
 		const group = this.state.group;
 		if ( !group )
 			return null;

@@ -39,7 +39,7 @@ export async function load( key, obj = false, alarmProps = {}, groupProps = {} )
  * @param parent
  * @returns {Promise<GroupItem>}
  */
-export async function save( state: any, parent: AlarmList ) {
+export async function save( state: any, parent: AlarmList ): Promise<AlarmList> {
 	let item: AlarmItem | GroupItem;
 	
 	if ( state.type === itemType.Alarm ) {

@@ -12,7 +12,7 @@ export default class Repeat extends React.PureComponent {
 		change: ( Array ) => void
 	};
 	
-	render() {
+	render(): JSX.Element {
 		return <ListItem
 			containerStyle={[ styles.Item, {
 				paddingRight: 0

@@ -48,7 +48,7 @@ export default class TimezonePicker extends React.PureComponent {
 	
 	private tzs: Array<string> = moment.tz.names();
 	
-	render() {
+	render(): JSX.Element {
 		return <View style={[ style.flex ]}>
 			{this.state.searchTZ.length ? null : <ListItem
 				containerStyle={[ color.background ]}

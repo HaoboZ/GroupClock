@@ -10,7 +10,7 @@ export default class Label extends React.PureComponent {
 		change: ( string ) => void
 	};
 	
-	render() {
+	render(): JSX.Element {
 		return <ListItem
 			containerStyle={[ styles.Item ]}
 			title='Label'

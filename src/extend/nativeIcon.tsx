@@ -18,7 +18,7 @@ export default class NativeIcon extends React.PureComponent {
 		color: colors.highlight
 	};
 	
-	render() {
+	render(): JSX.Element {
 		let iconName = ( Platform.OS === 'android' ? 'md-' : 'ios-' ) + `${this.props.name}`;
 		if ( Platform.OS === 'ios' && this.props.outline )
 			iconName = `${iconName}-outline`;
@@ -38,7 +38,7 @@ export class IconButton extends React.PureComponent {
 		outline?: boolean
 	};
 	
-	render() {
+	render(): JSX.Element {
 		let { onPress, ...props } = this.props;
 		
 		return <Button

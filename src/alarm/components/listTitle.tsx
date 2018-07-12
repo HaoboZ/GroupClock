@@ -11,7 +11,7 @@ export default class ListTitle extends React.PureComponent {
 		onPress
 	};
 	
-	render() {
+	render(): JSX.Element {
 		return <View style={[ style.flex, style.row, style.center ]}>
 			<IconButton name='open' outline={true} onPress={this.props.onPress}/>
 			<Text

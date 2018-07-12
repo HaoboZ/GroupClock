@@ -39,12 +39,12 @@ export default class GroupItem extends React.PureComponent {
 		this.key = props.k;
 	}
 	
-	componentDidMount() {
+	componentDidMount(): void {
 		this.mounted = true;
 		this.load().then();
 	}
 	
-	componentWillUnmount() {
+	componentWillUnmount(): void {
 		this.mounted = false;
 	}
 	
@@ -56,7 +56,7 @@ export default class GroupItem extends React.PureComponent {
 		return new GroupItem( { k: key } );
 	}
 	
-	public async load( callback?: ( GroupItem ) => void ) {
+	public async load( callback?: ( GroupItem ) => void ): Promise<this> {
 		await Storage.getItem( this.key ).then( data => {
 			if ( data ) {
 				if ( this.mounted )
@@ -114,7 +114,7 @@ export default class GroupItem extends React.PureComponent {
 		return state;
 	}
 	
-	public async reloadActive( parent: AlarmList ) {
+	public async reloadActive( parent: AlarmList ): Promise<void> {
 		let active = await this.getActive();
 		if ( this.state.active !== active ) {
 			this.state.active = active;
@@ -124,7 +124,19 @@ export default class GroupItem extends React.PureComponent {
 		}
 	}
 	
-	render() {
+	public async activate( active: boolean ): Promise<void> {
+		for ( let _item of this.state.items ) {
+			let item = await load( _item, true ) as AlarmItem | GroupItem;
+			if ( !item )
+				continue;
+			await item.load();
+			item.activate( active ).then();
+		}
+		this.state.active = active ? 1 : 0;
+		await this.save();
+	}
+	
+	render(): JSX.Element {
 		if ( !this.state.type.length )
 			return null;
 		
@@ -141,13 +153,11 @@ export default class GroupItem extends React.PureComponent {
 			switch={{
 				value:         this.state.active !== SwitchState.off,
 				onValueChange: ( active ) => {
-					this.setState( { active: active ? 1 : 0 }, () => {
-						// TODO: loop every child to turn on, recursive if group, ignore groups that are on
-						this.save().then( async () => {
-							this.props.list.state.group.reloadActive(
-								this.props.list.props.navigation.getParam( 'parent', null )
-							).then()
-						} );
+					this.setState( { active: active ? 1 : 0 }, async () => {
+						await this.activate( active );
+						await this.props.list.state.group.reloadActive(
+							this.props.list.props.navigation.getParam( 'parent', null )
+						);
 					} );
 				},
 				onTintColor:   this.state.active === SwitchState.partial ? '#007fff' : undefined
@@ -155,6 +165,6 @@ export default class GroupItem extends React.PureComponent {
 		/>
 	}
 	
-	onPress = () => this.props.onPress( this )
+	onPress: () => void = () => this.props.onPress( this )
 	
 }

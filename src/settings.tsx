@@ -1,20 +1,20 @@
 import React from 'react';
 import { Text, View } from 'react-native';
 import createNavigator from './extend/createNavigator';
-import NavComponent from './extend/navComponent';
+import NavComponent, { Options } from './extend/navComponent';
 
 import { color, style } from './styles';
 
 class Settings extends NavComponent {
 	
-	static navigationOptions( { navigation } ) {
+	static navigationOptions( { navigation } ): Options {
 		
 		return {
 			title: 'Settings'
 		};
 	}
 	
-	render() {
+	render(): JSX.Element {
 		return <View style={[
 			style.flex,
 			style.center,

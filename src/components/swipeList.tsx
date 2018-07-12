@@ -13,7 +13,7 @@ export default class SwipeList extends React.PureComponent {
 		currentSwipeable: null
 	};
 	
-	render() {
+	render(): JSX.Element {
 		return <FlatList
 			style={[ style.flex ]}
 			scrollEnabled={!this.state.isSwiping}

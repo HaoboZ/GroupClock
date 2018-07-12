@@ -12,7 +12,7 @@ export default class Type extends React.PureComponent {
 		change: ( string ) => void
 	};
 	
-	render() {
+	render(): JSX.Element {
 		return <View style={[ styles.Item, style.center ]}>
 			<ButtonGroup
 				buttons={[ 'Alarm', 'Group' ]}

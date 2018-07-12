@@ -31,12 +31,12 @@ export default class AlarmItem extends React.PureComponent {
 		this.key = props.k;
 	}
 	
-	componentDidMount() {
+	componentDidMount(): void {
 		this.mounted = true;
 		this.load().then();
 	}
 	
-	componentWillUnmount() {
+	componentWillUnmount(): void {
 		this.mounted = false;
 	}
 	
@@ -49,7 +49,7 @@ export default class AlarmItem extends React.PureComponent {
 		return new AlarmItem( { k: key } );
 	}
 	
-	public async load() {
+	public async load(): Promise<this> {
 		await Storage.getItem( this.key ).then( data => {
 			if ( data ) {
 				if ( this.mounted )
@@ -80,7 +80,12 @@ export default class AlarmItem extends React.PureComponent {
 		await Storage.removeItem( this.key );
 	}
 	
-	render() {
+	public async activate( active: boolean ): Promise<void> {
+		this.state.active = active;
+		await this.save();
+	}
+	
+	render(): JSX.Element {
 		if ( !this.state.type.length )
 			return null;
 		

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, Group, View } from 'react-native';
-import NavComponent from '../../extend/navComponent';
+import NavComponent, { Options } from '../../extend/navComponent';
 import * as moment from 'moment-timezone';
 
 import { AlarmList } from '../alarmList';
@@ -68,7 +68,7 @@ export default class AddItem extends NavComponent {
 	 * @navParam parent
 	 * @returns {NavigationScreenOptions}
 	 */
-	static navigationOptions( { navigation } ) {
+	static navigationOptions( { navigation } ): Options {
 		const title           = navigation.getParam( 'title', '' ),
 				list: AlarmList = navigation.getParam( 'list' );
 		if ( !list )
@@ -92,11 +92,11 @@ export default class AddItem extends NavComponent {
 		};
 	}
 	
-	componentDidMount() {
+	componentDidMount(): void {
 		this.props.navigation.setParams( { state: () => this.state } );
 	}
 	
-	render() {
+	render(): JSX.Element {
 		return <View
 			style={[ style.flex, color.background ]}
 		>

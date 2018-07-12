@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, View } from 'react-native';
-import NavComponent from '../../extend/navComponent';
+import NavComponent, { Options } from '../../extend/navComponent';
 import TimezonePicker from '../../components/timezonePicker';
 
 import { AlarmList } from '../alarmList';
@@ -35,11 +35,11 @@ export default class EditGroup extends NavComponent {
 		this.state.tz = this.state.group.state.tz;
 	}
 	
-	static navigationOptions( { navigation } ) {
+	static navigationOptions( { navigation } ): Options {
 		const list: AlarmList = navigation.getParam( 'list' );
 		if ( !list )
 			alert( 'An error has occurred' );
-		const group: GroupItem = list.state.group;
+		const group = list.state.group;
 		
 		return {
 			title:           `Edit Group ${group.state.label}`,
@@ -60,11 +60,11 @@ export default class EditGroup extends NavComponent {
 		};
 	}
 	
-	componentDidMount() {
+	componentDidMount(): void {
 		this.props.navigation.setParams( { state: () => this.state } );
 	}
 	
-	render() {
+	render(): JSX.Element {
 		return <View
 			style={[ style.flex, color.background ]}
 		>
