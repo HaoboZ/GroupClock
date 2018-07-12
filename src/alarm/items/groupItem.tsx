@@ -83,9 +83,11 @@ export default class GroupItem extends React.PureComponent {
 	}
 	
 	public async delete(): Promise<void> {
-		for ( let item of this.state.items ) {
-			let i = await load( item, true ) as AlarmItem | GroupItem;
-			i.delete().then();
+		for ( let _item of this.state.items ) {
+			let item = await load( _item, true ) as AlarmItem | GroupItem;
+			if ( !item )
+				continue;
+			await item.delete();
 		}
 		await Storage.removeItem( this.key );
 	}
@@ -93,9 +95,10 @@ export default class GroupItem extends React.PureComponent {
 	public async getActive(): Promise<number> {
 		let state = SwitchState.off,
 			 first = true;
-		
 		for ( let _item of this.state.items ) {
 			let item = await load( _item, true ) as AlarmItem | GroupItem;
+			if ( !item )
+				continue;
 			await item.load();
 			
 			// first state initialize
@@ -125,6 +128,7 @@ export default class GroupItem extends React.PureComponent {
 		if ( !this.state.type.length )
 			return null;
 		
+		// TODO: pull down reload
 		return <ListItem
 			containerStyle={[ color.listItem ]}
 			topDivider
