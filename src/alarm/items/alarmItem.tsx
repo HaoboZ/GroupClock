@@ -10,7 +10,7 @@ import { color, style } from '../../styles';
 export default class AlarmItem extends Item {
 	
 	state = {
-		type:   '',
+		type:   undefined,
 		label:  '',
 		time:   '',
 		repeat: [],
@@ -47,7 +47,7 @@ export default class AlarmItem extends Item {
 	}
 	
 	render(): JSX.Element {
-		if ( !this.state.type.length )
+		if ( !this.state.type )
 			return null;
 		
 		return <ListItem

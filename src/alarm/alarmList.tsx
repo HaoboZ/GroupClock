@@ -1,22 +1,21 @@
 import React from 'react';
 import { FlatList, ListRenderItemInfo, Text, View } from 'react-native';
-
-import createNavigator from '../extend/createNavigator';
-import NavComponent, { Options } from '../extend/navComponent';
-import { IconButton } from '../extend/nativeIcon';
 import * as moment from 'moment-timezone';
 
+import NavComponent, { Options } from '../extend/navComponent';
+import { IconButton } from '../extend/nativeIcon';
 import ListTitle from './components/listTitle';
+import EditGroup from './modify/editGroup';
+import EditAlarm from './modify/editAlarm';
+
 import Item from './items/item';
 import AlarmItem from './items/alarmItem';
 import GroupItem from './items/groupItem';
 import AddItem, { itemType } from './modify/addItem';
-import EditGroup from './modify/editGroup';
-import EditAlarm from './modify/editAlarm';
 
 import { color, style } from '../styles';
 
-export class AlarmList extends NavComponent {
+export default class AlarmList extends NavComponent {
 	
 	state: { group: GroupItem, dirty: boolean, list: Array<JSX.Element> } = {
 		group: null,
@@ -54,12 +53,14 @@ export class AlarmList extends NavComponent {
 		};
 	}
 	
+	static initial: Promise<void>;
+	
 	mounted = false;
 	
 	componentDidMount(): void {
 		this.mounted = true;
 		// load data from storage
-		this.getData().then();
+		AlarmList.initial.then( async () => await this.getData() );
 		this.props.navigation.setParams( { current: this } );
 	}
 	componentWillUnmount(): void {
@@ -184,12 +185,3 @@ export class AlarmList extends NavComponent {
 	};
 	
 }
-
-export default createNavigator(
-	{
-		AlarmList,
-		AddItem,
-		EditGroup,
-		EditAlarm
-	}
-);

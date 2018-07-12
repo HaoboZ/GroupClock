@@ -5,7 +5,6 @@ import Storage from '../../extend/storage';
 
 import { AlarmList } from '../alarmList';
 import Item from './item';
-import { itemType } from '../modify/addItem';
 import AlarmItem from './alarmItem';
 
 import { color } from '../../styles';
@@ -19,7 +18,7 @@ export const SwitchState = {
 export default class GroupItem extends Item {
 	
 	state = {
-		type:   '',
+		type:   undefined,
 		label:  '',
 		tz:     '',
 		items:  [],
@@ -95,7 +94,7 @@ export default class GroupItem extends Item {
 	}
 	
 	render(): JSX.Element {
-		if ( !this.state.type.length )
+		if ( !this.state.type )
 			return null;
 		
 		return <ListItem
