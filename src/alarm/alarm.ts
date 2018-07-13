@@ -9,30 +9,36 @@ import EditGroup from './modify/editGroup';
 import Item from './items/item';
 import GroupItem from './items/groupItem';
 
-AlarmList.initial = new Promise( ( res ) => {
-	Storage.getItem( 'activeAlarms' ).then( async items => {
-		if ( !items )
-			await Storage.setItem( 'activeAlarms', [] );
-	} );
+export let activeAlarms: Array<string>;
+export let singleActiveAlarms: Array<string>;
+
+export async function saveActiveAlarms() {
+	await Storage.setItem( 'activeAlarms', activeAlarms );
+}
+
+export async function saveSingleActiveAlarms() {
+	await Storage.setItem( 'singleActiveAlarms', singleActiveAlarms );
+}
+
+AlarmList.initial = new Promise( async ( res ) => {
+	activeAlarms = await Storage.getItem( 'activeAlarms' );
+	if ( !activeAlarms )
+		activeAlarms = [];
 	
-	Storage.getItem( 'singleActiveAlarms' ).then( async items => {
-		if ( !items ) {
-			await Storage.setItem( 'singleActiveAlarms', [] );
-			return;
-		}
-		
-		for ( let _item of items ) {
-			let item = await GroupItem.getNew( _item, true ) as Item;
-			if ( !item )
-				continue;
-			await item.load();
-			// TODO: find each alarm where time has passed and remove the active
-			// TODO: set timer for each item to update state
-		}
-		
-	} );
+	singleActiveAlarms = await Storage.getItem( 'singleActiveAlarms' );
+	if ( !singleActiveAlarms )
+		singleActiveAlarms = [];
 	
-	setTimeout( res, 1000 );
+	for ( let _item of singleActiveAlarms ) {
+		let item = await GroupItem.getNew( _item, true ) as Item;
+		if ( !item )
+			continue;
+		await item.load();
+		// TODO: find each alarm where time has passed and remove the active
+		// TODO: set timer for each item to update state
+	}
+	
+	res();
 } );
 
 export default createNavigator(

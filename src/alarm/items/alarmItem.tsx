@@ -9,21 +9,32 @@ import { color, style } from '../../styles';
 
 export default class AlarmItem extends Item {
 	
-	state = {
+	state: {
+		type: string,
+		parent: string,
+		label: string,
+		time: string,
+		repeat: Array<boolean>,
+		active: boolean,
+		update: number
+	} = {
 		type:   undefined,
+		parent: '',
 		label:  '',
 		time:   '',
 		repeat: [],
-		active: false
+		active: false,
+		update: 0
 	};
 	
-	public static create( key, label, time, repeat ): Promise<AlarmItem> {
-		let data = { type: 'Alarm', label, time, repeat, active: false };
+	public static create( key: string, parent: string, label: string, time: string, repeat: Array<boolean> ): Promise<AlarmItem> {
+		let data = { type: 'Alarm', parent, label, time, repeat, active: false, update: Date.now() };
 		return super._create<AlarmItem>( key, data, AlarmItem );
 	}
 	
 	public async save(): Promise<void> {
 		// TODO: turn on notifications
+		let date = Date.now();
 		if ( this.state.active === true ) {
 			// push to larger alarm tracker
 			
@@ -37,13 +48,14 @@ export default class AlarmItem extends Item {
 				// push to different larger alarm tracker
 			}
 		}
-		await Storage.mergeItem( this.key,
-			{
-				label:  this.state.label,
-				time:   this.state.time,
-				repeat: this.state.repeat,
-				active: this.state.active
-			} );
+		
+		await Storage.mergeItem( this.key, {
+			label:  this.state.label,
+			time:   this.state.time,
+			repeat: this.state.repeat,
+			active: this.state.active,
+			update: date
+		} );
 	}
 	
 	render(): JSX.Element {

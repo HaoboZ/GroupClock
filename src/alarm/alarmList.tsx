@@ -86,7 +86,7 @@ export default class AlarmList extends NavComponent {
 			if ( group.key !== 'AlarmMain' )
 				return;
 			group = await (
-				await GroupItem.create( 'AlarmMain', 'Alarm', moment.tz.guess(), [] )
+				await GroupItem.create( 'AlarmMain', null, 'Alarm', moment.tz.guess(), [] )
 			).load();
 		}
 		
@@ -131,6 +131,7 @@ export default class AlarmList extends NavComponent {
 		if ( state.type === itemType.Alarm ) {
 			item = await AlarmItem.create(
 				null,
+				this.state.group.key,
 				state.alarmLabel,
 				AlarmItem.convert.dateToTime( state.time ),
 				AlarmItem.convert.fillArray( state.repeat )
@@ -138,6 +139,7 @@ export default class AlarmList extends NavComponent {
 		} else {
 			item = await GroupItem.create(
 				null,
+				this.state.group.key,
 				state.groupLabel,
 				state.tz,
 				[]

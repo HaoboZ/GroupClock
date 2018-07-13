@@ -3,7 +3,7 @@ import { Group } from 'react-native';
 import { ListItem } from 'react-native-elements';
 import Storage from '../../extend/storage';
 
-import { AlarmList } from '../alarmList';
+import AlarmList from '../alarmList';
 import Item from './item';
 import AlarmItem from './alarmItem';
 
@@ -17,16 +17,24 @@ export const SwitchState = {
 
 export default class GroupItem extends Item {
 	
-	state = {
+	state: {
+		type: string,
+		parent: string,
+		label: string,
+		tz: string,
+		items: Array<string>,
+		active: number
+	} = {
 		type:   undefined,
+		parent: '',
 		label:  '',
 		tz:     '',
 		items:  [],
 		active: 0
 	};
 	
-	public static async create( key: string, label: string, tz: string, items: Array<boolean> ): Promise<GroupItem> {
-		let data = { type: 'Group', label, tz, items, active: SwitchState.off };
+	public static async create( key: string, parent: string, label: string, tz: string, items: Array<string> ): Promise<GroupItem> {
+		let data = { type: 'Group', parent, label, tz, items, active: SwitchState.off };
 		return super._create<GroupItem>( key, data, GroupItem );
 	}
 	

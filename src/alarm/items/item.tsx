@@ -1,7 +1,7 @@
 import React from 'react';
 
 import Storage from '../../extend/storage';
-import { AlarmList } from '../alarmList';
+import AlarmList from '../alarmList';
 
 export default abstract class Item extends React.PureComponent {
 	
@@ -11,7 +11,12 @@ export default abstract class Item extends React.PureComponent {
 		onPress?: ( AlarmItem ) => void
 	};
 	
-	abstract state: any;
+	abstract state: {
+		type: string,
+		parent: string,
+		label: string,
+		active: boolean | number
+	};
 	
 	key: string;
 	mounted = false;
@@ -22,7 +27,7 @@ export default abstract class Item extends React.PureComponent {
 		this.key = props.k;
 	}
 	
-	protected static async _create<type>( key, data,type ): Promise<type> {
+	protected static async _create<type>( key, data, type ): Promise<type> {
 		if ( !key )
 			key = Math.random().toString( 36 ).substring( 2, 12 );
 		await Storage.setItem( key, data );
@@ -46,7 +51,7 @@ export default abstract class Item extends React.PureComponent {
 							callback( this );
 					} );
 				else
-					this.state = data;
+					Object.assign( this.state, data );
 			} else if ( callback )
 				callback( null );
 		} );

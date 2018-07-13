@@ -2,7 +2,7 @@ import React from 'react';
 import { Button, View } from 'react-native';
 import NavComponent, { Options } from '../../extend/navComponent';
 
-import { AlarmList } from '../alarmList';
+import AlarmList from '../alarmList';
 import AlarmItem from '../items/alarmItem';
 import Label from '../components/label';
 import PickTime from '../components/pickTime';

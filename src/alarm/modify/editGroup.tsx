@@ -3,7 +3,7 @@ import { Button, View } from 'react-native';
 import NavComponent, { Options } from '../../extend/navComponent';
 import TimezonePicker from '../../components/timezonePicker';
 
-import { AlarmList } from '../alarmList';
+import AlarmList from '../alarmList';
 import GroupItem from '../items/groupItem';
 import Label from '../components/label';
 import Delete from '../components/delete';

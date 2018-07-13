@@ -3,7 +3,7 @@ import { Button, Group, View } from 'react-native';
 import NavComponent, { Options } from '../../extend/navComponent';
 import * as moment from 'moment-timezone';
 
-import { AlarmList } from '../alarmList';
+import AlarmList from '../alarmList';
 import TimezonePicker from '../../components/timezonePicker';
 import Label from '../components/label';
 import Type from '../components/type';
@@ -75,13 +75,12 @@ export default class AddItem extends NavComponent {
 	static navigationOptions( { navigation } ): Options {
 		const title           = navigation.getParam( 'title', '' ),
 				list: AlarmList = navigation.getParam( 'list' );
-		let parentKey = list.state.group.key;
 		
 		let canClick = true;
 		return {
 			title:           `Add Alarm${title}`,
 			headerBackTitle: 'Cancel',
-			headerRight:     parentKey ? <Button
+			headerRight:     list.state.group.key ? <Button
 				title='Save'
 				onPress={() => {
 					if ( !canClick )
