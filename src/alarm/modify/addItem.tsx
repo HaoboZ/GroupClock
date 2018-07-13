@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button, Group, View } from 'react-native';
 import NavComponent, { Options } from '../../extend/navComponent';
-import * as moment from 'moment-timezone';
+import moment, { Moment } from 'moment-timezone';
 
 import AlarmList from '../alarmList';
 import TimezonePicker from '../../components/timezonePicker';
@@ -20,15 +20,22 @@ export const itemType = {
 
 export default class AddItem extends NavComponent {
 	
-	public state = {
+	public state: {
+		alarmLabel: string,
+		groupLabel: string,
+		type: number,
+		time: Moment,
+		viewDate: boolean,
+		repeat: Array<number>,
+		tz: string
+	} = {
 		alarmLabel: 'Alarm',
 		groupLabel: 'Group',
 		type:       itemType.Alarm,
 		time:       null,
 		viewDate:   false,
 		repeat:     [],
-		tz:         '',
-		tzOffset:   0
+		tz:         ''
 	};
 	
 	/**
@@ -41,7 +48,7 @@ export default class AddItem extends NavComponent {
 			this.props.navigation.setParams( { title: type === itemType.Group ? ' Group' : '' } );
 			this.setState( { type } );
 		},
-		time:       time => this.setState( { time } ),
+		time:       ( time: Date ) => this.setState( { time: moment( time ) } ),
 		viewDate:   () => this.setState( { viewDate: !this.state.viewDate } ),
 		repeat:     repeat => this.setState( { repeat } ),
 		tz:         tz => this.setState( { tz } )
@@ -56,15 +63,9 @@ export default class AddItem extends NavComponent {
 		super( props );
 		const list: AlarmList = this.props.navigation.getParam( 'list' );
 		
-		// Loads timezone
+		// Loads timezone and time that will be offset
 		this.state.tz = list.state.group.state.tz;
-		// calculates timezone 1 time so that tz will be used for new group
-		this.state.tzOffset = moment.tz.zone( this.state.tz ).utcOffset( Date.now() );
-		
-		// Loads time that will be changed to timezone
-		let time = new Date( Date.now() );
-		time.setTime( time.getTime() + ( time.getTimezoneOffset() - this.state.tzOffset + 1 ) * 60 * 1000 );
-		this.state.time = time;
+		this.state.time = moment( moment().tz( this.state.tz ).format( 'YYYY-MM-DD kk:mm' ) );
 	}
 	
 	/**

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button, View } from 'react-native';
 import NavComponent, { Options } from '../../extend/navComponent';
+import moment, { Moment } from "moment-timezone";
 
 import AlarmList from '../alarmList';
 import AlarmItem from '../items/alarmItem';
@@ -14,7 +15,13 @@ import { color, style } from '../../styles';
 
 export default class EditAlarm extends NavComponent {
 	
-	public state: { alarm: AlarmItem, label: string, time: Date, viewDate: boolean, repeat: Array<number> } = {
+	public state: {
+		alarm: AlarmItem,
+		label: string,
+		time: Moment,
+		viewDate: boolean,
+		repeat: Array<number>
+	} = {
 		alarm:    null,
 		label:    '',
 		time:     null,
@@ -27,7 +34,7 @@ export default class EditAlarm extends NavComponent {
 	 */
 	private set = {
 		label:    label => this.setState( { label } ),
-		time:     time => this.setState( { time } ),
+		time:     ( time: Date ) => this.setState( { time: moment( time ) } ),
 		viewDate: () => this.setState( { viewDate: !this.state.viewDate } ),
 		repeat:   repeat => this.setState( { repeat } )
 	};
@@ -36,7 +43,7 @@ export default class EditAlarm extends NavComponent {
 		super( props );
 		this.state.alarm = this.props.navigation.getParam( 'alarm' );
 		this.state.label = this.state.alarm.state.label;
-		this.state.time = new Date( `07 Mar 1997 ${this.state.alarm.state.time}:00` );
+		this.state.time = moment( this.state.alarm.state.time );
 		this.state.repeat = AlarmItem.convert.emptyArray( this.state.alarm.state.repeat );
 	}
 	
@@ -52,7 +59,7 @@ export default class EditAlarm extends NavComponent {
 					const list: AlarmList = navigation.getParam( 'list' ),
 							state           = navigation.getParam( 'state' )();
 					alarm.state.label = state.label;
-					alarm.state.time = AlarmItem.convert.dateToTime( state.time );
+					alarm.state.time = state.time.format( 'YYYY-MM-DD kk:mm' );
 					alarm.state.repeat = AlarmItem.convert.fillArray( state.repeat );
 					alarm.save().then( () => {
 						list.setState( { dirty: true } );

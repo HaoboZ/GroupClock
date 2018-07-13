@@ -1,13 +1,13 @@
 import React from 'react';
 import { Button, DatePickerIOS, View } from 'react-native';
-import AlarmItem from '../items/alarmItem';
+import { Moment } from "moment-timezone";
 
 import { colors } from '../../config';
 
 export default class PickTime extends React.PureComponent {
 	
 	props: {
-		time: Date,
+		time: Moment,
 		view: boolean,
 		change: ( string ) => void,
 		changeView: () => void
@@ -17,11 +17,11 @@ export default class PickTime extends React.PureComponent {
 		return <View>
 			<Button
 				onPress={this.props.changeView}
-				title={AlarmItem.convert.timeTo12Hour( AlarmItem.convert.dateToTime( this.props.time ) )}
+				title={this.props.time.format( 'LT' )}
 				color={colors.highlight}
 			/>
 			{this.props.view ? <DatePickerIOS
-				date={this.props.time}
+				date={this.props.time.toDate()}
 				onDateChange={this.props.change}
 				mode='time'
 				style={{ backgroundColor: '#ffffff' }}

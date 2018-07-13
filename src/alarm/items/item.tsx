@@ -1,6 +1,6 @@
 import React from 'react';
-
 import Storage from '../../extend/storage';
+
 import AlarmList from '../alarmList';
 
 export default abstract class Item extends React.PureComponent {

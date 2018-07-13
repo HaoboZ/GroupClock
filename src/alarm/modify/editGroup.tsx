@@ -29,8 +29,8 @@ export default class EditGroup extends NavComponent {
 	
 	constructor( props ) {
 		super( props );
-		let parent: AlarmList = this.props.navigation.getParam( 'list' );
-		this.state.group = parent.state.group;
+		let list: AlarmList = this.props.navigation.getParam( 'list' );
+		this.state.group = list.state.group;
 		this.state.label = this.state.group.state.label;
 		this.state.tz = this.state.group.state.tz;
 	}
@@ -66,19 +66,18 @@ export default class EditGroup extends NavComponent {
 		return <View
 			style={[ style.flex, color.background ]}
 		>
-			<Delete onPress={() => this.state.group.delete().then( () => {
+			<Delete onPress={() => this.state.group.delete().then( async () => {
+				let parent: AlarmList = this.props.navigation.getParam( 'parent' );
+				if ( parent ) {
+					let items = parent.state.group.state.items;
+					items.splice( items.indexOf( this.state.group.key ), 1 );
+					await parent.state.group.save();
+					
+					parent.setState( { dirty: true } );
+				}
 				let list: AlarmList = this.props.navigation.getParam( 'list' );
-				let items = list.state.group.state.items;
-				items.splice( items.indexOf( this.state.group.key ), 1 );
-				list.state.group.save().then( () => {
-					list.setState( { dirty: true } );
-					
-					let parent: AlarmList = list.props.navigation.getParam( 'parent', null );
-					if ( parent )
-						parent.setState( { dirty: true } );
-					
-					this.props.navigation.pop( 2 );
-				} );
+				list.setState( { dirty: true } );
+				this.props.navigation.pop( 2 );
 			} )}/>
 			<Label label={this.state.label} change={this.set.label}/>
 			<TimezonePicker tz={this.state.tz} setTZ={this.set.tz}/>

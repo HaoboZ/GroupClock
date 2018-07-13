@@ -2,8 +2,11 @@ import React from 'react';
 import { Text, View } from 'react-native';
 import { ListItem } from 'react-native-elements';
 import Storage from '../../extend/storage';
+import moment, { Moment } from 'moment-timezone';
 
+import { alarms, saveAlarms, saveSingleAlarms, singleAlarms } from '../alarm';
 import Item from './item';
+import GroupItem from './groupItem';
 
 import { color, style } from '../../styles';
 
@@ -19,34 +22,42 @@ export default class AlarmItem extends Item {
 		update: number
 	} = {
 		type:   undefined,
-		parent: '',
-		label:  '',
-		time:   '',
-		repeat: [],
-		active: false,
-		update: 0
+		parent: undefined,
+		label:  undefined,
+		time:   undefined,
+		repeat: undefined,
+		active: undefined,
+		update: undefined
 	};
 	
 	public static create( key: string, parent: string, label: string, time: string, repeat: Array<boolean> ): Promise<AlarmItem> {
-		let data = { type: 'Alarm', parent, label, time, repeat, active: false, update: Date.now() };
+		let data = { type: 'Alarm', parent, label, time, repeat, active: false, update: moment().unix() };
 		return super._create<AlarmItem>( key, data, AlarmItem );
 	}
 	
 	public async save(): Promise<void> {
+		let parent = await GroupItem.getNew( this.state.parent, true ) as GroupItem;
+		await parent.load();
+		
+		let time: Moment = moment().tz( parent.state.tz );
+		
 		// TODO: turn on notifications
-		let date = Date.now();
-		if ( this.state.active === true ) {
-			// push to larger alarm tracker
+		
+		alarms[ this.key ] = this.state.active;
+		saveAlarms().then();
+		if ( this.state.active === true && !this.isRepeat() ) {
+			let index = singleAlarms.indexOf( this.key );
+			if ( index !== -1 )
+				singleAlarms.splice( index, 1 );
+			singleAlarms.push( this.key );
+			saveSingleAlarms().then();
 			
-			const isRepeat = () => {
-				for ( let r of this.state.repeat )
-					if ( r )
-						return true;
-				return false;
-			};
-			if ( !isRepeat() ) {
-				// push to different larger alarm tracker
+			let target = moment.tz( this.state.time, parent.state.tz )
+				.subtract( 1, 'day' );
+			while ( target.isBefore( time ) ) {
+				target.add( 1, 'day' );
 			}
+			time = target;
 		}
 		
 		await Storage.mergeItem( this.key, {
@@ -54,8 +65,14 @@ export default class AlarmItem extends Item {
 			time:   this.state.time,
 			repeat: this.state.repeat,
 			active: this.state.active,
-			update: date
+			update: time.unix()
 		} );
+	}
+	
+	public async delete(): Promise<void> {
+		delete alarms[ this.key ];
+		saveAlarms().then();
+		await super.delete();
 	}
 	
 	render(): JSX.Element {
@@ -98,20 +115,12 @@ export default class AlarmItem extends Item {
 		return <View style={[ style.flex, style.row, style.space ]}>
 			<Text style={[ color.foreground, {
 				fontSize: 16
-			} ]}>{AlarmItem.convert.timeTo12Hour( this.state.time )}</Text>
+			} ]}>{moment( this.state.time ).format( 'LT' )}</Text>
 			<Text style={{ fontSize: 16 }}>{repeat}</Text>
 		</View>;
 	};
 	
 	public static convert = {
-		dateToTime( date: Date ): string {
-			return `${date.getHours()}:${( `0${date.getMinutes()}` ).slice( -2 )}`;
-		},
-		timeTo12Hour( time: string ): string {
-			let parts = time.split( ':' );
-			let hour = parseInt( parts[ 0 ] );
-			return `${( hour + 11 ) % 12 + 1}:${parts[ 1 ]} ${( hour >= 12 ? 'PM' : 'AM' )}`;
-		},
 		fillArray( array: Array<number> ): Array<boolean> {
 			let res = [];
 			for ( let i = 0; i < 7; ++i )
@@ -125,6 +134,13 @@ export default class AlarmItem extends Item {
 					res.push( i );
 			return res;
 		}
+	};
+	
+	private isRepeat() {
+		for ( let r of this.state.repeat )
+			if ( r )
+				return true;
+		return false;
 	};
 	
 }

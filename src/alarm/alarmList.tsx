@@ -1,6 +1,6 @@
 import React from 'react';
 import { FlatList, ListRenderItemInfo, Text, View } from 'react-native';
-import * as moment from 'moment-timezone';
+import moment from 'moment-timezone';
 
 import NavComponent, { Options } from '../extend/navComponent';
 import { IconButton } from '../extend/nativeIcon';
@@ -24,8 +24,8 @@ export default class AlarmList extends NavComponent {
 	};
 	
 	static navigationOptions( { navigation } ): Options {
-		const group = navigation.getParam( 'group' );
-		const current = navigation.getParam( 'current' );
+		const group   = navigation.getParam( 'group' ),
+				current = navigation.getParam( 'current' );
 		if ( !group )
 			return null;
 		
@@ -36,7 +36,7 @@ export default class AlarmList extends NavComponent {
 				
 				return navigation.navigate(
 					'EditGroup',
-					{ list: current }
+					{ list: current, parent: navigation.getParam( 'parent', null ) }
 				);
 			}}>{group.state.label}</ListTitle>,
 			headerRight:
@@ -133,7 +133,7 @@ export default class AlarmList extends NavComponent {
 				null,
 				this.state.group.key,
 				state.alarmLabel,
-				AlarmItem.convert.dateToTime( state.time ),
+				state.time.format( 'YYYY-MM-DD kk:mm' ),
 				AlarmItem.convert.fillArray( state.repeat )
 			);
 		} else {

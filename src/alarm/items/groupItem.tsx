@@ -5,9 +5,9 @@ import Storage from '../../extend/storage';
 
 import AlarmList from '../alarmList';
 import Item from './item';
-import AlarmItem from './alarmItem';
 
 import { color } from '../../styles';
+import AlarmItem from "./alarmItem";
 
 export const SwitchState = {
 	off:     0,
@@ -26,11 +26,11 @@ export default class GroupItem extends Item {
 		active: number
 	} = {
 		type:   undefined,
-		parent: '',
-		label:  '',
-		tz:     '',
-		items:  [],
-		active: 0
+		parent: undefined,
+		label:  undefined,
+		tz:     undefined,
+		items:  undefined,
+		active: undefined
 	};
 	
 	public static async create( key: string, parent: string, label: string, tz: string, items: Array<string> ): Promise<GroupItem> {
@@ -132,7 +132,7 @@ export default class GroupItem extends Item {
 	static async getNew( key, obj = false, alarmProps = {}, groupProps = {} ): Promise<Item | JSX.Element> {
 		return await Storage.getItem( key ).then( async data => {
 			if ( !data )
-				return null;
+				return undefined;
 			
 			switch ( data.type ) {
 			case 'Alarm':
