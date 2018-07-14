@@ -37,7 +37,6 @@ export default class AlarmList extends NavComponent {
 		if ( !group )
 			return null;
 		
-		
 		return {
 			title:       group.state.label,
 			headerTitle: <ListTitle onPress={() => {
@@ -64,7 +63,6 @@ export default class AlarmList extends NavComponent {
 	static initial: Promise<void>;
 	
 	mounted = false;
-	
 	componentDidMount(): void {
 		this.mounted = true;
 		// load data from storage

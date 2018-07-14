@@ -52,13 +52,13 @@ export default class GroupItem extends Item {
 	}
 	
 	public async delete(): Promise<void> {
+		await super.delete();
 		for ( let _item of this.state.items ) {
 			let item = await GroupItem.getNew( _item, true ) as Item;
 			if ( !item )
 				continue;
-			await item.delete(false);
+			await item.delete();
 		}
-		await super.delete();
 	}
 	
 	public async getActive(): Promise<number> {

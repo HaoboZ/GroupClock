@@ -74,13 +74,13 @@ export default class AlarmItem extends Item {
 		} );
 	}
 	
-	public async delete( hasParent = true ): Promise<void> {
+	public async delete(): Promise<void> {
 		delete globals.alarms[ this.key ];
 		globals.saveAlarms().then();
 		globals.removeSingleAlarm( this.key ).then();
 		
-		if ( hasParent ) {
-			let parent = await GroupItem.getNew( this.state.parent, true ) as GroupItem;
+		let parent = await GroupItem.getNew( this.state.parent, true ) as GroupItem;
+		if ( parent ) {
 			await parent.load();
 			let items = parent.state.items;
 			items.splice( items.indexOf( this.key ), 1 );

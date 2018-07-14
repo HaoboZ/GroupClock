@@ -19,7 +19,6 @@ export default abstract class Item extends React.PureComponent {
 	};
 	
 	key: string;
-	mounted = false;
 	
 	// noinspection TypeScriptAbstractClassConstructorCanBeMadeProtected
 	constructor( props ) {
@@ -34,6 +33,7 @@ export default abstract class Item extends React.PureComponent {
 		return new type( { k: key } );
 	}
 	
+	mounted = false;
 	componentDidMount(): void {
 		this.mounted = true;
 		this.load().then();
@@ -60,7 +60,7 @@ export default abstract class Item extends React.PureComponent {
 	
 	public abstract async save(): Promise<void>;
 	
-	public async delete(...args): Promise<void> {
+	public async delete(): Promise<void> {
 		await Storage.removeItem( this.key );
 	}
 	

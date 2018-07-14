@@ -33,13 +33,13 @@ export class globals {
 	
 	static async updateSingle(): Promise<void> {
 		let time = moment().unix();
-		for ( let [ index, _item ] of globals.singleAlarms.entries() ) {
+		for ( let _item of globals.singleAlarms ) {
 			let item = await GroupItem.getNew( _item, true ) as AlarmItem;
 			if ( !item )
 				continue;
 			await item.load();
 			if ( item.state.update >= time )
-				globals.singleAlarms.splice( index, 1 );
+				item.delete().then();
 		}
 	}
 }
