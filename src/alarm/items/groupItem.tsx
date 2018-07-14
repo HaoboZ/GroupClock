@@ -33,12 +33,15 @@ export default class GroupItem extends Item {
 		active: undefined
 	};
 	
-	public static async create( key: string, parent: string, label: string, tz: string, items: Array<string> ): Promise<GroupItem> {
+	public static create( key: string, parent: string, label: string, tz: string, items: Array<string> ): Promise<GroupItem> {
 		let data = { type: 'Group', parent, label, tz, items, active: SwitchState.off };
 		return super._create<GroupItem>( key, data, GroupItem );
 	}
 	
 	public async save(): Promise<void> {
+		if ( !this.state.type )
+			await this.load();
+		
 		await Storage.mergeItem( this.key,
 			{
 				label:  this.state.label,
@@ -53,7 +56,7 @@ export default class GroupItem extends Item {
 			let item = await GroupItem.getNew( _item, true ) as Item;
 			if ( !item )
 				continue;
-			await item.delete();
+			await item.delete(false);
 		}
 		await super.delete();
 	}

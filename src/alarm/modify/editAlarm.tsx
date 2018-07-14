@@ -51,7 +51,7 @@ export default class EditAlarm extends NavComponent {
 		const alarm: AlarmItem = navigation.getParam( 'alarm' );
 		
 		return {
-			title:           `Edit Alarm ${alarm.state.label}`,
+			title:           `Edit Alarm ${alarm.state.label !== 'Alarm' ? alarm.state.label : ''}`,
 			headerBackTitle: 'Cancel',
 			headerRight:     alarm.key ? <Button
 				title='Save'
@@ -59,7 +59,7 @@ export default class EditAlarm extends NavComponent {
 					const list: AlarmList = navigation.getParam( 'list' ),
 							state           = navigation.getParam( 'state' )();
 					alarm.state.label = state.label;
-					alarm.state.time = state.time.format( 'YYYY-MM-DD kk:mm' );
+					alarm.state.time = state.time.format( 'YYYY-MM-DD HH:mm' );
 					alarm.state.repeat = AlarmItem.convert.fillArray( state.repeat );
 					alarm.save().then( () => {
 						list.setState( { dirty: true } );
@@ -81,11 +81,6 @@ export default class EditAlarm extends NavComponent {
 		>
 			<Delete onPress={() => this.state.alarm.delete().then( async () => {
 				const list: AlarmList = this.props.navigation.getParam( 'list' );
-				
-				let items = list.state.group.state.items;
-				items.splice( items.indexOf( this.state.alarm.key ), 1 );
-				await list.state.group.save();
-				
 				list.setState( { dirty: true } );
 				this.props.navigation.pop();
 			} )}/>

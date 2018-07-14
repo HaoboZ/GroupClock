@@ -40,7 +40,7 @@ export default class EditGroup extends NavComponent {
 		const group = list.state.group;
 		
 		return {
-			title:           `Edit Group ${group.state.label}`,
+			title:           `Edit Group ${group.state.label !== 'Group' ? group.state.label : ''}`,
 			headerBackTitle: 'Cancel',
 			headerRight:     group.key ? <Button
 				title='Save'

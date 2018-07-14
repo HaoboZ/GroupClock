@@ -1,9 +1,10 @@
 import React from 'react';
-import { FlatList, ListRenderItemInfo, Text, View } from 'react-native';
+import { FlatList, ListRenderItemInfo, RefreshControl, Text, View } from 'react-native';
 import moment from 'moment-timezone';
 
 import NavComponent, { Options } from '../extend/navComponent';
 import { IconButton } from '../extend/nativeIcon';
+import { globals } from './alarm';
 import ListTitle from './components/listTitle';
 import EditGroup from './modify/editGroup';
 import EditAlarm from './modify/editAlarm';
@@ -14,13 +15,20 @@ import GroupItem from './items/groupItem';
 import AddItem, { itemType } from './modify/addItem';
 
 import { color, style } from '../styles';
+import { colors } from '../config';
 
 export default class AlarmList extends NavComponent {
 	
-	state: { group: GroupItem, dirty: boolean, list: Array<JSX.Element> } = {
-		group: null,
-		dirty: false,
-		list:  []
+	state: {
+		group: GroupItem,
+		dirty: boolean,
+		list: Array<JSX.Element>,
+		refreshing: boolean
+	} = {
+		group:      null,
+		dirty:      false,
+		list:       [],
+		refreshing: false
 	};
 	
 	static navigationOptions( { navigation } ): Options {
@@ -133,7 +141,7 @@ export default class AlarmList extends NavComponent {
 				null,
 				this.state.group.key,
 				state.alarmLabel,
-				state.time.format( 'YYYY-MM-DD kk:mm' ),
+				state.time.format( 'YYYY-MM-DD HH:mm' ),
 				AlarmItem.convert.fillArray( state.repeat )
 			);
 		} else {
@@ -155,7 +163,7 @@ export default class AlarmList extends NavComponent {
 	render(): JSX.Element {
 		const group = this.state.group;
 		if ( !group )
-			return null;
+			return <View style={[ color.background, style.flex ]}/>;
 		
 		// allows externally to reload
 		if ( this.state.dirty ) {
@@ -163,23 +171,37 @@ export default class AlarmList extends NavComponent {
 			// will check if active state has changed
 			group.reloadActive( this.props.navigation.getParam( 'parent', null ) )
 				.then( async () => await this.getData() );
-			return null;
+			return <View style={[ color.background, style.flex ]}/>;
 		}
 		
 		// TODO: add text if there is no item in list
 		// TODO: allow moving items by dragging an icon on left side
 		// TODO: allow extracting items to parent group before deleting
 		// TODO: allow dragging items into another group to place in
-		// TODO: pull down reload
 		return <View style={[ color.background, style.flex ]}>
 			<Text style={[ style.centerSelf, color.foreground ]}>{group.state.tz}</Text>
 			<FlatList
 				data={this.state.list}
 				renderItem={this.list.renderItem}
+				refreshControl={<RefreshControl
+					refreshing={this.state.refreshing}
+					onRefresh={this._onRefresh}
+					tintColor={colors.foreground}
+				/>}
 				keyExtractor={this.list.keyExtractor}
 			/>
 		</View>;
 	}
+	
+	_onRefresh = () => {
+		this.setState( { refreshing: true } );
+		globals.updateSingle().then( () => {
+			setTimeout(
+				() => this.setState( { refreshing: false, dirty: true } ),
+				250
+			);
+		} );
+	};
 	
 	private list = {
 		renderItem:   ( { item }: ListRenderItemInfo<JSX.Element> ) => item,

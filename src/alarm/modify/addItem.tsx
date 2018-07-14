@@ -65,7 +65,7 @@ export default class AddItem extends NavComponent {
 		
 		// Loads timezone and time that will be offset
 		this.state.tz = list.state.group.state.tz;
-		this.state.time = moment( moment().tz( this.state.tz ).format( 'YYYY-MM-DD kk:mm' ) );
+		this.state.time = moment( moment().tz( this.state.tz ).format( 'YYYY-MM-DD HH:mm' ) );
 	}
 	
 	/**

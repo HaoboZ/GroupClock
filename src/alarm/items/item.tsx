@@ -60,7 +60,7 @@ export default abstract class Item extends React.PureComponent {
 	
 	public abstract async save(): Promise<void>;
 	
-	public async delete(): Promise<void> {
+	public async delete(...args): Promise<void> {
 		await Storage.removeItem( this.key );
 	}
 	

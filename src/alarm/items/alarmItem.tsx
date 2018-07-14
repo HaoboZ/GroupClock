@@ -4,7 +4,7 @@ import { ListItem } from 'react-native-elements';
 import Storage from '../../extend/storage';
 import moment, { Moment } from 'moment-timezone';
 
-import { alarms, saveAlarms, saveSingleAlarms, singleAlarms } from '../alarm';
+import { globals } from '../alarm';
 import Item from './item';
 import GroupItem from './groupItem';
 
@@ -30,27 +30,30 @@ export default class AlarmItem extends Item {
 		update: undefined
 	};
 	
-	public static create( key: string, parent: string, label: string, time: string, repeat: Array<boolean> ): Promise<AlarmItem> {
+	public static async create( key: string, parent: string, label: string, time: string, repeat: Array<boolean> ): Promise<AlarmItem> {
 		let data = { type: 'Alarm', parent, label, time, repeat, active: false, update: moment().unix() };
-		return super._create<AlarmItem>( key, data, AlarmItem );
+		let alarm: AlarmItem = await super._create<AlarmItem>( key, data, AlarmItem );
+		globals.alarms[ alarm.key ] = false;
+		globals.saveAlarms().then();
+		return alarm;
 	}
 	
 	public async save(): Promise<void> {
+		if ( !this.state.type )
+			await this.load();
+		
 		let parent = await GroupItem.getNew( this.state.parent, true ) as GroupItem;
 		await parent.load();
 		
 		let time: Moment = moment().tz( parent.state.tz );
 		
-		// TODO: turn on notifications
+		globals.alarms[ this.key ] = this.state.active;
+		globals.saveAlarms().then();
 		
-		alarms[ this.key ] = this.state.active;
-		saveAlarms().then();
-		if ( this.state.active === true && !this.isRepeat() ) {
-			let index = singleAlarms.indexOf( this.key );
-			if ( index !== -1 )
-				singleAlarms.splice( index, 1 );
-			singleAlarms.push( this.key );
-			saveSingleAlarms().then();
+		globals.removeSingleAlarm( this.key ).then();
+		if ( !this.isRepeat() && this.state.active ) {
+			globals.singleAlarms.push( this.key );
+			globals.saveSingleAlarms().then();
 			
 			let target = moment.tz( this.state.time, parent.state.tz )
 				.subtract( 1, 'day' );
@@ -59,6 +62,8 @@ export default class AlarmItem extends Item {
 			}
 			time = target;
 		}
+		
+		// TODO: turn on notifications
 		
 		await Storage.mergeItem( this.key, {
 			label:  this.state.label,
@@ -69,9 +74,19 @@ export default class AlarmItem extends Item {
 		} );
 	}
 	
-	public async delete(): Promise<void> {
-		delete alarms[ this.key ];
-		saveAlarms().then();
+	public async delete( hasParent = true ): Promise<void> {
+		delete globals.alarms[ this.key ];
+		globals.saveAlarms().then();
+		globals.removeSingleAlarm( this.key ).then();
+		
+		if ( hasParent ) {
+			let parent = await GroupItem.getNew( this.state.parent, true ) as GroupItem;
+			await parent.load();
+			let items = parent.state.items;
+			items.splice( items.indexOf( this.key ), 1 );
+			await parent.save();
+		}
+		
 		await super.delete();
 	}
 	
@@ -136,7 +151,7 @@ export default class AlarmItem extends Item {
 		}
 	};
 	
-	private isRepeat() {
+	private isRepeat(): boolean {
 		for ( let r of this.state.repeat )
 			if ( r )
 				return true;
