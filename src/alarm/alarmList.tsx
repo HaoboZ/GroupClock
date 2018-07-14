@@ -174,10 +174,15 @@ export default class AlarmList extends NavComponent {
 			return <View style={[ color.background, style.flex ]}/>;
 		}
 		
-		// TODO: add text if there is no item in list
+		if ( !this.state.list.length )
+			return <View style={[ color.background, style.flex, style.center ]}>
+				<Text style={[ color.foreground ]}>No alarms</Text>
+			</View>;
+		
 		// TODO: allow moving items by dragging an icon on left side
 		// TODO: allow extracting items to parent group before deleting
 		// TODO: allow dragging items into another group to place in
+		
 		return <View style={[ color.background, style.flex ]}>
 			<Text style={[ style.centerSelf, color.foreground ]}>{group.state.tz}</Text>
 			<FlatList
