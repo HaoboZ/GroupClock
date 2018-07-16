@@ -30,7 +30,6 @@ export default class EditAlarmGroup extends NavComponent {
 	};
 	
 	static navigationOptions( { navigation } ): Options {
-		const list: AlarmList = navigation.getParam( 'list' );
 		const self: EditAlarmGroup = navigation.getParam( 'self' );
 		if ( !self )
 			return null;
@@ -44,8 +43,13 @@ export default class EditAlarmGroup extends NavComponent {
 					self.state.group.data.label = self.state.label;
 					self.state.group.data.tz = self.state.tz;
 					self.state.group.save().then( () => {
-						list.load().then();
-						navigation.pop();
+						const list: AlarmList   = navigation.getParam( 'list' ),
+								parent: AlarmList = list.props.navigation.getParam( 'parent' );
+						list.load().then( () => {
+							if ( parent )
+								parent.load().then();
+							navigation.pop();
+						} );
 					} );
 				}}
 				color={colors.highlight}
@@ -59,12 +63,13 @@ export default class EditAlarmGroup extends NavComponent {
 			group,
 			label: group.data.label,
 			tz:    group.data.tz
-		} );
-		
-		this.props.navigation.setParams( { self: this } );
+		}, () => this.props.navigation.setParams( { self: this } ) );
 	}
 	
 	render(): JSX.Element {
+		if ( !this.state.group )
+			return null;
+		
 		return <View style={[ style.flex, color.background ]}>
 			<Delete onPress={this.delete}/>
 			<Label label={this.state.label} change={this.set.label}/>
@@ -79,13 +84,12 @@ export default class EditAlarmGroup extends NavComponent {
 			let items = parent.state.group.data.items;
 			items.splice( items.indexOf( this.state.group.key ), 1 );
 			parent.state.group.save().then( () =>
-				parent.load().then()
+				parent.load().then( () => this.props.navigation.pop( 2 ) )
 			);
 		} else {
 			list.state.group = null;
-			list.load().then();
+			list.load().then( () => this.props.navigation.pop() );
 		}
-		this.props.navigation.pop( 2 );
 	} );
 	
 }

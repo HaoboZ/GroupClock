@@ -27,4 +27,3 @@ export default class Type extends React.PureComponent {
 	}
 	
 }
-

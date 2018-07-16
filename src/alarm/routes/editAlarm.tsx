@@ -37,7 +37,6 @@ export default class EditAlarm extends NavComponent {
 	};
 	
 	static navigationOptions( { navigation } ): Options {
-		const list: AlarmList = navigation.getParam( 'list' );
 		const self: EditAlarm = navigation.getParam( 'self' );
 		if ( !self )
 			return null;
@@ -48,13 +47,13 @@ export default class EditAlarm extends NavComponent {
 			headerRight:     ( <Button
 				title='Save'
 				onPress={() => {
+					const list: AlarmList = navigation.getParam( 'list' );
+					
 					self.state.alarm.data.label = self.state.label;
 					self.state.alarm.data.time = self.state.time.format( 'YYYY-MM-DD HH:mm' );
 					self.state.alarm.data.repeat = AlarmItem.convert.fillArray( self.state.repeat );
-					self.state.alarm.save().then( () => {
-						list.load().then();
-						navigation.pop();
-					} );
+					self.state.alarm.save().then( () =>
+						list.load().then( () => navigation.pop() ) );
 				}}
 				color={colors.highlight}
 			/> )
@@ -68,12 +67,15 @@ export default class EditAlarm extends NavComponent {
 			label:  alarm.data.label,
 			time:   moment( alarm.data.time ),
 			repeat: AlarmItem.convert.emptyArray( alarm.data.repeat )
-		} );
+		}, () => this.props.navigation.setParams( { self: this } ) );
 		
-		this.props.navigation.setParams( { self: this } );
 	}
 	
 	render(): JSX.Element {
+		if ( !this.state.alarm )
+			return null;
+		
+		
 		return <View style={[ style.flex, color.background ]}>
 			<Delete onPress={this.delete}/>
 			<Label label={this.state.label} change={this.set.label}/>
@@ -92,9 +94,8 @@ export default class EditAlarm extends NavComponent {
 		let items = list.state.group.data.items;
 		items.splice( items.indexOf( this.state.alarm.key ), 1 );
 		list.state.group.save().then( () =>
-			list.load().then()
+			list.load().then( () => this.props.navigation.pop() )
 		);
-		this.props.navigation.pop();
 	} )
 	
 }

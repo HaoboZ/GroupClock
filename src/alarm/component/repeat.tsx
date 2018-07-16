@@ -34,4 +34,3 @@ export default class Repeat extends React.PureComponent {
 	}
 	
 }
-

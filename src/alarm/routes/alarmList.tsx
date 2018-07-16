@@ -17,18 +17,20 @@ import { colors } from '../../config';
 export default class AlarmList extends NavComponent {
 	
 	state: {
+		groupComponent: AlarmGroupComponent,
 		group: AlarmGroupItem,
 		listItems: Array<JSX.Element>,
 		refreshing: boolean
 	} = {
-		group:      null,
-		listItems:  [],
-		refreshing: false
+		groupComponent: null,
+		group:          null,
+		listItems:      [],
+		refreshing:     false
 	};
 	
 	static navigationOptions( { navigation } ): Options {
 		const self: AlarmList = navigation.getParam( 'self' );
-		if ( !self || !self.state.group )
+		if ( !self )
 			return null;
 		
 		return {
@@ -61,12 +63,14 @@ export default class AlarmList extends NavComponent {
 	}
 	
 	componentDidMount(): void {
-		let group = this.props.navigation.getParam( 'group', null );
-		this.state.group = group;
+		let group: AlarmGroupComponent = this.props.navigation.getParam( 'group', null );
+		this.state.groupComponent = group;
 		if ( !group )
 			AlarmStorage.init().then( () => this.load().then() );
-		else
+		else {
+			this.state.group = group.state.group;
 			this.load().then();
+		}
 	}
 	
 	public async load() {
@@ -100,8 +104,8 @@ export default class AlarmList extends NavComponent {
 							list={this}
 							onPress={( alarm: AlarmComponent ) => {
 								this.props.navigation.navigate( 'EditAlarm', {
-									list: this,
-									alarm
+									list:  this,
+									alarm: alarm.state.alarm
 								} );
 							}}
 						/>;
@@ -113,7 +117,7 @@ export default class AlarmList extends NavComponent {
 							onPress={( group: AlarmGroupComponent ) => {
 								this.props.navigation.push( 'AlarmList', {
 									parent: this,
-									group:  group.state.group
+									group
 								} );
 							}}
 						/>;
@@ -154,7 +158,7 @@ export default class AlarmList extends NavComponent {
 			this.setState( { refreshing: true } );
 			setTimeout(
 				() => this.setState( { refreshing: false } ),
-				250
+				500
 			);
 		}
 	};

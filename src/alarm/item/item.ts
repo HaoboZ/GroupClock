@@ -6,7 +6,7 @@ export default class Item<T> {
 	
 	load: Promise<T>;
 	static loaded: any = {};
-	data: T = null;
+	data: { active } & T = null;
 	
 	constructor( key?: string, noLoad = false ) {
 		if ( !key ) {
@@ -15,7 +15,7 @@ export default class Item<T> {
 		}
 		this.key = key;
 		
-		if ( !noLoad )
+		if ( noLoad )
 			return;
 		if ( Item.loaded[ key ] )
 			this.load = Promise.resolve( Item.loaded[ key ] );
@@ -23,7 +23,7 @@ export default class Item<T> {
 			this.load = Item.load( key );
 		this.load.then( data => {
 			Item.loaded[ key ] = data;
-			this.data = data;
+			this.data = data as any;
 		} );
 	}
 	
@@ -32,21 +32,26 @@ export default class Item<T> {
 	}
 	
 	public create( data: T ) {
-		this.data = data;
+		this.data = data as any;
 		Item.loaded[ this.key ] = data;
 		this.load = Promise.resolve( data );
 		return Storage.setItem( this.key, data );
 	}
 	
 	public async save() {
-		let data = await this.load;
-		await Storage.mergeItem( this.key, data );
+		await Storage.mergeItem( this.key, this.data );
 	}
 	
 	public delete() {
 		this.data = null;
 		delete Item.loaded[ this.key ];
 		return Storage.removeItem( this.key );
+	}
+	
+	public async activate( active ) {
+		await this.load;
+		this.data.active = active;
+		await this.save();
 	}
 	
 }

@@ -67,9 +67,7 @@ export default class AddAlarm extends NavComponent {
 	}
 	
 	static navigationOptions( { navigation } ): Options {
-		const title: string   = navigation.getParam( 'title', '' ),
-				self: AddAlarm  = navigation.getParam( 'self' ),
-				list: AlarmList = navigation.getParam( 'list' );
+		const title: string = navigation.getParam( 'title', '' );
 		
 		let clicked = false;
 		return {
@@ -81,6 +79,9 @@ export default class AddAlarm extends NavComponent {
 					if ( clicked )
 						return;
 					clicked = true;
+					
+					const self: AddAlarm  = navigation.getParam( 'self' ),
+							list: AlarmList = navigation.getParam( 'list' );
 					
 					let item: Item<any>;
 					switch ( self.state.type ) {
@@ -115,8 +116,7 @@ export default class AddAlarm extends NavComponent {
 					item.load.then( () => {
 						list.state.group.data.items.push( item.key );
 						list.state.group.save().then( () => {
-								list.load().then();
-								navigation.pop();
+								list.load().then( () => navigation.pop() );
 							}
 						);
 					} )

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { ListItem } from 'react-native-elements';
 import moment from 'moment-timezone';
 
@@ -13,19 +13,21 @@ export default class AlarmComponent extends React.PureComponent {
 	props: {
 		_key: string,
 		list: AlarmList,
-		onPress: ( AlarmComponent ) => void
+		onPress: ( AlarmItem ) => void
 	};
 	
 	state: {
-		alarm: AlarmItem
+		alarm: AlarmItem,
+		active: boolean
 	} = {
-		alarm: null
+		alarm:  null,
+		active: undefined
 	};
 	
 	componentDidMount() {
 		let alarm = new AlarmItem( this.props._key );
 		alarm.load.then( () => {
-			this.setState( { alarm } );
+			this.setState( { alarm, active: alarm.data.active } );
 		} );
 	}
 	
@@ -40,32 +42,54 @@ export default class AlarmComponent extends React.PureComponent {
 				this.state.alarm.data.repeat[ i ] ? color.highlight : color.foreground
 			]}> {days[ i ]}</Text>;
 		}
+		
 		return <ListItem
 			containerStyle={[ color.listItem ]}
 			topDivider
 			bottomDivider
 			title={this.state.alarm.data.label}
-			titleStyle={[ color.foreground, { fontSize: 36 } ]}
+			titleStyle={[ color.foreground, styles.title ]}
 			subtitle={<View style={[ style.flex, style.row, style.space ]}>
-				<Text style={[ color.foreground, { fontSize: 16 } ]}>
+				<Text style={[ color.foreground, styles.subTitle ]}>
 					{moment( this.state.alarm.data.time ).format( 'LT' )}
 				</Text>
-				<Text style={{ fontSize: 16 }}>{repeat}</Text>
+				<Text style={[ styles.subTitle ]}>{repeat}</Text>
 			</View>}
 			onPress={this.onPress}
 			switch={{
-				value:         this.state.alarm.data.active,
-				onValueChange: ( active ) => {
-					this.setState( { active }, () => {
-						this.state.alarm.save().then( () => {
-							// reset list
-						} );
-					} );
-				}
+				value:         this.state.active,
+				onValueChange: this.onValueChange
 			}}
 		/>
 	}
 	
 	onPress = () => this.props.onPress( this );
 	
+	onValueChange = ( active ) => this.setState( { active }, () => {
+		this.state.alarm.activate( active ).then( async () => {
+			let list = this.props.list;
+			while ( list ) {
+				let oldActive = list.state.group.data.active;
+				let active = await list.state.group.getActive();
+				if ( active === oldActive )
+					return;
+				
+				list.state.group.data.active = active;
+				list.state.group.save().then();
+				if ( list.state.groupComponent )
+					list.state.groupComponent.setState( { active } );
+				list = list.props.navigation.getParam( 'parent', null );
+			}
+		} );
+	} );
+	
 }
+
+let styles = StyleSheet.create( {
+	title:    {
+		fontSize: 36
+	},
+	subTitle: {
+		fontSize: 16
+	}
+} );

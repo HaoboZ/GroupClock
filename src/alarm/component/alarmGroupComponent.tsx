@@ -2,34 +2,30 @@ import React from 'react';
 import { ListItem } from 'react-native-elements';
 
 import AlarmList from '../routes/alarmList';
-import AlarmGroupItem from '../item/alarmGroupItem';
+import AlarmGroupItem, { SwitchState } from '../item/alarmGroupItem';
 
 import { color } from '../../styles';
-
-export const SwitchState = {
-	off:     0,
-	on:      1,
-	partial: 2
-};
 
 export default class AlarmGroupComponent extends React.PureComponent {
 	
 	props: {
 		_key: string,
 		list: AlarmList,
-		onPress: ( AlarmGroupComponent ) => void
+		onPress: ( AlarmGroupItem ) => void
 	};
 	
 	state: {
 		group: AlarmGroupItem,
+		active: number
 	} = {
-		group: null,
+		group:  null,
+		active: undefined
 	};
 	
 	componentDidMount() {
 		let group = new AlarmGroupItem( this.props._key );
 		group.load.then( () => {
-			this.setState( { group } );
+			this.setState( { group, active: group.data.active } );
 		} );
 	}
 	
@@ -47,17 +43,35 @@ export default class AlarmGroupComponent extends React.PureComponent {
 			subtitleStyle={[ color.foreground ]}
 			onPress={this.onPress}
 			switch={{
-				value:         this.state.group.data.active !== SwitchState.off,
-				onValueChange: ( active ) => {
-					this.setState( { active: active ? 1 : 0 }, () => {
-						// reset list
-					} );
-				},
+				value:         this.state.active !== SwitchState.off,
+				onValueChange: this.onValueChange,
 				onTintColor:   this.state.group.data.active === SwitchState.partial ? '#007fff' : undefined
 			}}
 		/>
 	}
 	
 	onPress = () => this.props.onPress( this );
+	
+	onValueChange = ( _active ) => {
+		let active = _active ? SwitchState.on : SwitchState.off;
+		this.setState( { active }, () => {
+			this.state.group.activate( active ).then( async () => {
+				let list = this.props.list;
+				console.log( 'try to activate' );
+				while ( list ) {
+					let oldActive = list.state.group.data.active;
+					let active = await list.state.group.getActive();
+					if ( active === oldActive )
+						return;
+					
+					list.state.group.data.active = active;
+					list.state.group.save().then();
+					if ( list.state.groupComponent )
+						list.state.groupComponent.setState( { active } );
+					list = list.props.navigation.getParam( 'parent', null );
+				}
+			} );
+		} );
+	};
 	
 }

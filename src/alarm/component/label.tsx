@@ -29,4 +29,3 @@ export default class Label extends React.PureComponent {
 	}
 	
 }
-
