@@ -35,7 +35,7 @@ export default class EditAlarm extends NavComponent {
 	private set = {
 		label:    label => this.setState( { label } ),
 		time:     ( time: Date ) => this.setState( { time: moment( time ) } ),
-		viewDate: () => this.setState( { viewDate: !this.state.viewDate } ),
+		viewDate: () => this.setState( { viewPicker: !this.state.viewDate } ),
 		repeat:   repeat => this.setState( { repeat } )
 	};
 	

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button, View } from 'react-native';
 import NavComponent, { Options } from '../../extend/navComponent';
-import TimezonePicker from '../../components/timezonePicker';
+import TimezonePicker from '../components/timezonePicker';
 
 import AlarmList from '../alarmList';
 import GroupItem from '../items/groupItem';

@@ -3,8 +3,8 @@ import { FlatList, Text, View } from 'react-native';
 import { ListItem, SearchBar } from 'react-native-elements';
 import moment from 'moment-timezone';
 
-import { colors } from '../config';
-import { color, style } from '../styles';
+import { colors } from '../../config';
+import { color, style } from '../../styles';
 
 export default class TimezonePicker extends React.PureComponent {
 	
@@ -54,8 +54,9 @@ export default class TimezonePicker extends React.PureComponent {
 				containerStyle={[ color.background ]}
 				titleStyle={[ color.foreground ]}
 				title={this.props.tz}
-				rightElement={
-					<Text style={[ color.foreground ]}>{this.search.getTZ( this.props.tz )}</Text>}
+				rightElement={<Text style={[ color.foreground ]}>
+					{this.search.getTZ( this.props.tz )}
+				</Text>}
 			/>}
 			<SearchBar
 				platform='ios'
@@ -89,9 +90,9 @@ export default class TimezonePicker extends React.PureComponent {
 				}}
 				containerStyle={[ color.listItem ]}
 				titleStyle={[ color.foreground ]}
-				rightElement={
-					<Text style={[ color.foreground ]}>{this.search.getTZ( tz.item )}</Text>
-				}
+				rightElement={<Text
+					style={[ color.foreground ]}>{this.search.getTZ( tz.item )}
+				</Text>}
 				bottomDivider
 			/>;
 		},
