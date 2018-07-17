@@ -1,9 +1,9 @@
 import React from 'react';
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { ButtonGroup } from 'react-native-elements';
 
 import styles from './styles';
-import { color, style } from '../../styles';
+import { themeStyle, contentStyle } from '../../styles';
 
 export default class Type extends React.PureComponent {
 	
@@ -13,17 +13,23 @@ export default class Type extends React.PureComponent {
 	};
 	
 	render(): JSX.Element {
-		return <View style={[ styles.Item, style.center ]}>
+		return <View style={[ styles.Item, contentStyle.center ]}>
 			<ButtonGroup
 				buttons={[ 'Alarm', 'Group' ]}
 				selectedIndex={this.props.type}
 				onPress={this.props.change}
-				containerStyle={[ color.background, styles.innerItem ]}
-				selectedButtonStyle={{ backgroundColor: '#ffffff' }}
-				selectedTextStyle={{ color: '#000000' }}
-				textStyle={[ color.foreground, { fontSize: 14 } ]}
+				containerStyle={[ themeStyle.background, styles.innerItem ]}
+				textStyle={[ themeStyle.foreground, style.text ]}
+				selectedButtonStyle={[ style.selectButton ]}
+				selectedTextStyle={[ style.selectText ]}
 			/>
 		</View>;
 	}
 	
 }
+
+const style = StyleSheet.create( {
+	text:         { fontSize: 14 },
+	selectButton: { backgroundColor: '#ffffff' },
+	selectText:   { color: '#000000' }
+} );

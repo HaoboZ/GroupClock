@@ -2,8 +2,8 @@ import React from 'react';
 import { Platform } from 'react-native';
 import { Button, Icon } from 'react-native-elements';
 
-import { style } from '../styles';
-import { colors } from '../config';
+import { contentStyle } from '../styles';
+import { theme } from '../config';
 
 export default class NativeIcon extends React.PureComponent {
 	
@@ -15,7 +15,7 @@ export default class NativeIcon extends React.PureComponent {
 	};
 	
 	static defaultProps = {
-		color: colors.highlight
+		color: theme.highlight
 	};
 	
 	render(): JSX.Element {
@@ -43,7 +43,7 @@ export class IconButton extends React.PureComponent {
 		
 		return <Button
 			clear
-			style={style.buttonPadding}
+			style={[ contentStyle.buttonPadding ]}
 			title=''
 			icon={<NativeIcon {...props}/>}
 			onPress={onPress}

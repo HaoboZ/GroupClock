@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { colors } from '../../config';
+import { theme } from '../../config';
 
 export default StyleSheet.create( {
 	Item:      {
@@ -8,7 +8,7 @@ export default StyleSheet.create( {
 		paddingBottom:   0,
 		paddingLeft:     20,
 		paddingRight:    20,
-		backgroundColor: colors.background
+		backgroundColor: theme.background
 	},
 	innerItem: {
 		width:  210,

@@ -6,7 +6,7 @@ import moment from 'moment-timezone';
 import AlarmList from '../routes/alarmList';
 import AlarmItem from '../item/alarmItem';
 
-import { color, style } from '../../styles';
+import { themeStyle, contentStyle } from '../../styles';
 
 export default class AlarmComponent extends React.PureComponent {
 	
@@ -24,14 +24,14 @@ export default class AlarmComponent extends React.PureComponent {
 		active: undefined
 	};
 	
-	componentDidMount() {
+	componentDidMount(): void {
 		let alarm = new AlarmItem( this.props._key );
 		alarm.load.then( () => {
 			this.setState( { alarm, active: alarm.data.active } );
 		} );
 	}
 	
-	render() {
+	render(): JSX.Element {
 		if ( !this.state.alarm )
 			return null;
 		
@@ -39,21 +39,25 @@ export default class AlarmComponent extends React.PureComponent {
 		let repeat = [];
 		for ( let i = 0; i < 7; ++i ) {
 			repeat[ i ] = <Text key={i} style={[
-				this.state.alarm.data.repeat[ i ] ? color.highlight : color.foreground
+				this.state.alarm.data.repeat[ i ] ? themeStyle.highlight : themeStyle.foreground
 			]}> {days[ i ]}</Text>;
 		}
 		
 		return <ListItem
-			containerStyle={[ color.listItem ]}
+			containerStyle={[ themeStyle.listItem ]}
 			topDivider
 			bottomDivider
 			title={this.state.alarm.data.label}
-			titleStyle={[ color.foreground, styles.title ]}
-			subtitle={<View style={[ style.flex, style.row, style.space ]}>
-				<Text style={[ color.foreground, styles.subTitle ]}>
+			titleStyle={[ themeStyle.foreground, style.title ]}
+			subtitle={<View style={[
+				contentStyle.flex,
+				contentStyle.row,
+				contentStyle.space
+			]}>
+				<Text style={[ themeStyle.foreground, style.subTitle ]}>
 					{moment( this.state.alarm.data.time ).format( 'LT' )}
 				</Text>
-				<Text style={[ styles.subTitle ]}>{repeat}</Text>
+				<Text style={[ style.subTitle ]}>{repeat}</Text>
 			</View>}
 			onPress={this.onPress}
 			switch={{
@@ -65,8 +69,14 @@ export default class AlarmComponent extends React.PureComponent {
 	
 	onPress = () => this.props.onPress( this );
 	
-	onValueChange = ( active ) => this.setState( { active }, () => {
+	/**
+	 * Changes active value.
+	 *
+	 * @param {boolean} active
+	 */
+	onValueChange = ( active: boolean ) => this.setState( { active }, () => {
 		this.state.alarm.activate( active ).then( async () => {
+			// activates parent if it changes
 			let list = this.props.list;
 			while ( list ) {
 				let oldActive = list.state.group.data.active;
@@ -74,6 +84,7 @@ export default class AlarmComponent extends React.PureComponent {
 				if ( active === oldActive )
 					return;
 				
+				// saves group active property
 				list.state.group.data.active = active;
 				list.state.group.save().then();
 				if ( list.state.groupComponent )
@@ -85,7 +96,7 @@ export default class AlarmComponent extends React.PureComponent {
 	
 }
 
-let styles = StyleSheet.create( {
+const style = StyleSheet.create( {
 	title:    {
 		fontSize: 36
 	},

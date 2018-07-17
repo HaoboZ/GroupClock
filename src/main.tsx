@@ -2,12 +2,12 @@ import React from 'react';
 import { StatusBar, View } from 'react-native';
 import MainNav from './navigator';
 
-import { style } from './styles';
+import { contentStyle } from './styles';
 
 export default class Main extends React.PureComponent {
 	
 	render(): JSX.Element {
-		return <View style={[ style.flex ]}>
+		return <View style={[ contentStyle.flex ]}>
 			{/*Makes status bar white*/}
 			<StatusBar barStyle='light-content'/>
 			<MainNav/>

@@ -7,8 +7,8 @@ import Timer from './timer/timer';
 import Stopwatch from './stopwatch/stopwatch';
 import Settings from './settings';
 
-import { colors } from './config';
-import { color } from './styles';
+import { theme } from './config';
+import { themeStyle } from './styles';
 
 const routeIcons = {
 	Alarm:     'alarm',
@@ -44,8 +44,8 @@ const MainNav = createBottomTabNavigator(
 			}
 		},
 		tabBarOptions:    {
-			activeTintColor: colors.highlight,
-			style:           [ color.navigation ]
+			activeTintColor: theme.highlight,
+			style:           [ themeStyle.navigation ]
 		}
 	}
 );

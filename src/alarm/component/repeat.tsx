@@ -1,8 +1,9 @@
 import React from 'react';
+import { StyleSheet } from 'react-native';
 import { ButtonGroup, ListItem } from 'react-native-elements';
 
-import { colors } from '../../config';
-import { color } from '../../styles';
+import { theme } from '../../config';
+import { themeStyle } from '../../styles';
 import styles from './styles';
 
 export default class Repeat extends React.PureComponent {
@@ -14,23 +15,27 @@ export default class Repeat extends React.PureComponent {
 	
 	render(): JSX.Element {
 		return <ListItem
-			containerStyle={[ styles.Item, {
-				paddingRight: 0
-			} ]}
+			containerStyle={[ styles.Item, style.padding ]}
 			title='Repeat'
-			titleStyle={[ color.foreground ]}
+			titleStyle={[ themeStyle.foreground ]}
 			rightElement={<ButtonGroup
 				buttons={[ 'Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa' ]}
 				selectMultiple
 				selectedIndex={null}
 				selectedIndexes={this.props.repeat}
 				onPress={this.props.change}
-				containerStyle={[ color.background, styles.innerItem ]}
-				textStyle={[ color.foreground ]}
-				selectedButtonStyle={{ backgroundColor: colors.foreground }}
-				selectedTextStyle={{ color: colors.background }}
+				containerStyle={[ themeStyle.background, styles.innerItem ]}
+				textStyle={[ themeStyle.foreground ]}
+				selectedButtonStyle={[ style.selectButton ]}
+				selectedTextStyle={[ style.selectText ]}
 			/>}
 		/>;
 	}
 	
 }
+
+const style = StyleSheet.create( {
+	padding:      { paddingRight: 0 },
+	selectButton: { backgroundColor: theme.foreground },
+	selectText:   { color: theme.background }
+} );

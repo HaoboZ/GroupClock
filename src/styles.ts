@@ -1,7 +1,7 @@
 import { StyleSheet } from 'react-native';
-import { colors } from './config';
+import { theme } from './config';
 
-export const style = StyleSheet.create( {
+export const contentStyle = StyleSheet.create( {
 	flex:          {
 		flex: 1
 	},
@@ -27,10 +27,10 @@ export const style = StyleSheet.create( {
 	}
 } );
 
-export const color = StyleSheet.create( {
-	navigation: { backgroundColor: colors.navigation },
-	background: { backgroundColor: colors.background },
-	foreground: { color: colors.foreground },
-	highlight:  { color: colors.highlight },
-	listItem:   { backgroundColor: colors.contrast }
+export const themeStyle = StyleSheet.create( {
+	navigation: { backgroundColor: theme.navigation },
+	background: { backgroundColor: theme.background },
+	foreground: { color: theme.foreground },
+	highlight:  { color: theme.highlight },
+	listItem:   { backgroundColor: theme.contrast }
 } );

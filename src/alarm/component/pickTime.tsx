@@ -1,8 +1,8 @@
 import React from 'react';
-import { Button, DatePickerIOS, View } from 'react-native';
+import { Button, DatePickerIOS, StyleSheet, View } from 'react-native';
 import { Moment } from 'moment-timezone';
 
-import { colors } from '../../config';
+import { theme } from '../../config';
 
 export default class PickTime extends React.PureComponent {
 	
@@ -18,15 +18,19 @@ export default class PickTime extends React.PureComponent {
 			<Button
 				onPress={this.props.changeView}
 				title={this.props.time.format( 'LT' )}
-				color={colors.highlight}
+				color={theme.highlight}
 			/>
 			{this.props.view ? <DatePickerIOS
 				date={this.props.time.toDate()}
 				onDateChange={this.props.change}
 				mode='time'
-				style={{ backgroundColor: '#ffffff' }}
+				style={[ style.picker ]}
 			/> : null}
 		</View>;
 	}
 	
 }
+
+const style = StyleSheet.create( {
+	picker: { backgroundColor: theme.foreground }
+} );

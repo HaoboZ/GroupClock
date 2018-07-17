@@ -4,7 +4,7 @@ import createNavigator from '../extend/createNavigator';
 import NavComponent, { Options } from '../extend/navComponent';
 import { IconButton } from '../extend/nativeIcon';
 
-import { color, style } from '../styles';
+import { themeStyle, contentStyle } from '../styles';
 
 class Timer extends NavComponent {
 	
@@ -24,11 +24,11 @@ class Timer extends NavComponent {
 	
 	render(): JSX.Element {
 		return <View style={[
-			style.flex,
-			style.center,
-			color.background
+			contentStyle.flex,
+			contentStyle.center,
+			themeStyle.background
 		]}>
-			<Text style={[ color.foreground ]}>
+			<Text style={[ themeStyle.foreground ]}>
 				Timer
 			</Text>
 		</View>;

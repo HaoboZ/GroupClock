@@ -1,7 +1,7 @@
 import React from 'react';
 import { Input, ListItem } from 'react-native-elements';
 
-import { color } from '../../styles';
+import { themeStyle } from '../../styles';
 import styles from './styles';
 
 export default class Label extends React.PureComponent {
@@ -15,11 +15,11 @@ export default class Label extends React.PureComponent {
 		return <ListItem
 			containerStyle={[ styles.Item ]}
 			title='Label'
-			titleStyle={[ color.foreground ]}
+			titleStyle={[ themeStyle.foreground ]}
 			rightElement={<Input
 				keyboardAppearance='dark'
-				containerStyle={[ color.background, styles.innerItem ]}
-				inputStyle={[ color.foreground ]}
+				containerStyle={[ themeStyle.background, styles.innerItem ]}
+				inputStyle={[ themeStyle.foreground ]}
 				onChangeText={this.props.change}
 				value={this.props.label}
 				selectTextOnFocus

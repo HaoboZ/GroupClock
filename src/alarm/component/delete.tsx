@@ -8,7 +8,7 @@ export default class Delete extends React.PureComponent {
 	};
 	
 	render(): JSX.Element {
-		return <Button color={'red'} onPress={this.props.onPress} title='Delete'/>;
+		return <Button color={'#ff0000'} onPress={this.props.onPress} title='Delete'/>;
 	}
 	
 }

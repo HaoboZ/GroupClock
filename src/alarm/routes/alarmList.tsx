@@ -1,8 +1,8 @@
 import React from 'react';
-import { FlatList, RefreshControl, Text, View } from 'react-native';
-import moment from 'moment-timezone';
+import { AsyncStorage, FlatList, RefreshControl, StyleSheet, Text, View } from 'react-native';
 import NavComponent, { Options } from '../../extend/navComponent';
 import { IconButton } from '../../extend/nativeIcon';
+import moment from 'moment-timezone';
 
 import AlarmStorage from '../alarmStorage';
 import Item from '../item/item';
@@ -11,8 +11,8 @@ import AlarmGroupItem from '../item/alarmGroupItem';
 import AlarmComponent from '../component/alarmComponent';
 import AlarmGroupComponent from '../component/alarmGroupComponent';
 
-import { color, style } from '../../styles';
-import { colors } from '../../config';
+import { themeStyle, contentStyle } from '../../styles';
+import { theme } from '../../config';
 
 export default class AlarmList extends NavComponent {
 	
@@ -28,6 +28,10 @@ export default class AlarmList extends NavComponent {
 		refreshing:     false
 	};
 	
+	/**
+	 * @param {NavigationScreenProp<NavigationState>} navigation
+	 * @returns {NavigationScreenOptions}
+	 */
 	static navigationOptions( { navigation } ): Options {
 		const self: AlarmList = navigation.getParam( 'self' );
 		if ( !self )
@@ -35,7 +39,14 @@ export default class AlarmList extends NavComponent {
 		
 		return {
 			title:       self.state.group.data.label,
-			headerTitle: ( <View style={[ style.flex, style.row, style.center ]}>
+			/**
+			 * Adds button to title to navigate to {@link EditAlarmGroup}.
+			 */
+			headerTitle: ( <View style={[
+				contentStyle.flex,
+				contentStyle.row,
+				contentStyle.center
+			]}>
 				<IconButton name='open' outline={true} onPress={() => {
 					navigation.navigate(
 						'EditAlarmGroup',
@@ -44,24 +55,31 @@ export default class AlarmList extends NavComponent {
 							group: self.state.group
 						}
 					)
-				}
-				}/>
-				<Text style={[ color.foreground, { fontWeight: 'bold', fontSize: 18 } ]}>
+				}}/>
+				<Text style={[ themeStyle.foreground, style.title ]}>
 					{self.state.group.data.label}
 				</Text>
 			</View> ),
+			/**
+			 * Navigate to {@link AddAlarm}.
+			 */
 			headerRight: ( <IconButton
 				name='add'
-				onPress={() =>
+				onPress={() => {
 					navigation.navigate(
 						'AddAlarm',
 						{ list: self }
-					)}
+					);
+				}}
 				size={40}
 			/> )
 		};
 	}
 	
+	/**
+	 * Runs {@link AlarmStorage.init} for the first list.
+	 * Loads data.
+	 */
 	componentDidMount(): void {
 		let group: AlarmGroupComponent = this.props.navigation.getParam( 'group', null );
 		this.state.groupComponent = group;
@@ -73,10 +91,16 @@ export default class AlarmList extends NavComponent {
 		}
 	}
 	
-	public async load() {
+	/**
+	 * Loads each item from list.
+	 *
+	 * @returns {Promise<void>}
+	 */
+	public async load(): Promise<void> {
 		let group = this.state.group;
 		if ( !group ) {
-			group = new AlarmGroupItem( 'AlarmStart' );
+			// first list beginning
+			group = new AlarmGroupItem( 'alarmStart' );
 			await group.load.then( async ( data ) => {
 				if ( !data ) {
 					await group.create( {
@@ -92,6 +116,7 @@ export default class AlarmList extends NavComponent {
 			} );
 		}
 		
+		// loads individual list items
 		let promises: Array<Promise<void>> = [];
 		let listItems: Array<JSX.Element> = [];
 		group.load.then( ( data ) => {
@@ -125,19 +150,23 @@ export default class AlarmList extends NavComponent {
 					}
 				} ) );
 			}
-			this.props.navigation.setParams( { self: this } );
+			// once each item is loaded, set items
 			Promise.all( promises ).then( () => {
+				this.props.navigation.setParams( { self: this } );
 				this.setState( { listItems } );
 			} );
 		} );
 	}
 	
+	/**
+	 * @returns {JSX.Element}
+	 */
 	render(): JSX.Element {
 		if ( !this.state.group )
-			return <View style={[ color.background ]}/>;
+			return <View style={[ themeStyle.background ]}/>;
 		
-		return <View style={[ color.background, style.flex ]}>
-			<Text style={[ style.centerSelf, color.foreground ]}>
+		return <View style={[ themeStyle.background, contentStyle.flex ]}>
+			<Text style={[ contentStyle.centerSelf, themeStyle.foreground ]}>
 				{this.state.group.data.tz}
 			</Text>
 			<FlatList
@@ -146,7 +175,7 @@ export default class AlarmList extends NavComponent {
 				refreshControl={<RefreshControl
 					refreshing={this.state.refreshing}
 					onRefresh={this.helper.onRefresh}
-					tintColor={colors.foreground}
+					tintColor={theme.foreground}
 				/>}
 			/>
 		</View>;
@@ -154,8 +183,9 @@ export default class AlarmList extends NavComponent {
 	
 	private helper = {
 		renderItem: ( { item } ) => item,
-		onRefresh:  () => {
+		onRefresh:  async () => {
 			this.setState( { refreshing: true } );
+			await this.load();
 			setTimeout(
 				() => this.setState( { refreshing: false } ),
 				500
@@ -164,3 +194,7 @@ export default class AlarmList extends NavComponent {
 	};
 	
 }
+
+const style = StyleSheet.create( {
+	title: { fontWeight: 'bold', fontSize: 18 }
+} );

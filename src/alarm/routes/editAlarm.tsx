@@ -6,12 +6,13 @@ import NavComponent, { Options } from '../../extend/navComponent';
 import AlarmList from './alarmList';
 import AlarmItem from '../item/alarmItem';
 
-import { colors } from '../../config';
-import { color, style } from '../../styles';
 import Delete from '../component/delete';
 import Label from '../component/label';
 import PickTime from '../component/pickTime';
 import Repeat from '../component/repeat';
+
+import { theme } from '../../config';
+import { themeStyle, contentStyle } from '../../styles';
 
 export default class EditAlarm extends NavComponent {
 	
@@ -29,13 +30,20 @@ export default class EditAlarm extends NavComponent {
 		repeat:     undefined
 	};
 	
+	/**
+	 * Set state methods passed to components.
+	 */
 	private set = {
-		label:      label => this.setState( { label } ),
+		label:      ( label: string ) => this.setState( { label } ),
 		viewPicker: () => this.setState( { viewPicker: !this.state.viewPicker } ),
 		time:       ( time: Date ) => this.setState( { time: moment( time ) } ),
-		repeat:     repeat => this.setState( { repeat } )
+		repeat:     ( repeat: Array<number> ) => this.setState( { repeat } )
 	};
 	
+	/**
+	 * @param {NavigationScreenProp<NavigationState>} navigation
+	 * @returns {NavigationScreenOptions}
+	 */
 	static navigationOptions( { navigation } ): Options {
 		const self: EditAlarm = navigation.getParam( 'self' );
 		if ( !self )
@@ -48,20 +56,24 @@ export default class EditAlarm extends NavComponent {
 				title='Save'
 				onPress={() => {
 					const list: AlarmList = navigation.getParam( 'list' );
-					
-					self.state.alarm.data.label = self.state.label;
-					self.state.alarm.data.time = self.state.time.format( 'YYYY-MM-DD HH:mm' );
-					self.state.alarm.data.repeat = AlarmItem.convert.fillArray( self.state.repeat );
+					// move properties to alarm
+					Object.assign( self.state.alarm.data, {
+						label:  self.state.label,
+						time:   self.state.time.format( 'YYYY-MM-DD HH:mm' ),
+						repeat: AlarmItem.convert.fillArray( self.state.repeat )
+					} );
+					// save and reloads list
 					self.state.alarm.save().then( () =>
 						list.load().then( () => navigation.pop() ) );
 				}}
-				color={colors.highlight}
+				color={theme.highlight}
 			/> )
 		};
 	}
 	
-	componentDidMount() {
+	componentDidMount(): void {
 		const alarm: AlarmItem = this.props.navigation.getParam( 'alarm' );
+		// converts to correct format
 		this.setState( {
 			alarm,
 			label:  alarm.data.label,
@@ -71,12 +83,14 @@ export default class EditAlarm extends NavComponent {
 		
 	}
 	
+	/**
+	 * @returns {JSX.Element}
+	 */
 	render(): JSX.Element {
 		if ( !this.state.alarm )
 			return null;
 		
-		
-		return <View style={[ style.flex, color.background ]}>
+		return <View style={[ contentStyle.flex, themeStyle.background ]}>
 			<Delete onPress={this.delete}/>
 			<Label label={this.state.label} change={this.set.label}/>
 			<PickTime
@@ -89,10 +103,17 @@ export default class EditAlarm extends NavComponent {
 		</View>;
 	}
 	
+	/**
+	 * Delete this alarm from list.
+	 *
+	 * @returns {Promise<void>}
+	 */
 	delete = () => this.state.alarm.delete().then( () => {
 		const list: AlarmList = this.props.navigation.getParam( 'list' );
+		// removes from list
 		let items = list.state.group.data.items;
 		items.splice( items.indexOf( this.state.alarm.key ), 1 );
+		// reloads list
 		list.state.group.save().then( () =>
 			list.load().then( () => this.props.navigation.pop() )
 		);

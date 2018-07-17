@@ -1,5 +1,5 @@
+import AlarmItem, { alarmItemData } from './alarmItem';
 import Item from './item';
-import { default as AlarmItem, alarmItemData } from './alarmItem';
 
 export type alarmGroupItemData = {
 	type: 'group',
@@ -18,7 +18,12 @@ export const SwitchState = {
 
 export default class AlarmGroupItem extends Item<alarmGroupItemData> {
 	
-	async delete() {
+	/**
+	 * Deletes all children of group.
+	 *
+	 * @returns {Promise<void>}
+	 */
+	async delete(): Promise<void> {
 		let data = await this.load;
 		if ( !data ) {
 			alert( '????' );
@@ -42,7 +47,13 @@ export default class AlarmGroupItem extends Item<alarmGroupItemData> {
 		return super.delete();
 	}
 	
-	async activate( active: number ) {
+	/**
+	 * Activates all children of group.
+	 *
+	 * @param {number} active
+	 * @returns {Promise<void>}
+	 */
+	async activate( active: number ): Promise<void> {
 		await super.activate( active );
 		for ( let key of this.data.items ) {
 			Item.load( key ).then( async ( data: alarmGroupItemData | alarmItemData ) => {
@@ -61,24 +72,28 @@ export default class AlarmGroupItem extends Item<alarmGroupItemData> {
 		}
 	}
 	
-	async getActive() {
-		let state = SwitchState.off,
-			 first = true;
+	/**
+	 * Calculates active state of group from children.
+	 *
+	 * @returns {Promise<number>}
+	 */
+	async getActive(): Promise<number> {
+		let active = SwitchState.off,
+			 first  = true;
 		for ( let key of this.data.items ) {
 			let item = new Item( key );
 			await item.load;
-			
-			// first state initialize
+			// first initialize
 			if ( first ) {
-				state = item.data.active === true || item.data.active === SwitchState.on ? 1 : 0;
+				active = item.data.active === true || item.data.active === SwitchState.on ? 1 : 0;
 				first = false;
 				continue;
 			}
-			// child states are different
-			if ( state !== ( item.data.active === true || item.data.active === SwitchState.on ? 1 : 0 ) )
+			// child is different
+			if ( active !== ( item.data.active === true || item.data.active === SwitchState.on ? 1 : 0 ) )
 				return SwitchState.partial;
 		}
-		return state;
+		return active;
 	}
 	
 }
