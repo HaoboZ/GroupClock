@@ -226,7 +226,7 @@ export default connect( ( store: AppState ) => {
 						} as FolderListModalParams );
 					}}
 				>
-					<Icon active name='create'/>
+					<Icon name='create'/>
 				</Button>
 				<Button
 					style={styles.swipeButton}
@@ -235,7 +235,7 @@ export default connect( ( store: AppState ) => {
 						this.deleteRow( list, item, secId, rowId, rowMap );
 					}}
 				>
-					<Icon active name='trash'/>
+					<Icon name='trash'/>
 				</Button>
 			</View>;
 		};

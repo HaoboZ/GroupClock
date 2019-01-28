@@ -46,10 +46,6 @@ Pressing the left button will reset the it
 
 ## TODO
 
-### Basic
-
-* Restyle button text to icons
-
 ### Intermediate
 
 * Reformat

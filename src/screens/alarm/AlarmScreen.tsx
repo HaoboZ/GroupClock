@@ -98,7 +98,7 @@ export default connect( ( store: AppState ) => {
 							new AlarmItem( item ).offAction();
 						} );
 					}
-				}, 'Off' )}
+				}, 'square' )}
 				{this.circleButton( {
 					dark:    true,
 					onPress: () => {
@@ -106,7 +106,7 @@ export default connect( ( store: AppState ) => {
 							new AlarmItem( item ).onAction();
 						} );
 					}
-				}, 'On' )}
+				}, 'play' )}
 			</Right>
 		</ListItem>;
 	};
@@ -178,7 +178,7 @@ export default connect( ( store: AppState ) => {
 				<Body><Text>Timezone</Text></Body>
 				<Right>
 					<Text>{Timezone.ZTN[ item.timezone ].split( ',' )[ 0 ]}</Text>
-					<Icon active name='arrow-forward'/>
+					<Icon name='arrow-forward'/>
 				</Right>
 			</ListItem>
 		</>;
@@ -227,12 +227,12 @@ export default connect( ( store: AppState ) => {
 		}
 	}
 	
-	private circleButton( props: NativeBase.Button, text: string ) {
+	private circleButton( props: NativeBase.Button, name: string ) {
 		return <Button
 			style={styles.circular}
 			{...props}
 		>
-			<Text style={styles.circleButtonText} note={text.length > 5}>{text}</Text>
+			<Icon name={name}/>
 		</Button>;
 	}
 	

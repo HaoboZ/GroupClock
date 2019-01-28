@@ -95,7 +95,7 @@ export default connect( ( store: AppState ) => {
 			<Body><Text>Default Timezone</Text></Body>
 			<Right>
 				<Text>{Timezone.ZTN[ this.props.settings.timezone ].split( ',' )[ 0 ]}</Text>
-				<Icon active name='arrow-forward'/>
+				<Icon name='arrow-forward'/>
 			</Right>
 		</ListItem>;
 	}

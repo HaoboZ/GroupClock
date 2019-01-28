@@ -90,7 +90,7 @@ export default connect( ( store: AppState ) => {
 							new TimerItem( item ).leftAction();
 						} );
 					}
-				}, 'Left' )}
+				}, 'arrow-round-down' )}
 				{this.circleButton( {
 					dark:    true,
 					onPress: () => {
@@ -103,7 +103,7 @@ export default connect( ( store: AppState ) => {
 								new TimerItem( item ).rightChainAction( sum )
 							);
 					}
-				}, 'Right' )}
+				}, 'arrow-round-down' )}
 			</Right>
 		</ListItem>;
 	};
@@ -142,12 +142,12 @@ export default connect( ( store: AppState ) => {
 					
 					disabled: timer.data.state === State.OFF,
 					onPress:  () => timer.leftAction()
-				}, 'Cancel' )}
+				}, 'square' )}
 				{this.circleButton( {
 					[ [ 'success', 'warning', 'success' ][ timer.data.state ] ]: true,
 					
 					onPress: () => timer.rightAction()
-				}, [ 'Start', 'Pause', 'Resume' ][ timer.data.state ] )}
+				}, [ 'play', 'pause', 'play' ][ timer.data.state ] )}
 			</Right>
 		</>;
 	}
@@ -267,7 +267,7 @@ export default connect( ( store: AppState ) => {
 			style={styles.circular}
 			{...props}
 		>
-			<Text style={styles.circleButtonText} note={text.length > 5}>{text}</Text>
+			<Icon name={text}/>
 		</Button>;
 	}
 	

@@ -75,7 +75,7 @@ export default connect( ( store: AppState ) => {
 							new WatchItem( item ).leftAction();
 						} );
 					}
-				}, 'Left' )}
+				}, 'arrow-round-down' )}
 				{this.circleButton( {
 					dark:    true,
 					onPress: () => {
@@ -83,7 +83,7 @@ export default connect( ( store: AppState ) => {
 							new WatchItem( item ).rightAction();
 						} );
 					}
-				}, 'Right' )}
+				}, 'arrow-round-down' )}
 			</Right>
 		</ListItem>;
 	};
@@ -121,12 +121,12 @@ export default connect( ( store: AppState ) => {
 					
 					disabled: stopwatch.data.state === State.OFF,
 					onPress:  () => stopwatch.leftAction()
-				}, [ 'Lap', 'Lap', 'Reset' ][ stopwatch.data.state ] )}
+				}, [ 'repeat', 'repeat', 'square' ][ stopwatch.data.state ] )}
 				{this.circleButton( {
 					[ [ 'success', 'danger', 'success' ][ stopwatch.data.state ] ]: true,
 					
 					onPress: () => stopwatch.rightAction()
-				}, [ 'Start', 'Stop', 'Start' ][ stopwatch.data.state ] )}
+				}, [ 'play', 'pause', 'play' ][ stopwatch.data.state ] )}
 			</Right>
 		</>;
 	}
@@ -157,7 +157,7 @@ export default connect( ( store: AppState ) => {
 			style={styles.circular}
 			{...props}
 		>
-			<Text style={styles.circleButtonText}>{text}</Text>
+			<Icon name={text}/>
 		</Button>;
 	}
 	
