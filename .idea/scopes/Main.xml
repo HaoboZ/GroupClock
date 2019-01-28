@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="Main" pattern="file[GroupClock]:src//*||file[GroupClock]:assets//*||file[GroupClock]:native-base-theme//*||file:package.json||file:README.md||file:tsconfig.json||file:App.ts||file:app.json" />
+</component>

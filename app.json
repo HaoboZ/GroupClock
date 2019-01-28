@@ -1,12 +1,24 @@
 {
 	"expo": {
-		"sdkVersion": "27.0.0",
-		"packagerOpts": {
-			"sourceExts": [
-				"ts",
-				"tsx"
-			],
-			"transformer": "node_modules/react-native-typescript-transformer/index.js"
+		"name": "GroupClock",
+		"description": "A clock app, but includes a folder structure to organize different alarms and and activate multiple at the same time.",
+		"slug": "GroupClock",
+		"privacy": "unlisted",
+		"sdkVersion": "32.0.0",
+		"version": "1.0.0",
+		"platforms": [
+			"ios",
+			"android"
+		],
+		"orientation": "portrait",
+		"primaryColor": "#ffffff",
+		"icon": "./assets/images/icon.png",
+		"assetBundlePatterns": [
+			"**/*"
+		],
+		"splash": {
+			"image": "./assets/images/splash.png",
+			"backgroundColor": "#ffffff"
 		}
 	}
 }

@@ -1,30 +1,69 @@
 {
-	"name": "GroupTimer",
-	"version": "0.1.0",
-	"main": "./node_modules/react-native-scripts-ts/build/bin/crna-entry.js",
+	"name": "groupclock",
+	"private": true,
+	"main": "node_modules/expo/AppEntry.js",
 	"scripts": {
-		"start": "react-native-scripts-ts start",
-		"eject": "react-native-scripts-ts eject",
-		"android": "react-native-scripts-ts android",
-		"ios": "react-native-scripts-ts ios"
+		"start": "expo start",
+		"android": "expo start --android",
+		"ios": "expo start --ios",
+		"eject": "expo eject",
+		"test": "node ./node_modules/jest/bin/jest.js"
+	},
+	"jest": {
+		"preset": "jest-expo",
+		"transform": {
+			"^.+\\.js$": "<rootDir>/node_modules/react-native/jest/preprocessor.js",
+			"^.+\\.tsx?$": "ts-jest"
+		},
+		"testMatch": [
+			"**/__tests__/**/*.ts?(x)",
+			"**/?(*.)+(spec|test).ts?(x)"
+		],
+		"moduleFileExtensions": [
+			"js",
+			"ts",
+			"tsx"
+		],
+		"globals": {
+			"ts-jest": {
+				"tsConfig": {
+					"jsx": "react"
+				}
+			}
+		}
 	},
 	"dependencies": {
-		"expo": "^27.0.1",
-		"react": "16.3.1",
-		"react-native": "~0.55.2",
-		"react-native-elements": "^1.0.0-beta5",
-		"react-native-scripts-ts": "1.15.0",
-		"react-native-swipeable": "^0.6.0",
-		"react-navigation": "^2.3.1",
-		"typescript": "^2.9.2"
+		"expo": "^32.0.1",
+		"expo-cli": "^2.7.0",
+		"moment-duration-format": "^2.2.2",
+		"moment-timezone": "^0.5.23",
+		"native-base": "^2.10.0",
+		"react": "16.5.0",
+		"react-native": "https://github.com/expo/react-native/archive/sdk-32.0.0.tar.gz",
+		"react-navigation": "^3.0.9",
+		"react-redux": "^6.0.0",
+		"redux": "^4.0.1",
+		"redux-persist": "^5.10.0",
+		"redux-promise-middleware": "^5.1.1",
+		"shortid": "^2.2.14",
+		"tslib": "^1.9.3",
+		"typescript": "^3.2.4"
 	},
 	"devDependencies": {
-		"@types/react": "^16.3.14",
-		"@types/react-native": "^0.55.14",
-		"@types/react-navigation": "^2.0.5",
-		"@types/react-test-renderer": "^16.0.1",
-		"react-native-typescript-transformer": "^1.2.3",
-		"react-test-renderer": "16.3.1",
-		"tslib": "^1.9.1"
+		"@types/expo": "^31.0.8",
+		"@types/jest": "^23.3.13",
+		"@types/moment-duration-format": "^2.2.2",
+		"@types/moment-timezone": "^0.5.10",
+		"@types/react": "^16.7.20",
+		"@types/react-native": "^0.57.29",
+		"@types/react-navigation": "^3.0.1",
+		"@types/react-redux": "^7.0.0",
+		"@types/shortid": "^0.0.29",
+		"babel-preset-expo": "^5.0.0",
+		"jest": "^23.6.0",
+		"jest-expo": "^32.0.0",
+		"prettier": "^1.15.3",
+		"react-test-renderer": "^16.7.0",
+		"ts-jest": "^23.10.5"
 	}
 }
