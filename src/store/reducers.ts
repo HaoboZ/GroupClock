@@ -7,6 +7,9 @@ import timer, { timerState } from '../screens/timer/timerStore';
 import notice, { localNoticeStore, noticeState } from '../utils/notice/noticeStore';
 
 export default combineReducers( {
+	time() {
+		return Date.now();
+	},
 	notice,
 	localNotice: localNoticeStore,
 	settings,
@@ -17,6 +20,7 @@ export default combineReducers( {
 } );
 
 export type state = {
+	time: number
 	notice: noticeState
 	localNotice: noticeState
 	settings: settingsState

@@ -2,6 +2,7 @@ import moment from 'moment-timezone';
 import { folderListItem } from '../../pages/FolderList';
 import store from '../../store/store';
 import Notice from '../../utils/notice/Notice';
+import { power } from '../home/settings/settingsStore';
 import { timerActions } from './timerStore';
 
 export enum State {
@@ -206,8 +207,11 @@ export default class TimerItem {
 	}
 	
 	public toString( time: number ) {
-		return moment.duration( Math.max( 0, time ) )
-			.format( 'hh:mm:ss', { stopTrim: 'm' } );
+		let duration = moment.duration( Math.max( 0, time ) );
+		if ( store.getState().settings.precision === power.low )
+			return duration.format( 'h:mm:ss', { stopTrim: 'm' } );
+		else
+			return duration.format( 'h:mm:ss.SS', { stopTrim: 'm' } );
 	}
 	
 }

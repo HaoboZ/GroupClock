@@ -18,7 +18,7 @@ type Props = {
 
 export default connect( ( store: AppState ) => {
 		return {
-			time:    store.settings.time,
+			time:    store.time,
 			items:   store.folderList,
 			watches: store.stopwatch
 		} as Props;

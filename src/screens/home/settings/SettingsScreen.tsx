@@ -44,10 +44,12 @@ export default connect( ( store: AppState ) => {
 	
 	private items() {
 		return <List>
-			<Separator/>
 			{this.login()}
+			<Separator/>
 			{this.theme()}
 			{this.timezone()}
+			{this.precision()}
+			{this.persistence()}
 			<Separator/>
 			{this.removeAd()}
 			{this.donate()}
@@ -65,6 +67,7 @@ export default connect( ( store: AppState ) => {
 			<Body><Text>Login/Logout</Text></Body>
 		</ListItem>;
 	}
+	
 	private theme() {
 		return <ListItem icon>
 			<Body><Text>Light Theme</Text></Body>
@@ -93,6 +96,35 @@ export default connect( ( store: AppState ) => {
 			<Right>
 				<Text>{Timezone.ZTN[ this.props.settings.timezone ].split( ',' )[ 0 ]}</Text>
 				<Icon active name='arrow-forward'/>
+			</Right>
+		</ListItem>;
+	}
+	private precision() {
+		return <ListItem
+			button icon
+			onPress={() => {
+				this.props.navigation.navigate( 'Selector', {
+					list:    [ 'Low', 'Medium', 'High', 'Extreme' ],
+					current: this.props.settings.precision,
+					select:  ( i ) => {
+						Settings.target( i );
+					}
+				} );
+			}}
+		>
+			<Body><Text>Precision/Power Usage</Text></Body>
+			<Right><Text>{[ 'Low', 'Medium', 'High', 'Extreme' ][ this.props.settings.precision ]}</Text></Right>
+		</ListItem>;
+	}
+	private persistence() {
+		return <ListItem icon>
+			<Body><Text>Save State (WIP)</Text></Body>
+			<Right>
+				<Switch
+					value={this.props.settings.persistence}
+					onValueChange={( value ) => {
+						Settings.persist( value );
+					}}/>
 			</Right>
 		</ListItem>;
 	}

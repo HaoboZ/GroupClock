@@ -138,7 +138,7 @@ export default new class Notice {
 		return setTimeout( async () => {
 			Toast.show( {
 				text:       title + '\n\t' + body,
-				buttonText: 'close',
+				buttonText: 'Close',
 				position:   'top',
 				duration:   4000
 			} );

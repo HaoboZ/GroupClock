@@ -1,6 +1,7 @@
 import moment from 'moment-timezone';
 import { folderListItem } from '../../pages/FolderList';
 import store from '../../store/store';
+import { power } from '../home/settings/settingsStore';
 import { watchActions } from './watchStore';
 
 export enum State {
@@ -98,9 +99,12 @@ export default class WatchItem {
 		store.dispatch( watchActions.deleteWatch( this.data.id ) );
 	}
 	
-	public toString( time: number, ms: boolean = true ) {
-		return moment.duration( Math.max( 0, time ) )
-			.format( 'hh:mm:ss' + ( ms ? '.SS' : '' ), { stopTrim: 'm' } );
+	public toString( time: number, accurate: boolean = true ) {
+		let duration = moment.duration( Math.max( 0, time ) );
+		if ( accurate || store.getState().settings.precision !== power.low )
+			return duration.format( 'h:mm:ss.SS', { stopTrim: 'm' } );
+		else
+			return duration.format( 'h:mm:ss', { stopTrim: 'm' } );
 	}
 	
 }

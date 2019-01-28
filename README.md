@@ -39,6 +39,8 @@ Pressing the left button will reset the it
 * Login/Logout
 * Theme
 * Timezone
+* Precision
+* Persistence
 * Payment
 * Reset All & Parts
 
@@ -46,12 +48,13 @@ Pressing the left button will reset the it
 
 ### Basic
 
-* Change time precision
-* Navigation persistence in settings
 * Restyle button text to icons
 
 ### Intermediate
 
+* Reformat
+	* move onPress arrow functions outside
+	* styling
 * Group control restyling
 * Colored items based on selected
 * Timer chain disable buttons
@@ -60,8 +63,8 @@ Pressing the left button will reset the it
 ### Advanced
 
 * Login
-	* Authorize (Expo Google, AuthSession)
-	* Database (Firebase, MongoDB)
+	* authorize (Expo Google, AuthSession)
+	* database (Firebase, MongoDB)
 * Payment (Expo Payments)
 * Dark theme
 * Initial help

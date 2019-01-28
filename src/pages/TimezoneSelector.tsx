@@ -67,24 +67,22 @@ export default class TimezoneSelector extends NavigationComponent {
 	private list( timezones ) {
 		return <List
 			dataArray={timezones}
-			renderRow={this.item}>
-		</List>;
+			renderRow={this.item}
+		/>;
 	}
-	private item = ( zone ) => {
-		return <ListItem
-			button icon
-			onPress={() => {
-				this.state.onChange( zone );
-				this.setState( { current: zone } );
-			}}
-		>
-			<Body><Text>{Timezone.ZTN[ zone ]}</Text></Body>
-			<Right>
-				<Text note>
-					{Timezone.getUTC( zone )}
-				</Text>
-			</Right>
-		</ListItem>;
-	};
+	private item = ( zone ) => <ListItem
+		button icon
+		onPress={() => {
+			this.state.onChange( zone );
+			this.setState( { current: zone } );
+		}}
+	>
+		<Body><Text>{Timezone.ZTN[ zone ]}</Text></Body>
+		<Right>
+			<Text note>
+				{Timezone.getUTC( zone )}
+			</Text>
+		</Right>
+	</ListItem>;
 	
 }

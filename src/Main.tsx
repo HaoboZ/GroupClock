@@ -7,19 +7,18 @@ import platform from '../native-base-theme/variables/platform';
 import ReduxComponent from './components/ReduxComponent';
 import AppNavigator from './navigation/AppNavigator';
 import AlarmItem from './screens/alarm/AlarmItem';
-import Settings from './screens/home/settings/Settings';
-import { themes } from './screens/home/settings/settingsStore';
+import { settingsState, themes } from './screens/home/settings/settingsStore';
 import TimerItem from './screens/timer/TimerItem';
-import { AppState } from './store/store';
+import store, { AppState } from './store/store';
 import Notice from './utils/notice/Notice';
 
 type Props = {
-	theme: themes
+	settings: settingsState
 };
 
 export default connect( ( store: AppState ) => {
 		return {
-			theme: store.settings.theme
+			settings: store.settings
 		} as Props;
 	}
 )( class Main extends ReduxComponent<Props> {
@@ -32,8 +31,8 @@ export default connect( ( store: AppState ) => {
 		AlarmItem.reset();
 		TimerItem.reset();
 		this.interval = setInterval( () => {
-			Settings.updateTime();
-		}, 1000 );
+			store.dispatch( { type: 'timeUpdate' } );
+		}, [ 1000, 250, 100, 33.333 ][ this.props.settings.precision ] );
 	}
 	
 	public componentWillUnmount(): void {
@@ -41,9 +40,9 @@ export default connect( ( store: AppState ) => {
 	}
 	
 	render() {
-		return <StyleProvider style={getTheme( this.props.theme === themes.light ? platform : opposite )}>
+		return <StyleProvider style={getTheme( this.props.settings.theme === themes.light ? platform : opposite )}>
 			<Root>
-				<AppNavigator persistenceKey={'NavigationState'}/>
+				<AppNavigator persistenceKey={this.props.settings.persistence ? 'clockNavigate' : undefined}/>
 				{/*<Ad/>*/}
 			</Root>
 		</StyleProvider>;

@@ -1,5 +1,5 @@
 import moment from 'moment-timezone';
-import { Body, Button, H1, Item, Label, Left, ListItem, NativeBase, Picker as ListPicker, Right, Text, View } from 'native-base';
+import { Body, Button, H1, Item, Label, Left, ListItem, NativeBase, Right, Text, View } from 'native-base';
 import * as React from 'react';
 import { Picker, StyleSheet } from 'react-native';
 import { connect } from 'react-redux';
@@ -13,6 +13,8 @@ import TimerGroup, { activationType, timerGroupData } from './TimerGroup';
 import TimerItem, { State, timerItemData } from './TimerItem';
 import { timerState } from './timerStore';
 
+let arr10 = Array.from( Array( 10 ) ).map( ( e, i ) => i + 1 );
+
 type Props = {
 	time: number
 	items: folderListState
@@ -21,7 +23,7 @@ type Props = {
 
 export default connect( ( store: AppState ) => {
 		return {
-			time:   store.settings.time,
+			time:   store.time,
 			items:  store.folderList,
 			timers: store.timer
 		} as Props;
@@ -196,17 +198,20 @@ export default connect( ( store: AppState ) => {
 					} )}
 				</View>
 			</Item>
-			<ListItem style={{ marginLeft: 0, paddingTop: 0, paddingBottom: 0 }}>
+			<ListItem
+				button icon
+				onPress={() => {
+					this.props.navigation.navigate( 'Selector', {
+						list:    arr10,
+						current: item.repeat - 1,
+						select:  ( repeat ) => {
+							modal.setState( { itemData: { ...item, repeat: repeat + 1 } } );
+						}
+					} );
+				}}
+			>
 				<Body style={{ flex: 2 }}><Text>Repeat</Text></Body>
-				<ListPicker
-					selectedValue={item.repeat}
-					iosIcon={<Icon name='arrow-down'/>}
-					onValueChange={( repeat ) => {
-						modal.setState( { itemData: { ...item, repeat } } );
-					}}
-				>
-					{this.pickerNumbers( 1, 10 )}
-				</ListPicker>
+				<Right><Text>{item.repeat}</Text></Right>
 			</ListItem>
 		</>;
 	};
