@@ -4,7 +4,9 @@ import { ListView, StyleSheet } from 'react-native';
 import { connect } from 'react-redux';
 import Icon from '../components/Icon';
 import NavigationComponent from '../components/NavigationComponent';
+import debug from '../debug';
 import store, { AppState } from '../store/store';
+import styles from '../styles';
 import FolderListModal, { FolderListModalParams } from './FolderList/FolderListModal';
 import { folderListActions, folderListState } from './FolderList/folderListStore';
 
@@ -66,7 +68,7 @@ export default connect( ( store: AppState ) => {
 	// rendered for adding and editing groups
 	modalGroupContent?: ( itemData: any, modal: FolderListModal ) => JSX.Element
 	// called when saving or editing item
-	onSave?: ( item: folderListItem, itemData: any, id: string ) => folderListItem
+	onSave?: ( item: folderListItem, data: any, id: string ) => folderListItem
 	// called when deleting item
 	onDelete?: ( item: folderListItem ) => void
 }> {
@@ -104,7 +106,7 @@ export default connect( ( store: AppState ) => {
 	}
 	
 	render() {
-		let list = this.props.items[ this.state.listId ];
+		const list = this.props.items[ this.state.listId ];
 		// if data has been reset, will need to run init
 		if ( !list ) return this.reset();
 		
@@ -120,8 +122,8 @@ export default connect( ( store: AppState ) => {
 			<Header>
 				<Body><Title>{this.props.initialListName}</Title></Body>
 			</Header>
-			<Body style={{ paddingTop: 16 }}>
-			<Button onPress={() => this.init()}><Text>Reset</Text></Button>
+			<Body style={styles.empty}>
+			<Button onPress={this.init}><Text>Reset</Text></Button>
 			</Body>
 		</Container>;
 	}
@@ -129,7 +131,7 @@ export default connect( ( store: AppState ) => {
 	private header( list: folderListItem ) {
 		return <Header>
 			{list.parent ? this.goBack() : <Left/>}
-			<Body style={{ flex: 2 }}>
+			<Body style={styles.widerHeader}>
 			<Title>{list.name}</Title>
 			{this.props.subtitle && <Subtitle>{this.props.subtitle( list )}</Subtitle>}
 			</Body>
@@ -139,9 +141,8 @@ export default connect( ( store: AppState ) => {
 	private accessButtons( list: folderListItem ) {
 		return <>
 			<Button
-				transparent
-				icon
-				style={styles.noPaddingLeft}
+				transparent icon
+				style={styles.noPadHorizontal}
 				onPress={() => {
 					list.filter = ( list.filter + 1 ) % 4;
 					this.props.dispatch( folderListActions.saveItem( list.id, list ) );
@@ -173,20 +174,19 @@ export default connect( ( store: AppState ) => {
 	private static emptyList( list: folderListItem ) {
 		if ( list.value ) return null;
 		
-		return <Body style={{ paddingTop: 16 }}>
+		return <Body style={styles.empty}>
 		<Text>No Items</Text>
 		</Body>;
 	}
 	private list( list: folderListItem ) {
 		if ( !Object.keys( list.items ).length ) return null;
-		let items = sort( list );
 		
 		return <List
 			closeOnRowBeginSwipe
 			directionalLockEnabled
 			disableRightSwipe
 			rightOpenValue={-120}
-			dataSource={this.ds.cloneWithRows( items )}
+			dataSource={this.ds.cloneWithRows( sort( list ) )}
 			renderRow={this.renderItem( list )}
 			renderRightHiddenRow={this.rightSwipe( list )}
 		/>;
@@ -195,10 +195,12 @@ export default connect( ( store: AppState ) => {
 		return ( item: folderListItem ) => {
 			return this.props.renderItem( item,
 				this.debounce( () => {
-					if ( item.type === FolderListType.Group )
+					if ( item.type === FolderListType.Group ) {
+						if ( debug.navigate ) console.log( `Navigating deeper in ${this.props.routeName}` );
 						this.props.navigation.push( this.props.routeName, {
 							listId: item.id
 						} );
+					}
 				} ),
 				list.items[ item.id ],
 				() => {
@@ -213,7 +215,7 @@ export default connect( ( store: AppState ) => {
 		return ( item, secId, rowId, rowMap ) => {
 			return <View style={styles.row}>
 				<Button
-					style={styles.swipeButton}
+					style={innerStyle.swipeButton}
 					onPress={() => {
 						this.props.navigation.navigate( 'FolderListModal', {
 							title:        'Edit Item',
@@ -229,7 +231,7 @@ export default connect( ( store: AppState ) => {
 					<Icon name='create'/>
 				</Button>
 				<Button
-					style={styles.swipeButton}
+					style={innerStyle.swipeButton}
 					danger
 					onPress={() => {
 						this.deleteRow( list, item, secId, rowId, rowMap );
@@ -250,7 +252,7 @@ export default connect( ( store: AppState ) => {
 	}
 	private delete( list: folderListItem ) {
 		if ( list.type === FolderListType.Group )
-			for ( let id in list.items )
+			for ( const id in list.items )
 				this.delete( this.props.items[ id ] );
 		
 		this.props.onDelete && this.props.onDelete( list );
@@ -260,51 +262,46 @@ export default connect( ( store: AppState ) => {
 } );
 
 export function sort( list: folderListItem ) {
-	let compareFn = [ ( a, b ) => {
-		    let x = a.name.toLowerCase(),
-		        y = b.name.toLowerCase();
+	const compareFn = [ ( a, b ) => {
+		      const x = a.name.toLowerCase(),
+		            y = b.name.toLowerCase();
 		
-		    if ( x < y ) return -1;
-		    if ( x > y ) return 1;
-		    return a.value - b.value;
-	    }, ( a, b ) => {
-		    let x = a.name.toLowerCase(),
-		        y = b.name.toLowerCase();
+		      if ( x < y ) return -1;
+		      if ( x > y ) return 1;
+		      return a.value - b.value;
+	      }, ( a, b ) => {
+		      const x = a.name.toLowerCase(),
+		            y = b.name.toLowerCase();
 		
-		    if ( x < y ) return 1;
-		    if ( x > y ) return -1;
-		    return a.value - b.value;
-	    }, ( a, b ) => {
-		    let diff = a.value - b.value;
-		    if ( diff ) return diff;
-		    let x = a.name.toLowerCase(),
-		        y = b.name.toLowerCase();
-		    if ( x < y ) return -1;
-		    if ( x > y ) return 1;
-		    return 0;
-	    }, ( a, b ) => {
-		    let diff = b.value - a.value;
-		    if ( diff ) return diff;
-		    let x = a.name.toLowerCase(),
-		        y = b.name.toLowerCase();
-		    if ( x < y ) return -1;
-		    if ( x > y ) return 1;
-		    return 0;
-	    } ][ list.filter ],
-	    items     = store.getState().folderList;
+		      if ( x < y ) return 1;
+		      if ( x > y ) return -1;
+		      return a.value - b.value;
+	      }, ( a, b ) => {
+		      const diff = a.value - b.value;
+		      if ( diff ) return diff;
+		      const x = a.name.toLowerCase(),
+		            y = b.name.toLowerCase();
+		      if ( x < y ) return -1;
+		      if ( x > y ) return 1;
+		      return 0;
+	      }, ( a, b ) => {
+		      const diff = b.value - a.value;
+		      if ( diff ) return diff;
+		      const x = a.name.toLowerCase(),
+		            y = b.name.toLowerCase();
+		      if ( x < y ) return -1;
+		      if ( x > y ) return 1;
+		      return 0;
+	      } ][ list.filter ],
+	      items     = store.getState().folderList;
 	return Object.keys( list.items ).map( ( id ) => items[ id ] ).sort( compareFn );
 }
 
-const styles = StyleSheet.create( {
-	row:           {
-		flex:          1,
-		flexDirection: 'row'
-	},
-	swipeButton:   {
+const innerStyle = StyleSheet.create( {
+	swipeButton: {
 		height:         '100%',
 		width:          '50%',
 		justifyContent: 'center',
 		borderRadius:   0
-	},
-	noPaddingLeft: { paddingLeft: 0 }
+	}
 } );

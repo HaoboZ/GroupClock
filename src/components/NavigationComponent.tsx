@@ -14,14 +14,15 @@ export default class NavigationComponent<T = {}> extends React.PureComponent<Dis
 		return <Left>
 			<Button
 				transparent
-				onPress={this.debounce( () => {
-					this.props.navigation.goBack();
-				} )}
+				onPress={this.backPress}
 			>
 				<Icon name='arrow-back'/>
 				<Text>{text}</Text>
 			</Button>
 		</Left>;
 	}
+	private backPress = this.debounce( () => {
+		this.props.navigation.goBack();
+	} );
 	
 }

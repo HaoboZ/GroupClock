@@ -1,17 +1,18 @@
 import * as _ from 'lodash';
 import moment from 'moment-timezone';
-import { Body, Button, H1, Item, Label, Left, ListItem, NativeBase, Right, Switch, Text, View } from 'native-base';
+import { Body, Button, H1, Item, Label, ListItem, Right, Switch, Text, View } from 'native-base';
 import * as React from 'react';
 import { Picker, StyleSheet } from 'react-native';
 import { connect } from 'react-redux';
 import platform from '../../../native-base-theme/variables/platform';
 import Icon from '../../components/Icon';
-import NavigationComponent from '../../components/NavigationComponent';
 import FolderList, { folderListItem, FolderListType } from '../../pages/FolderList';
 import FolderListModal from '../../pages/FolderList/FolderListModal';
 import { folderListActions, folderListState } from '../../pages/FolderList/folderListStore';
 import { AppState } from '../../store/store';
+import styles from '../../styles';
 import Timezone from '../../utils/Timezone';
+import CommonScreen from '../CommonScreen';
 import AlarmGroup, { alarmGroupData } from './AlarmGroup';
 import AlarmItem, { alarmItemData } from './AlarmItem';
 import { alarmState } from './alarmStore';
@@ -29,7 +30,7 @@ export default connect( ( store: AppState ) => {
 			alarms: store.alarm
 		} as Props;
 	}
-)( class AlarmScreen extends NavigationComponent<Props> {
+)( class AlarmScreen extends CommonScreen<Props> {
 	
 	render() {
 		return <FolderList
@@ -39,42 +40,16 @@ export default connect( ( store: AppState ) => {
 			initialGroupData={() => AlarmGroup.Initial}
 			initialItemName='Alarm'
 			initialItemData={AlarmItem.Initial}
-			loadEdit={item => this.props.alarms[ item.id ]}
-			subtitle={list => Timezone.ZTN[ new AlarmGroup( list ).data.timezone ]}
-			renderPreList={this.groupControl}
-			renderItem={this.renderItem}
-			modalGroupContent={this.groupModal}
-			modalItemContent={this.itemModal}
-			onSave={( item, itemData: alarmItemData | alarmGroupData, id ) => {
-				if ( item.type === FolderListType.Item ) {
-					itemData = AlarmItem.create( id, itemData as alarmItemData );
-					item.value = itemData.targetTime;
-				} else {
-					itemData = AlarmGroup.create( id, itemData as alarmGroupData );
-					if ( item.id ) {
-						let list       = this.props.items[ item.parent ],
-						    alarmGroup = new AlarmGroup( list );
-						if ( alarmGroup.data.timezone !== itemData.timezone )
-							AlarmItem.disableChildren( list );
-					}
-				}
-				return item;
-			}}
-			onDelete={( item ) => {
-				if ( item.type === FolderListType.Item )
-					new AlarmItem( item ).delete();
-				else
-					new AlarmGroup( item ).delete();
-			}}
+			loadEdit={( item ) => this.props.alarms[ item.id ]}
+			subtitle={( list ) => Timezone.ZTN[ new AlarmGroup( list ).data.timezone ]}
 			
-			navigation={this.props.navigation}
-			isFocused={this.props.isFocused}
+			{...this.listProps()}
 		/>;
 	}
 	
-	private groupControl = ( list: folderListItem ) => {
+	protected groupControl = ( list: folderListItem ) => {
 		let checked, partial = false;
-		for ( let id in list.items ) {
+		for ( const id in list.items ) {
 			if ( checked === undefined ) checked = list.items[ id ];
 			if ( checked !== list.items[ id ] ) {
 				partial = true;
@@ -82,15 +57,15 @@ export default connect( ( store: AppState ) => {
 			}
 		}
 		
-		return <ListItem style={styles.listItem}>
+		return <ListItem style={innerStyle.listItem}>
 			{this.checkBox( () => {
-				for ( let id in list.items ) {
+				for ( const id in list.items )
 					list.items[ id ] = !checked;
-				}
+				
 				this.props.dispatch( folderListActions.saveItem( list.id, list ) );
 			}, checked, partial )}
-			<Body style={styles.center}/>
-			<Right style={styles.right}>
+			<Body style={innerStyle.center}/>
+			<Right style={innerStyle.right}>
 				{this.circleButton( {
 					dark:    true,
 					onPress: () => {
@@ -98,7 +73,7 @@ export default connect( ( store: AppState ) => {
 							new AlarmItem( item ).offAction();
 						} );
 					}
-				}, 'square' )}
+				}, 'pause' )}
 				{this.circleButton( {
 					dark:    true,
 					onPress: () => {
@@ -111,46 +86,35 @@ export default connect( ( store: AppState ) => {
 		</ListItem>;
 	};
 	
-	private renderItem = ( item: folderListItem, GroupNavigate, checked: boolean, updateChecked ) => {
-		return <ListItem
-			button
-			style={styles.listItem}
-			onPress={item.type === FolderListType.Group ? GroupNavigate : () => {
-				this.props.navigation.navigate( 'AlarmDetails', {
-					itemId: item.id
-				} );
-			}}
-		>
-			{this.checkBox( updateChecked, checked )}
-			{item.type === FolderListType.Group ? this.group( new AlarmGroup( item ) ) : this.item( new AlarmItem( item ) )}
-		</ListItem>;
-	};
-	private group( alarmGroup: AlarmGroup ) {
-		return <Body style={styles.body}>
+	protected itemRoute = 'AlarmDetails';
+	protected createGroup = ( item: folderListItem ) => new AlarmGroup( item );
+	protected group( alarmGroup: AlarmGroup ) {
+		return <Body style={innerStyle.body}>
 		<H1 numberOfLines={1}>{alarmGroup.item.name}</H1>
 		<Text numberOfLines={1}>Timezone: {Timezone.ZTN[ alarmGroup.data.timezone ]}</Text>
 		<Text>Items: {alarmGroup.item.value}</Text>
 		</Body>;
 	}
-	private item( alarm: AlarmItem ) {
-		let time     = moment.duration( alarm.data.targetTime, 'minutes' ),
-		    hour     = time.hours() % 12 ? ( time.hours() % 12 ).toString() : '12',
-		    minute   = _.padStart( time.minutes().toString(), 2, '0' ),
-		    meridiem = Math.floor( time.hours() / 12 ) ? 'PM' : 'AM';
-		let repeat = alarm.data.repeatDays.map( ( val, i ) => {
-			let text = day[ i ] + ' ';
+	protected createItem = ( item: folderListItem ) => new AlarmItem( item );
+	protected item( alarm: AlarmItem ) {
+		const time     = moment.duration( alarm.data.targetTime, 'minutes' ),
+		      hour     = time.hours() % 12 ? ( time.hours() % 12 ).toString() : '12',
+		      minute   = _.padStart( time.minutes().toString(), 2, '0' ),
+		      meridiem = Math.floor( time.hours() / 12 ) ? 'PM' : 'AM';
+		const repeat = alarm.data.repeatDays.map( ( val, i ) => {
+			const text = day[ i ] + ' ';
 			
 			return val
-				? <Text key={i} style={{ color: platform.brandPrimary }}>{text}</Text>
+				? <Text key={i} style={innerStyle.primary}>{text}</Text>
 				: text;
 		} );
 		return <>
-			<Body style={styles.switchBody}>
+			<Body style={innerStyle.switchBody}>
 			<H1 numberOfLines={1}>{alarm.item.name}</H1>
 			<Text>Time: {`${hour}:${minute} ${meridiem}`}</Text>
 			<Text>Days: {repeat}</Text>
 			</Body>
-			<Right style={styles.switch}>
+			<Right style={innerStyle.switch}>
 				<Switch
 					value={!!alarm.data.state}
 					onValueChange={( val ) => {
@@ -162,82 +126,74 @@ export default connect( ( store: AppState ) => {
 		</>;
 	}
 	
-	private groupModal = ( item: alarmGroupData, modal: FolderListModal ) => {
+	protected groupModal = ( data: alarmGroupData, modal: FolderListModal ) => {
 		return <>
 			<ListItem
 				button icon
 				onPress={() => {
 					this.props.navigation.navigate( 'Timezone', {
-						current:  item.timezone,
+						current:  data.timezone,
 						onChange: ( zone: string ) => {
-							modal.setState( { groupData: { ...item, timezone: zone } } );
+							modal.setState( { groupData: { ...data, timezone: zone } } );
 						}
 					} );
 				}}
 			>
 				<Body><Text>Timezone</Text></Body>
 				<Right>
-					<Text>{Timezone.ZTN[ item.timezone ].split( ',' )[ 0 ]}</Text>
+					<Text>{Timezone.ZTN[ data.timezone ].split( ',' )[ 0 ]}</Text>
 					<Icon name='arrow-forward'/>
 				</Right>
 			</ListItem>
 		</>;
 	};
-	private itemModal = ( item: alarmItemData, modal: FolderListModal ) => {
-		let days = item.repeatDays.map( ( val, i ) => <Button
+	protected itemModal = ( data: alarmItemData, modal: FolderListModal ) => {
+		const days = data.repeatDays.map( ( val, i ) => <Button
 			key={i}
 			style={styles.flex}
 			transparent={!val}
 			onPress={() => {
-				item.repeatDays[ i ] = !item.repeatDays[ i ];
-				modal.setState( { itemData: { ...item } } );
+				data.repeatDays[ i ] = !data.repeatDays[ i ];
+				modal.setState( { itemData: { ...data } } );
 			}}
 		><Text>{day[ i ]}</Text></Button> );
 		
 		return <>
 			<Item stackedLabel>
-				<Label style={styles.label}>Time</Label>
-				{this.timePicker( item, modal )}
+				<Label style={innerStyle.label}>Time</Label>
+				{this.timePicker( data, modal )}
 			</Item>
 			<Item stackedLabel>
-				<Label style={styles.label}>Repeating Days</Label>
+				<Label style={innerStyle.label}>Repeating Days</Label>
 				<View style={styles.row}>{days}</View>
 			</Item>
 		</>;
 	};
 	
-	private checkBox( updateChecked, checked: boolean, partial?: boolean ) {
-		return <Left>
-			<Button full transparent onPress={updateChecked} style={styles.left}>
-				<Icon
-					style={styles.fullIcon}
-					name={partial ? 'remove-circle-outline' : `radio-button-${checked ? 'on' : 'off'}`}
-				/>
-			</Button>
-		</Left>;
-	}
-	private activate( list: folderListItem, func: ( item: folderListItem ) => void ) {
-		if ( list.type !== FolderListType.Group ) {
-			func( list );
-			return;
+	protected onSave = ( item: folderListItem, data: alarmItemData | alarmGroupData, id: string ) => {
+		if ( item.type === FolderListType.Item ) {
+			data = AlarmItem.create( id, data as alarmItemData );
+			item.value = data.targetTime;
+		} else {
+			data = AlarmGroup.create( id, data as alarmGroupData );
+			if ( item.id ) {
+				const list       = this.props.items[ item.parent ],
+				      alarmGroup = new AlarmGroup( list );
+				if ( alarmGroup.data.timezone !== data.timezone )
+					AlarmItem.disableChildren( list );
+			}
 		}
-		for ( let id in list.items ) {
-			if ( list.items[ id ] === true )
-				this.activate( this.props.items[ id ], func );
-		}
-	}
-	
-	private circleButton( props: NativeBase.Button, name: string ) {
-		return <Button
-			style={styles.circular}
-			{...props}
-		>
-			<Icon name={name}/>
-		</Button>;
-	}
+		return item;
+	};
+	protected onDelete = ( item: folderListItem ) => {
+		if ( item.type === FolderListType.Item )
+			new AlarmItem( item ).delete();
+		else
+			new AlarmGroup( item ).delete();
+	};
 	
 	private timePicker( item: alarmItemData, modal: FolderListModal ) {
-		let time = moment.duration( item.targetTime, 'minutes' );
+		const time = moment.duration( item.targetTime, 'minutes' );
 		
 		return <View style={styles.row}>
 			<Picker
@@ -285,9 +241,8 @@ export default connect( ( store: AppState ) => {
 			</Picker>
 		</View>;
 	}
-	
 	private pickerNumbers( min: number, max: number, pad: boolean ) {
-		let nums = [];
+		const nums = [];
 		for ( let num = min; num <= max; ++num ) {
 			nums.push( <Picker.Item
 				key={num}
@@ -300,41 +255,19 @@ export default connect( ( store: AppState ) => {
 	
 } );
 
-let size = 52;
-
-const styles = StyleSheet.create( {
-	flex:             { flex: 1 },
-	row:              { flex: 1, flexDirection: 'row' },
-	listItem:         { height: 72, marginLeft: 0 },
-	body:             { flex: 7 },
-	switchBody:       { flex: 5 },
-	center:           { flex: 4 },
-	left:             {
-		height: 72,
-		width:  '100%'
-	},
-	right:            {
+const innerStyle = StyleSheet.create( {
+	listItem:   { height: 72, marginLeft: 0 },
+	body:       { flex: 7 },
+	center:     { flex: 4 },
+	right:      {
 		flex:           3,
 		flexDirection:  'row',
 		justifyContent: 'space-between'
 	},
-	switch:           { flex: 2 },
-	circular:         {
-		justifyContent: 'center',
-		width:          size,
-		height:         size,
-		borderRadius:   size / 2
-	},
-	circleButtonText: {
-		color:        '#fff',
-		paddingLeft:  0,
-		paddingRight: 0
-	},
-	fullIcon:         {
-		marginLeft:  0,
-		marginRight: 0
-	},
-	label:            {
+	switchBody: { flex: 5 },
+	switch:     { flex: 2 },
+	primary:    { color: platform.brandPrimary },
+	label:      {
 		paddingBottom: 5
 	}
 } );

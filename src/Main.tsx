@@ -5,6 +5,7 @@ import getTheme from '../native-base-theme/components';
 import opposite from '../native-base-theme/variables/opposite';
 import platform from '../native-base-theme/variables/platform';
 import ReduxComponent from './components/ReduxComponent';
+import debug from './debug';
 import AppNavigator from './navigation/AppNavigator';
 import AlarmItem from './screens/alarm/AlarmItem';
 import { settingsState, themes } from './screens/home/settings/settingsStore';
@@ -42,10 +43,29 @@ export default connect( ( store: AppState ) => {
 	render() {
 		return <StyleProvider style={getTheme( this.props.settings.theme === themes.light ? platform : opposite )}>
 			<Root>
-				<AppNavigator persistenceKey={this.props.settings.persistence ? 'clockNavigate' : undefined}/>
+				<AppNavigator
+					persistenceKey={this.props.settings.persistence ? 'clockNavigate' : undefined}
+					onNavigationStateChange={debug.navigate ? ( prev, current ) => {
+						const currentRoute = this.getActiveRouteName( current ),
+						      prevRoute    = this.getActiveRouteName( prev );
+						
+						if ( prevRoute !== currentRoute )
+							console.log( `Navigating from ${prevRoute} to ${currentRoute}` );
+					} : undefined}
+				/>
 				{/*<Ad/>*/}
 			</Root>
 		</StyleProvider>;
+	}
+	
+	private getActiveRouteName( navigationState ) {
+		if ( !navigationState ) return null;
+		
+		const route = navigationState.routes[ navigationState.index ];
+		// dive into nested navigators
+		if ( route.routes ) return this.getActiveRouteName( route );
+		
+		return route.routeName;
 	}
 	
 } );

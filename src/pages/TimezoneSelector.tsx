@@ -3,6 +3,7 @@ import { Body, Container, Header, Input, Item, List, ListItem, Right, Text } fro
 import * as React from 'react';
 import Icon from '../components/Icon';
 import NavigationComponent from '../components/NavigationComponent';
+import styles from '../styles';
 import Timezone from '../utils/Timezone';
 
 export default class TimezoneSelector extends NavigationComponent {
@@ -19,19 +20,19 @@ export default class TimezoneSelector extends NavigationComponent {
 	
 	render() {
 		let count = 0;
-		let timezones = Timezone.names.filter( ( val ) => {
-			if ( count < this.state.maxCount && val.match( RegExp( this.state.filter, 'i' ) ) ) {
+		const timezones = Timezone.names.filter( ( val ) => {
+			if ( count < this.state.maxCount
+				&& val.match( RegExp( this.state.filter, 'i' ) ) ) {
 				++count;
 				return true;
 			}
 			return false;
-		} ).map( ( val ) => {
-			return Timezone.NTZ[ val ];
-		} );
+		} ).map( ( val ) => Timezone.NTZ[ val ] );
 		
 		return <Container>
 			{this.header()}
-			{!timezones.length ? this.empty()
+			{!timezones.length
+				? this.empty()
 				: this.list( timezones )}
 		</Container>;
 	}
@@ -44,7 +45,7 @@ export default class TimezoneSelector extends NavigationComponent {
 		</Header>;
 	}
 	private searchBar() {
-		return <Item style={{ flex: 2 }}>
+		return <Item style={styles.widerHeader}>
 			<Icon name='search'/>
 			<Input
 				placeholder='Filter Zones'
@@ -56,11 +57,13 @@ export default class TimezoneSelector extends NavigationComponent {
 		</Item>;
 	}
 	private selected() {
-		return <Text note>{Timezone.ZTN[ this.state.current ].split( ',' )[ 0 ]}</Text>;
+		return <Text note>
+			{Timezone.ZTN[ this.state.current ].split( ',' )[ 0 ]}
+		</Text>;
 	}
 	
 	private empty() {
-		return <Body style={{ paddingTop: 16 }}>
+		return <Body style={styles.empty}>
 		<Text>No Filtered Timezones</Text>
 		</Body>;
 	}

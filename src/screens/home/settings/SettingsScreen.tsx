@@ -6,6 +6,7 @@ import { connect } from 'react-redux';
 import Icon from '../../../components/Icon';
 import NavigationComponent from '../../../components/NavigationComponent';
 import { AppState } from '../../../store/store';
+import styles from '../../../styles';
 import Timezone from '../../../utils/Timezone';
 import { alarmActions } from '../../alarm/alarmStore';
 import { watchActions } from '../../stopwatch/watchStore';
@@ -154,9 +155,7 @@ export default connect( ( store: AppState ) => {
 		return <>
 			<Button
 				full danger
-				onPress={() => {
-					this.resetAlert( 'All', Settings.reset );
-				}}
+				onPress={this.resetAll}
 			>
 				<Text>Reset All</Text>
 			</Button>
@@ -167,16 +166,19 @@ export default connect( ( store: AppState ) => {
 			</View>
 		</>;
 	}
+	private resetAll = () => {
+		this.resetAlert( 'All', Settings.reset );
+	};
 	
 	private version() {
-		return <Separator style={{ paddingLeft: 0 }}>
-			<Text style={{ alignSelf: 'center' }}>Version: {Constants.manifest.version}</Text>
+		return <Separator style={styles.noPadHorizontal}>
+			<Text style={innerStyle.centerText}>Version: {Constants.manifest.version}</Text>
 		</Separator>;
 	}
 	
 	private resetButton( name: string, func: () => void ) {
 		return <Button
-			warning style={styles.centerButton}
+			warning style={innerStyle.centerButton}
 			onPress={() => {
 				this.resetAlert( name, func );
 			}}
@@ -199,7 +201,7 @@ export default connect( ( store: AppState ) => {
 	
 } );
 
-const styles = StyleSheet.create( {
-	row:          { flex: 1, flexDirection: 'row' },
-	centerButton: { flex: 1, justifyContent: 'center' }
+const innerStyle = StyleSheet.create( {
+	centerButton: { flex: 1, justifyContent: 'center' },
+	centerText:   { alignSelf: 'center' }
 } );

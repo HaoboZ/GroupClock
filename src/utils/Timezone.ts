@@ -13,7 +13,7 @@ export default new class Timezone {
 		this.zones = moment.tz.names();
 		this.zones.unshift( 'Default' );
 		this.names = this.zones.map( ( val ) => {
-			let res = /(\w+)\/(\w+)/.exec( val );
+			const res = /(\w+)\/(\w+)/.exec( val );
 			if ( res )
 				return ( res[ 2 ] + ', ' + res[ 1 ] ).replace( '_', ' ' );
 			else

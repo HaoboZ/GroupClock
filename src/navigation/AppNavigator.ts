@@ -19,6 +19,5 @@ const RootStack = createStackNavigator(
 
 export default createAppContainer( createSwitchNavigator( {
 	// You could add another route here for authentication.
-	
 	Root: RootStack
 } ) );

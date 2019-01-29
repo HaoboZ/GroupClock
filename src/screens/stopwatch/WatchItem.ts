@@ -45,7 +45,7 @@ export default class WatchItem {
 	}
 	
 	public get lapDiff() {
-		let lapDiff = [];
+		const lapDiff = [];
 		for ( let i = 0; i < this.data.laps.length; ++i )
 			lapDiff[ i ] = this.data.laps[ i ] - ( this.data.laps[ i + 1 ] || 0 );
 		return lapDiff;
@@ -100,7 +100,7 @@ export default class WatchItem {
 	}
 	
 	public toString( time: number, accurate: boolean = true ) {
-		let duration = moment.duration( Math.max( 0, time ) );
+		const duration = moment.duration( Math.max( 0, time ) );
 		if ( accurate || store.getState().settings.precision !== power.low )
 			return duration.format( 'h:mm:ss.SS', { stopTrim: 'm' } );
 		else

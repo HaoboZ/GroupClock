@@ -20,13 +20,14 @@ export default class HomeScreen extends NavigationComponent {
 			<Left/>
 			<Body><Title>Header</Title></Body>
 			<Right>
-				<Button transparent onPress={() => {
-					this.props.navigation.navigate( 'Settings' );
-				}}>
+				<Button transparent onPress={this.openSettings}>
 					<Icon name='settings'/>
 				</Button>
 			</Right>
 		</Header>;
 	}
+	private openSettings = () => {
+		this.props.navigation.navigate( 'Settings' );
+	};
 	
 }

@@ -13,14 +13,17 @@ export default class ItemSelector extends NavigationComponent {
 	};
 	
 	render() {
-		let list = [];
-		for ( let i = 0; i < this.state.list.length; ++i ) {
+		const list = [];
+		for ( let i = 0; i < this.state.list.length; ++i )
 			list.push( this.item( i, this.state.list[ i ] ) );
-		}
 		
 		return <Container>
 			{this.header()}
 			{list}
+			{/*<List*/}
+			{/*dataArray={this.state.list}*/}
+			{/*renderRow={this.item}*/}
+			{/*/>*/}
 		</Container>;
 	}
 	

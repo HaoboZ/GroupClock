@@ -50,7 +50,7 @@ export default class TimerItem {
 	
 	static reset() {
 		for ( const id in store.getState().timer ) {
-			let timer = new TimerItem( store.getState().folderList[ id ] );
+			const timer = new TimerItem( store.getState().folderList[ id ] );
 			if ( timer.data.state !== State.ON ) continue;
 			
 			if ( moment( timer.data.targetTime ).isBefore() )
@@ -172,7 +172,7 @@ export default class TimerItem {
 	public async notificationSet() {
 		if ( this.data.state === State.ON ) {
 			let time = this.data.targetTime - Date.now();
-			let repeat = this.data.repeat - 1 - this.data.repeatNum;
+			const repeat = this.data.repeat - 1 - this.data.repeatNum;
 			
 			for ( let i = 0; i < 10; ++i ) {
 				if ( i <= repeat ) {
@@ -207,7 +207,7 @@ export default class TimerItem {
 	}
 	
 	public toString( time: number ) {
-		let duration = moment.duration( Math.max( 0, time ) );
+		const duration = moment.duration( Math.max( 0, time ) );
 		if ( store.getState().settings.precision === power.low )
 			return duration.format( 'h:mm:ss', { stopTrim: 'm' } );
 		else

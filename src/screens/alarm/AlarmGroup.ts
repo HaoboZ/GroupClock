@@ -29,11 +29,11 @@ export default class AlarmGroup {
 	}
 	
 	public get timezone() {
-		let { settings, folderList, alarm } = store.getState(),
-		    parent                          = this.data && this.data.id;
+		const { settings, folderList, alarm } = store.getState();
 		
+		let parent = this.data && this.data.id;
 		while ( parent ) {
-			let data = alarm[ parent ] as alarmGroupData;
+			const data = alarm[ parent ] as alarmGroupData;
 			if ( data.timezone !== 'Default' ) return data.timezone;
 			parent = folderList[ parent ].parent;
 		}

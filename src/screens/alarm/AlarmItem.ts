@@ -43,7 +43,7 @@ export default class AlarmItem {
 	
 	static reset() {
 		for ( const id in store.getState().alarm ) {
-			let alarm = new AlarmItem( store.getState().folderList[ id ] );
+			const alarm = new AlarmItem( store.getState().folderList[ id ] );
 			if ( alarm.data.state !== State.ON ) continue;
 			
 			if ( !_.some( alarm.data.repeatDays ) ) {
@@ -91,9 +91,9 @@ export default class AlarmItem {
 	
 	public async notificationSet() {
 		if ( this.data.state === State.ON ) {
-			let timezone = new AlarmGroup( store.getState().folderList[ this.item.parent ] ).timezone,
-			    time     = moment().tz( timezone ).startOf( 'day' )
-				    .hour( this.data.targetTime / 60 ).minute( this.data.targetTime % 60 );
+			const timezone = new AlarmGroup( store.getState().folderList[ this.item.parent ] ).timezone,
+			      time     = moment().tz( timezone ).startOf( 'day' )
+				      .hour( this.data.targetTime / 60 ).minute( this.data.targetTime % 60 );
 			while ( time.isBefore() )
 				time.add( 1, 'day' );
 			

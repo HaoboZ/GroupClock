@@ -38,7 +38,7 @@ export default function noticeStore( state: noticeState = {}, action ): noticeSt
 export function localNoticeStore( state: noticeState = {}, action ): noticeState {
 	switch ( action.type ) {
 	case 'reset':
-		for ( let id in state )
+		for ( const id in state )
 			clearTimeout( state[ id ] );
 		return {};
 	case selectors.create:

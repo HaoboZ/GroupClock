@@ -10,6 +10,7 @@ import WatchDetails from '../screens/stopwatch/WatchDetails';
 import WatchScreen from '../screens/stopwatch/WatchScreen';
 import TimerDetails from '../screens/timer/TimerDetails';
 import TimerScreen from '../screens/timer/TimerScreen';
+import styles from '../styles';
 
 const HomeStack = createStackNavigator( {
 	Home:     HomeScreen,
@@ -38,10 +39,10 @@ export default createBottomTabNavigator( {
 	TimerStack
 }, {
 	tabBarComponent: ( props ) => {
-		let { index, routes } = props.navigation.state;
+		const { index, routes } = props.navigation.state;
 		
-		let tab = ( i: number, route: string, icon: string, name: string ) => {
-			let active = index === i;
+		const tab = ( i: number, route: string, icon: string, name: string ) => {
+			const active = index === i;
 			
 			return <FooterTab>
 				<Button
@@ -51,7 +52,7 @@ export default createBottomTabNavigator( {
 					onLongPress={() => props.onTabLongPress( { route: routes[ i ] } )}
 				>
 					<Icon active={active} name={icon}/>
-					<Text style={{ paddingLeft: 0, paddingRight: 0 }}>{name}</Text>
+					<Text style={styles.noPadHorizontal}>{name}</Text>
 				</Button>
 			</FooterTab>;
 		};

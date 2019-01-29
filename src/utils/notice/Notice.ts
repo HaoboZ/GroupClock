@@ -1,7 +1,7 @@
 import { Notifications, Permissions } from 'expo';
-import moment from 'moment-timezone';
 import { Toast } from 'native-base';
 import { Platform } from 'react-native';
+import debug from '../../debug';
 import Settings from '../../screens/home/settings/Settings';
 import store from '../../store/store';
 import { noticeActions } from './noticeStore';
@@ -55,13 +55,13 @@ export default new class Notice {
 		if ( store.getState().notice[ itemId ] !== undefined )
 			this.delete( itemId );
 		
-		let noticeId = await this.notice( {
+		const noticeId = await this.notice( {
 			title,
 			body,
 			time: Date.now() + time,
 			repeat
 		} );
-		let localId = await this.local( {
+		const localId = await this.local( {
 			itemId,
 			title,
 			body,
@@ -70,7 +70,7 @@ export default new class Notice {
 			onComplete
 		} );
 		store.dispatch( noticeActions.createNotice( itemId, noticeId, localId ) );
-		console.log( 'creating', moment( Date.now() + time ).toString(), noticeId, localId );
+		if ( debug.notice ) console.log( 'Creating notice: ', time, noticeId, localId );
 	}
 	
 	/**
@@ -79,14 +79,14 @@ export default new class Notice {
 	 * @param itemId - Id reference to delete.
 	 */
 	public delete( itemId: string ) {
-		let noticeId = store.getState().notice[ itemId ];
+		const noticeId = store.getState().notice[ itemId ];
 		if ( !noticeId ) return;
 		
 		Notifications.cancelScheduledNotificationAsync( noticeId );
-		let localId = store.getState().localNotice[ itemId ];
+		const localId = store.getState().localNotice[ itemId ];
 		clearTimeout( localId );
 		store.dispatch( noticeActions.deleteNotice( itemId ) );
-		console.log( 'deleting', noticeId, localId );
+		if ( debug.notice ) console.log( 'Delete notice: ', noticeId, localId );
 	}
 	
 	/**
@@ -143,7 +143,7 @@ export default new class Notice {
 				duration:   4000
 			} );
 			if ( repeat ) {
-				let localId = await this.local( {
+				const localId = await this.local( {
 					itemId,
 					title,
 					body,

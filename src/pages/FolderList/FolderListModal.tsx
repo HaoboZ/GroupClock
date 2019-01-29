@@ -33,16 +33,16 @@ export type FolderListModalParams = {
 
 export default class FolderListModal extends NavigationComponent {
 	
-	private title: string = this.props.navigation.getParam( 'title' );
+	private readonly title: string = this.props.navigation.getParam( 'title' );
 	
-	public list: folderListItem = this.props.navigation.getParam( 'list' );
+	public readonly list: folderListItem = this.props.navigation.getParam( 'list' );
 	
-	private groupTabName: string = this.props.navigation.getParam( 'groupName' ) || 'Group';
-	private _groupContent = this.props.navigation.getParam( 'groupContent' );
-	private itemTabName: string = this.props.navigation.getParam( 'itemName' ) || 'Item';
-	private _itemContent = this.props.navigation.getParam( 'itemContent' );
+	private readonly groupTabName: string = this.props.navigation.getParam( 'groupName' ) || 'Group';
+	private readonly _groupContent = this.props.navigation.getParam( 'groupContent' );
+	private readonly itemTabName: string = this.props.navigation.getParam( 'itemName' ) || 'Item';
+	private readonly _itemContent = this.props.navigation.getParam( 'itemContent' );
 	
-	private onSave = this.props.navigation.getParam( 'onSave' );
+	private readonly onSave = this.props.navigation.getParam( 'onSave' );
 	private saved = false;
 	
 	private readonly creating: boolean = true;
@@ -66,12 +66,12 @@ export default class FolderListModal extends NavigationComponent {
 	constructor( props ) {
 		super( props );
 		
-		let selectedItem: folderListItem = this.props.navigation.getParam( 'selectedItem' );
+		const selectedItem: folderListItem = this.props.navigation.getParam( 'selectedItem' );
 		// if is editing
 		if ( selectedItem ) {
 			this.creating = false;
 			this.type = selectedItem.type;
-			let selectedData = this.attemptCall( this.props.navigation.getParam( 'loadEdit' ), selectedItem );
+			const selectedData = this.attemptCall( this.props.navigation.getParam( 'loadEdit' ), selectedItem );
 			if ( this.type === FolderListType.Group ) {
 				this.state.group = { ...selectedItem };
 				this.state.groupData = { ...selectedData };
@@ -112,60 +112,58 @@ export default class FolderListModal extends NavigationComponent {
 		return <Header hasTabs>
 			{this.goBack( 'Cancel' )}
 			<Body><Title>{this.title}</Title></Body>
-			<Right>{this.save()}</Right>
+			<Right>{this.saveButton()}</Right>
 		</Header>;
 	}
-	private save() {
+	private saveButton() {
 		return <Button
 			transparent
-			onPress={() => {
-				let item = this.state.selectedTab ? this.state.group : this.state.item,
-				    data = this.state.selectedTab ? this.state.groupData : this.state.itemData;
-				if ( !item.name.length ) {
-					alert( 'Name is empty' );
-					return;
-				}
-				
-				if ( this.saved ) return;
-				this.saved = true;
-				
-				// generate/get id
-				let itemId = this.creating ? shortid.generate() : item.id;
-				// perform modifications
-				if ( this.onSave ) item = this.onSave( item, data, itemId );
-				// save item and parent
-				store.dispatch( folderListActions.saveItem( itemId, item ) );
-				if ( this.creating ) {
-					this.list.items[ itemId ] = true;
-					++this.list.value;
-					store.dispatch( folderListActions.saveItem( this.list.id, this.list ) );
-				}
-				this.props.navigation.goBack();
-			}}
+			onPress={this.save}
 		>
 			<Text>Save</Text>
 		</Button>;
 	}
+	private save = () => {
+		let item = this.state.selectedTab ? this.state.group : this.state.item,
+		    data = this.state.selectedTab ? this.state.groupData : this.state.itemData;
+		if ( !item.name.length ) {
+			alert( 'Name is empty' );
+			return;
+		}
+		
+		if ( this.saved ) return;
+		this.saved = true;
+		
+		// generate/get id
+		const itemId = this.creating ? shortid.generate() : item.id;
+		// perform modifications
+		if ( this.onSave ) item = this.onSave( item, data, itemId );
+		// save item and parent
+		store.dispatch( folderListActions.saveItem( itemId, item ) );
+		if ( this.creating ) {
+			this.list.items[ itemId ] = true;
+			++this.list.value;
+			store.dispatch( folderListActions.saveItem( this.list.id, this.list ) );
+		}
+		this.props.navigation.goBack();
+	};
 	
 	private tabs() {
 		return <Tabs
 			initialPage={this.type === FolderListType.Group ? 1 : 0}
 			page={this.creating ? undefined : this.state.selectedTab}
-			onChangeTab={( { i } ) => {
-				if ( this.creating )
-					this.setState( { selectedTab: i } );
-				else
-					this.forceUpdate();
-			}}
+			onChangeTab={this.pressTab}
 		>
-			<Tab heading={this.itemTabName}>
-				{this.itemContent()}
-			</Tab>
-			<Tab heading={this.groupTabName}>
-				{this.groupContent()}
-			</Tab>
+			<Tab heading={this.itemTabName}>{this.itemContent()}</Tab>
+			<Tab heading={this.groupTabName}>{this.groupContent()}</Tab>
 		</Tabs>;
 	}
+	private pressTab = ( { i } ) => {
+		if ( this.creating )
+			this.setState( { selectedTab: i } );
+		else
+			this.forceUpdate();
+	};
 	
 	private itemContent() {
 		if ( !this.creating && this.type !== FolderListType.Item ) return null;

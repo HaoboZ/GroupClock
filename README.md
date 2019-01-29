@@ -48,13 +48,11 @@ Pressing the left button will reset the it
 
 ### Intermediate
 
-* Reformat
-	* move onPress arrow functions outside
-	* styling
 * Group control restyling
 * Colored items based on selected
-* Timer chain disable buttons
+* Disable buttons based on content
 * Individual part screens
+* Home screen
 
 ### Advanced
 
@@ -62,6 +60,7 @@ Pressing the left button will reset the it
 	* authorize (Expo Google, AuthSession)
 	* database (Firebase, MongoDB)
 * Payment (Expo Payments)
+* Improved persist
 * Dark theme
 * Initial help
 * Individual themed groups
