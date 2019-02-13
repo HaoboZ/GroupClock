@@ -639,10 +639,10 @@
     mv "~2"
     safe-json-stringify "~1"
 
-"@expo/dev-tools@^0.2.33":
-  version "0.2.33"
-  resolved "https://registry.yarnpkg.com/@expo/dev-tools/-/dev-tools-0.2.33.tgz#2fe777b2130e2b46e87e2b617bc6f5e08eb65872"
-  integrity sha512-4wi9BL8HacQZy48e1Eooq50CnfOmLZVo+YhgexG7apVwIGALpWcneg/UIM0pxKjY0lj4T2o99+xDQPU1oeETMA==
+"@expo/dev-tools@^0.2.37":
+  version "0.2.37"
+  resolved "https://registry.yarnpkg.com/@expo/dev-tools/-/dev-tools-0.2.37.tgz#b04dbb1aa500c404a0c736c630c6f955bd1bef66"
+  integrity sha512-dHSQNLyCbpcs9BeaFJBKDgVmNVECEoQIM57eofT/e5lejkp+zZ9oS70UqFxU2yuMzMXdXDSmzG2iaeUZijrlcA==
   dependencies:
     express "4.16.4"
     freeport-async "1.1.1"
@@ -790,15 +790,15 @@
     "@types/cross-spawn" "^6.0.0"
     cross-spawn "^6.0.5"
 
-"@expo/traveling-fastlane-darwin@1.6.2":
-  version "1.6.2"
-  resolved "https://registry.yarnpkg.com/@expo/traveling-fastlane-darwin/-/traveling-fastlane-darwin-1.6.2.tgz#4bc5256423e4fc443b0cb7d9f5d3caa02ddef0db"
-  integrity sha512-mFqz2Nm/JME8C+61QlLDV/LY4/7+6SbDAwcSZwbbn6iXTmAfYV4AdQH8Unei56FgrTSosK4ZwMXkSoeCFOpaNA==
+"@expo/traveling-fastlane-darwin@1.7.1":
+  version "1.7.1"
+  resolved "https://registry.yarnpkg.com/@expo/traveling-fastlane-darwin/-/traveling-fastlane-darwin-1.7.1.tgz#8fae15172b94802d06dca6917ee78658b9c4d43e"
+  integrity sha512-IXupqO0LnEGBCqorD5MalHSThIcIXZ9awBa8MFXcW1z/vaPqvze7A2cdxWjZkoOqHsq9pbO7m+wq3B/diSRtTw==
 
-"@expo/traveling-fastlane-linux@1.6.2":
-  version "1.6.2"
-  resolved "https://registry.yarnpkg.com/@expo/traveling-fastlane-linux/-/traveling-fastlane-linux-1.6.2.tgz#f996f0be73746f371d6d3ca87a83432e7b8962eb"
-  integrity sha512-1V6hN2dEgPxLwSGsT2IsjFyGDUs1k5hBjHs5T9kEbNEcqZkVDiJ9n0bP8JuvNqshu++7eGxqojx0iByYbFqSXw==
+"@expo/traveling-fastlane-linux@1.7.1":
+  version "1.7.1"
+  resolved "https://registry.yarnpkg.com/@expo/traveling-fastlane-linux/-/traveling-fastlane-linux-1.7.1.tgz#141f4c9c904996aeced80470d494566721a9739f"
+  integrity sha512-26la+IP0Z8bm/YEUHPQ9tAfsvEXLKZK4hLZpQRIwTZgyP91DM/3MS4Bwg1TLjpjQ/jMKr3vOjnTSvhIarZy5ew==
 
 "@expo/vector-icons@github:expo/vector-icons#expo-font-fix":
   version "8.0.0"
@@ -2462,11 +2462,6 @@ combined-stream@^1.0.6, combined-stream@~1.0.6:
   dependencies:
     delayed-stream "~1.0.0"
 
-command-exists@1.2.7:
-  version "1.2.7"
-  resolved "https://registry.yarnpkg.com/command-exists/-/command-exists-1.2.7.tgz#16828f0c3ff2b0c58805861ef211b64fc15692a8"
-  integrity sha512-doWDvhXCcW5LK0cIUWrOQ8oMFXJv3lEQCkJpGVjM8v9SV0uhqYXB943538tEA2CiaWqSyuYUGAm5ezDwEx9xlw==
-
 commander@2.17.1, commander@~2.17.1:
   version "2.17.1"
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.17.1.tgz#bd77ab7de6de94205ceacc72f1716d29f20a77bf"
@@ -2713,6 +2708,11 @@ data-urls@^1.0.0:
     whatwg-mimetype "^2.2.0"
     whatwg-url "^7.0.0"
 
+dateformat@3.0.3:
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/dateformat/-/dateformat-3.0.3.tgz#a6e37499a4d9a9cf85ef5872044d62901c9889ae"
+  integrity sha512-jyCETtSl3VMZMWeRo7iY1FL19ges1t55hMo5yaam4Jrsm5EPL89UQkoQRyiI+Yf4k8r2ZpdngkV8hr1lIdjb3Q==
+
 debug@2, debug@2.6.9, debug@^2.1.2, debug@^2.2.0, debug@^2.3.3, debug@^2.6.2, debug@^2.6.8, debug@^2.6.9:
   version "2.6.9"
   resolved "https://registry.yarnpkg.com/debug/-/debug-2.6.9.tgz#5d128515df134ff327e90a4c93f4e077a536341f"
@@ -2784,6 +2784,11 @@ deepmerge@^1.3.0:
   version "1.5.2"
   resolved "https://registry.yarnpkg.com/deepmerge/-/deepmerge-1.5.2.tgz#10499d868844cdad4fee0842df8c7f6f0c95a753"
   integrity sha512-95k0GDqvBjZavkuvzx/YqVLv/6YYa17fz6ILMSf7neqQITCPbnfEnQvEgMPNjH4kgobe7+WIL0yJEHku+H3qtQ==
+
+deepmerge@^2.0.1:
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/deepmerge/-/deepmerge-2.2.1.tgz#5d3ff22a01c00f645405a2fbc17d0778a1801170"
+  integrity sha512-R9hc1Xa/NOBi9WRVUWg19rl1UB7Tt4kuPd+thNJgFZoxXsTz7ncaPaeIm+40oSGuP33DfMb4sZt1QIGiJzC4EA==
 
 default-require-extensions@^1.0.0:
   version "1.0.0"
@@ -3232,13 +3237,13 @@ expo-camera@~2.0.0:
     lodash.mapvalues "^4.6.0"
     prop-types "^15.6.0"
 
-expo-cli@^2.7.0:
-  version "2.7.0"
-  resolved "https://registry.yarnpkg.com/expo-cli/-/expo-cli-2.7.0.tgz#bfe5d1d27294acbb1cfaaa8f81b2db88795de30f"
-  integrity sha512-grgnyLNIu9Ufp+uKz0BrQObxrvongesvG7loXDtUbLEi69Q8zXA+n+FtKwYA7k6w+6fjlCdKa4vtQT6yUXiDqA==
+expo-cli@^2.10.1:
+  version "2.10.1"
+  resolved "https://registry.yarnpkg.com/expo-cli/-/expo-cli-2.10.1.tgz#8b4110c1d3ae0eb1991ae9de988f5fbececb8be7"
+  integrity sha512-bCBrdT7yUff1TGbzw1dtPlOmn4aNlO9cUEDugUc6KqN2KjYbYV7TCsukJtIpD1kT/bmULunnyL9ggchUhK5Otg==
   dependencies:
     "@expo/bunyan" "3.0.2"
-    "@expo/dev-tools" "^0.2.33"
+    "@expo/dev-tools" "^0.2.37"
     "@expo/json-file" "8.1.0"
     "@expo/simple-spinner" "1.0.2"
     "@expo/spawn-async" "1.3.0"
@@ -3247,6 +3252,7 @@ expo-cli@^2.7.0:
     chalk "2.4.1"
     cli-table "0.3.1"
     commander "2.17.1"
+    dateformat "3.0.3"
     delay-async "1.1.0"
     enquirer "2.1.1"
     envinfo "5.10.0"
@@ -3271,10 +3277,10 @@ expo-cli@^2.7.0:
     untildify "3.0.3"
     validator "10.5.0"
     wordwrap "1.0.0"
-    xdl "^52.1.0"
+    xdl "^53.0.1"
   optionalDependencies:
-    "@expo/traveling-fastlane-darwin" "1.6.2"
-    "@expo/traveling-fastlane-linux" "1.6.2"
+    "@expo/traveling-fastlane-darwin" "1.7.1"
+    "@expo/traveling-fastlane-linux" "1.7.1"
 
 expo-constants-interface@~2.0.0:
   version "2.0.0"
@@ -3502,10 +3508,10 @@ expo-task-manager@~1.0.0:
     expo-errors "~1.0.0"
     expo-task-manager-interface "~1.0.0"
 
-expo@^32.0.1:
-  version "32.0.1"
-  resolved "https://registry.yarnpkg.com/expo/-/expo-32.0.1.tgz#6b6eab63afd0fb4a7b8ca06de3f0f408f8c4ae6b"
-  integrity sha512-1oJPx3xjcjIcMZmQ8cuxnuaBe62miC+QrCqjtQgmErBJQG4jY3r2LP5l1pPoY42nR3zV8czhlvW9kx39sdunNw==
+expo@^32.0.5:
+  version "32.0.5"
+  resolved "https://registry.yarnpkg.com/expo/-/expo-32.0.5.tgz#ebfa6a12d6f11938264392ec7300ccc4368678fd"
+  integrity sha512-xo8wZ9/4F3P1xN9nKFSJM3Gb2m0p05aRncjgFF+jxM5XfvKkUrzW0a6FYOY/h/r2r1wyQI7OTBPTiTH/GxuwgA==
   dependencies:
     "@babel/runtime" "^7.1.2"
     "@expo/vector-icons" "github:expo/vector-icons#expo-font-fix"
@@ -3569,7 +3575,7 @@ expo@^32.0.1:
     prop-types "^15.6.0"
     qs "^6.5.0"
     react-native-branch "2.2.5"
-    react-native-gesture-handler "1.0.12"
+    react-native-gesture-handler "~1.0.14"
     react-native-maps expo/react-native-maps#v0.22.1-exp.0
     react-native-reanimated "1.0.0-alpha.11"
     react-native-screens "1.0.0-alpha.22"
@@ -6297,11 +6303,6 @@ moment-timezone@^0.5.23:
   dependencies:
     moment ">= 2.9.0"
 
-moment@2.22.0:
-  version "2.22.0"
-  resolved "https://registry.yarnpkg.com/moment/-/moment-2.22.0.tgz#7921ade01017dd45186e7fee5f424f0b8663a730"
-  integrity sha512-1muXCh8jb1N/gHRbn9VDUBr0GYb8A/aVcHlII9QSB68a50spqEVLIGN6KVmCOnSvJrUhC0edGgKU5ofnGXdYdg==
-
 "moment@>= 2.9.0", moment@>=2.14.0, moment@^2.10.6, moment@^2.22.2:
   version "2.23.0"
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.23.0.tgz#759ea491ac97d54bac5ad776996e2a58cc1bc225"
@@ -7191,6 +7192,18 @@ probe-image-size@^3.1.0:
     next-tick "^1.0.0"
     stream-parser "~0.3.1"
 
+probe-image-size@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/probe-image-size/-/probe-image-size-4.0.0.tgz#d35b71759e834bcf580ea9f18ec8b9265c0977eb"
+  integrity sha512-nm7RvWUxps+2+jZKNLkd04mNapXNariS6G5WIEVzvAqjx7EUuKcY1Dp3e6oUK7GLwzJ+3gbSbPLFAASHFQrPcQ==
+  dependencies:
+    any-promise "^1.3.0"
+    deepmerge "^2.0.1"
+    inherits "^2.0.3"
+    next-tick "^1.0.0"
+    request "^2.83.0"
+    stream-parser "~0.3.1"
+
 process-nextick-args@~2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/process-nextick-args/-/process-nextick-args-2.0.0.tgz#a37d732f4271b4ab1ad070d35508e8290788ffaa"
@@ -7444,10 +7457,19 @@ react-native-easy-grid@0.2.0:
   dependencies:
     lodash "^4.11.1"
 
-react-native-gesture-handler@1.0.12, react-native-gesture-handler@^1.0.0:
+react-native-gesture-handler@^1.0.0:
   version "1.0.12"
   resolved "https://registry.yarnpkg.com/react-native-gesture-handler/-/react-native-gesture-handler-1.0.12.tgz#99a22f90212df299245357dbd3a9a01c788f310b"
   integrity sha512-Qp5FjRmqUFeCevSu2IYQG1Xw+YXZ9YOzqze/ZxaIvWzYAoKsRchlgHhNoxvCqElp/befrnVFIjAEQyUxcmBKJw==
+  dependencies:
+    hoist-non-react-statics "^2.3.1"
+    invariant "^2.2.2"
+    prop-types "^15.5.10"
+
+react-native-gesture-handler@~1.0.14:
+  version "1.0.15"
+  resolved "https://registry.yarnpkg.com/react-native-gesture-handler/-/react-native-gesture-handler-1.0.15.tgz#7e0d0a457820a3c9325a3d492daaed14400508a6"
+  integrity sha512-BePn+YOKcspHb1xPkUdJs+H6jiaECrT2c98txADBYWHwuUeundE+uUJG0r3FQLFvM2MoGeiJeD96sePzk+WSvQ==
   dependencies:
     hoist-non-react-statics "^2.3.1"
     invariant "^2.2.2"
@@ -7471,7 +7493,7 @@ react-native-maps@*:
   resolved "https://registry.yarnpkg.com/react-native-maps/-/react-native-maps-0.23.0.tgz#edbfdcad0e42190627eb1c8067eaba5965c8f81e"
   integrity sha512-qxOIQGsDtQXQlSJdXMW1wg8pvLaVYdbiIolB7tZTTgTGgIA/hDxXwZbQZ08c4KDD6/VTk8krfd1APaHkqvh6og==
 
-react-native-maps@expo/react-native-maps#v0.22.1-exp.0:
+"react-native-maps@github:expo/react-native-maps#v0.22.1-exp.0":
   version "0.22.1"
   resolved "https://codeload.github.com/expo/react-native-maps/tar.gz/e6f98ff7272e5d0a7fe974a41f28593af2d77bb2"
 
@@ -7537,13 +7559,6 @@ react-native-view-shot@2.5.0:
   version "2.5.0"
   resolved "https://registry.yarnpkg.com/react-native-view-shot/-/react-native-view-shot-2.5.0.tgz#428a997f470d3148d0067c5b46abd988ef1aa4c0"
   integrity sha512-xFJA+N7wh8Ik/17I4QB24e0a0L3atg1ScVehvtYR5UBTgHdzTFA0ZylvXp9gkZt7V+AT5Pni0H3NQItpqSKFoQ==
-
-react-native-wheel-picker-android@^2.0.4:
-  version "2.0.4"
-  resolved "https://registry.yarnpkg.com/react-native-wheel-picker-android/-/react-native-wheel-picker-android-2.0.4.tgz#6df86cc2b8ad02d8023d15b4b50c2e03768e5e4f"
-  integrity sha512-bX3A5d3QGX4Rf6uam1GwGEEkxOk9hXHKA4KepLIlqDZfusNU78jHO+5U3jx8hGmI8Gn3zzRxFX8jMn7CzGfQcg==
-  dependencies:
-    moment "2.22.0"
 
 "react-native@https://github.com/expo/react-native/archive/sdk-32.0.0.tar.gz":
   version "0.57.1"
@@ -7918,7 +7933,7 @@ request-promise-native@1.0.5, request-promise-native@^1.0.5:
     stealthy-require "^1.1.0"
     tough-cookie ">=2.3.3"
 
-request@2.88.0, request@^2.81.0, request@^2.87.0:
+request@2.88.0, request@^2.81.0, request@^2.83.0, request@^2.87.0:
   version "2.88.0"
   resolved "https://registry.yarnpkg.com/request/-/request-2.88.0.tgz#9c2fca4f7d35b592efe57c7f0a55e81052124fef"
   integrity sha512-NAqBSrijGLZdM0WZNsInLJpkJokL72XYjUpnB0iwsRgxh7dB6COrHnTBNwN0E+lHDAJzu7kLAkDeY08z2/A0hg==
@@ -9365,10 +9380,10 @@ xcode@^0.9.1:
     simple-plist "^0.2.1"
     uuid "3.0.1"
 
-xdl@^52.1.0:
-  version "52.1.0"
-  resolved "https://registry.yarnpkg.com/xdl/-/xdl-52.1.0.tgz#b9a77080cd06ebbfd35cf45c078e41c389e67e0e"
-  integrity sha512-1qHsogBxMr2PmzKNzpkVfXzC5k4ZhWDWJ17nBMANHEIppePJ9mPnZgPDcstUBdm9xTHXgCC9YjZoYKnX/Y0lQQ==
+xdl@^53.0.1:
+  version "53.0.1"
+  resolved "https://registry.yarnpkg.com/xdl/-/xdl-53.0.1.tgz#224032667f70637fb55aff71d2221ef91fbfd20c"
+  integrity sha512-5ADx2bHjN5aB/QFxCIG/ndFJwnw9LOqPZzLLo4Aetb5S+aSX1E4upKju2xitB7HeUjvdmPPGPLMeZqKGisIVgw==
   dependencies:
     "@expo/bunyan" "3.0.2"
     "@expo/json-file" "8.1.0"
@@ -9379,7 +9394,6 @@ xdl@^52.1.0:
     analytics-node "^2.1.0"
     axios v0.19.0-beta.1
     chalk "2.4.1"
-    command-exists "1.2.7"
     concat-stream "1.6.2"
     decache "4.4.0"
     delay-async "1.1.0"
@@ -9412,6 +9426,7 @@ xdl@^52.1.0:
     p-timeout "2.0.1"
     pacote "9.2.3"
     plist "2.1.0"
+    probe-image-size "^4.0.0"
     querystring "0.2.0"
     raven "2.6.3"
     read-chunk "2.1.0"

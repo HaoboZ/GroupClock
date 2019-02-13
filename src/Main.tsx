@@ -1,5 +1,7 @@
-import { Root, StyleProvider } from 'native-base';
+import { Constants } from 'expo';
+import { Root, StyleProvider, View } from 'native-base';
 import * as React from 'react';
+import { Platform } from 'react-native';
 import { connect } from 'react-redux';
 import getTheme from '../native-base-theme/components';
 import opposite from '../native-base-theme/variables/opposite';
@@ -43,6 +45,7 @@ export default connect( ( store: AppState ) => {
 	render() {
 		return <StyleProvider style={getTheme( this.props.settings.theme === themes.light ? platform : opposite )}>
 			<Root>
+				<View style={{ paddingTop: Platform.OS === 'ios' ? 0 : Constants.statusBarHeight }}/>
 				<AppNavigator
 					persistenceKey={this.props.settings.persistence ? 'clockNavigate' : undefined}
 					onNavigationStateChange={debug.navigate ? ( prev, current ) => {

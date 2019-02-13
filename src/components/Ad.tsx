@@ -10,6 +10,7 @@ export default class Ad extends React.PureComponent {
 	};
 	
 	render() {
+		// @ts-ignore
 		return <AdMobBanner
 			style={{ height: this.state.load }}
 			bannerSize='smartBannerPortrait'

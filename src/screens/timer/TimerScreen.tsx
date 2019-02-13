@@ -58,7 +58,7 @@ export default connect( ( store: AppState ) => {
 		return <ListItem style={innerStyle.listItem}>
 			{this.checkBox( () => {
 				for ( const id in list.items )
-					list.items[ id ] = !checked;
+					list.items[ id ] = partial ? false : !checked;
 				
 				this.props.dispatch( folderListActions.saveItem( list.id, list ) );
 			}, checked, partial )}

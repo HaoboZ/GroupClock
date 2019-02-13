@@ -16,9 +16,13 @@
 		"assetBundlePatterns": [
 			"**/*"
 		],
+		"android": {
+			"package": "com.groupclock"
+		},
 		"splash": {
 			"image": "./assets/images/splash.png",
-			"backgroundColor": "#ffffff"
+			"backgroundColor": "#ffffff",
+			"resizeMode": "contain"
 		}
 	}
 }

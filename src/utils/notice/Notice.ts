@@ -30,6 +30,7 @@ export default new class Notice {
 		
 		if ( !store.getState().settings.permission ) {
 			const { status } = await Permissions.getAsync( Permissions.USER_FACING_NOTIFICATIONS );
+			// @ts-ignore
 			Settings.permission( status );
 		}
 	}
