@@ -4,9 +4,13 @@ A clock app, but includes a folder structure to organize different alarms and an
 
 ## Installation
 
-Install via `yarn` or `npm install`.
+To install with yarn (a little better package manager), run `npm i -g yarn` before running anything else
 
-`yarn run start` or `npm run start` to run the expo app, which requires the expo client app on a mobile device or an emulator.
+Install by running `yarn` or `npm install`.
+
+If you create an expo account on www.expo.io and login with `expo login`, then you can see projects that you run even without scanning the QR code. You probably want to install with `npm i -g expo-cli` to call expo from the command line.
+
+`yarn run start` or `npm run start` to run the expo app, which requires the expo client app on a mobile device or an emulator. This may not work if on the school server, so open up http://localhost:19002 and change the bottom right part to a tunnel instead of lan. Before, it worked for me, but if it fails, a tunnel will be slower but guaranteed work.
 
 ## Features
 

@@ -33,37 +33,37 @@
 		}
 	},
 	"dependencies": {
-		"expo": "^32.0.5",
-		"expo-cli": "^2.10.1",
+		"expo": "^32.0.6",
+		"expo-cli": "^2.11.3",
 		"moment-duration-format": "^2.2.2",
 		"moment-timezone": "^0.5.23",
 		"native-base": "^2.10.0",
 		"react": "16.5.0",
 		"react-native": "https://github.com/expo/react-native/archive/sdk-32.0.0.tar.gz",
-		"react-navigation": "^3.0.9",
-		"react-redux": "^6.0.0",
+		"react-navigation": "^3.3.2",
+		"react-redux": "^6.0.1",
 		"redux": "^4.0.1",
 		"redux-persist": "^5.10.0",
 		"redux-promise-middleware": "^5.1.1",
 		"shortid": "^2.2.14",
 		"tslib": "^1.9.3",
-		"typescript": "^3.2.4"
+		"typescript": "^3.3.3333"
 	},
 	"devDependencies": {
-		"@types/expo": "^31.0.8",
-		"@types/jest": "^23.3.13",
+		"@types/expo": "^32.0.3",
+		"@types/jest": "^24.0.9",
 		"@types/moment-duration-format": "^2.2.2",
 		"@types/moment-timezone": "^0.5.10",
-		"@types/react": "^16.7.20",
-		"@types/react-native": "^0.57.29",
-		"@types/react-navigation": "^3.0.1",
-		"@types/react-redux": "^7.0.0",
+		"@types/react": "^16.8.5",
+		"@types/react-native": "^0.57.38",
+		"@types/react-navigation": "^3.0.4",
+		"@types/react-redux": "^7.0.1",
 		"@types/shortid": "^0.0.29",
 		"babel-preset-expo": "^5.0.0",
-		"jest": "^23.6.0",
+		"jest": "^24.1.0",
 		"jest-expo": "^32.0.0",
-		"prettier": "^1.15.3",
-		"react-test-renderer": "^16.7.0",
-		"ts-jest": "^23.10.5"
+		"prettier": "^1.16.4",
+		"react-test-renderer": "^16.8.3",
+		"ts-jest": "^24.0.0"
 	}
 }
