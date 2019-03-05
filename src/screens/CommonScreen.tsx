@@ -90,10 +90,10 @@ export default abstract class CommonScreen<T extends { items }> extends Navigati
 	
 }
 
-const itemHeight = 72, circleSize = 52;
+const circleSize = 52;
 const innerStyle = StyleSheet.create( {
-	listItem: { height: itemHeight, marginLeft: 0 },
-	left:     { height: itemHeight, width: '100%' },
+	listItem: { height: 72, marginLeft: 0 },
+	left:     { height: 72, width: '100%' },
 	circular: {
 		justifyContent: 'center',
 		width:          circleSize,

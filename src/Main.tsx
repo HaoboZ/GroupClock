@@ -6,6 +6,7 @@ import { connect } from 'react-redux';
 import getTheme from '../native-base-theme/components';
 import opposite from '../native-base-theme/variables/opposite';
 import platform from '../native-base-theme/variables/platform';
+import Ad from './components/Ad';
 import ReduxComponent from './components/ReduxComponent';
 import debug from './debug';
 import AppNavigator from './navigation/AppNavigator';
@@ -56,7 +57,7 @@ export default connect( ( store: AppState ) => {
 							console.log( `Navigating from ${prevRoute} to ${currentRoute}` );
 					} : undefined}
 				/>
-				{/*<Ad/>*/}
+				<Ad/>
 			</Root>
 		</StyleProvider>;
 	}

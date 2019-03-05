@@ -23,6 +23,7 @@ export default function folderListStore( state: folderListState = {}, action ): 
 	case 'reset':
 		return {};
 	case selectors.save:
+		console.log( 'inner saved' );
 		return { ...state, [ action.itemId ]: { ...action.item, id: action.itemId } };
 	case selectors.delete:
 		state = { ...state };
