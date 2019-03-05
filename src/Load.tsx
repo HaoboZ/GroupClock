@@ -5,11 +5,9 @@ import { PersistGate } from 'redux-persist/integration/react';
 import Main from './Main';
 import store, { persistor } from './store/store';
 
-export default class Load extends React.Component {
-	
-	props: {
-		skipLoading?: boolean
-	};
+export default class Load extends React.Component<{
+	skipLoading?: boolean
+}> {
 	
 	state = {
 		loading: true

@@ -2,15 +2,13 @@ import { Icon as _Icon } from 'native-base';
 import * as React from 'react';
 import { Platform, TextStyle } from 'react-native';
 
-export default class Icon extends React.PureComponent {
-	
-	props: {
-		name?: string
-		ios?: string
-		android?: string
-		style?: TextStyle
-		active?: boolean
-	};
+export default class Icon extends React.PureComponent<{
+	name?: string
+	ios?: string
+	android?: string
+	style?: TextStyle
+	active?: boolean
+}> {
 	
 	render() {
 		let { name, ios, android, style, active } = this.props;

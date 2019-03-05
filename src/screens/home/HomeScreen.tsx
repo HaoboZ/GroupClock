@@ -11,7 +11,7 @@ export default class HomeScreen extends NavigationComponent {
 	render() {
 		return <Container>
 			{this.header()}
-			<Text>Will show list of active parts sorted by time</Text>
+			<Text>TODO</Text>
 		</Container>;
 	}
 	

@@ -34,7 +34,7 @@
 	},
 	"dependencies": {
 		"expo": "^32.0.6",
-		"expo-cli": "^2.11.3",
+		"expo-cli": "^2.11.6",
 		"moment-duration-format": "^2.2.2",
 		"moment-timezone": "^0.5.23",
 		"native-base": "^2.10.0",
@@ -50,7 +50,7 @@
 		"typescript": "^3.3.3333"
 	},
 	"devDependencies": {
-		"@types/expo": "^32.0.3",
+		"@types/expo": "^32.0.5",
 		"@types/jest": "^24.0.9",
 		"@types/moment-duration-format": "^2.2.2",
 		"@types/moment-timezone": "^0.5.10",
