@@ -61,6 +61,8 @@ export default connect( ( store: AppState ) => {
 	}
 	
 	render() {
+		if ( !this.props.items[ 'HomeWatch' ] ) return null;
+		
 		return <Container>
 			{this.header()}
 			{this.renderItem( this.props.items[ 'HomeWatch' ] )}
