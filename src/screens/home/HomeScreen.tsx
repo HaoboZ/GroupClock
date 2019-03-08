@@ -83,6 +83,12 @@ export default connect((store: AppState) => {
     }
 
     render() {
+      if (!this.props.items["HomeWatch"]) return null;
+      if (!this.props.items["NorthWatch"]) return null;
+      if (!this.props.items["EastWatch"]) return null;
+      if (!this.props.items["SouthWatch"]) return null;
+      if (!this.props.items["WestWatch"]) return null;
+
       return (
         <Container>
           {this.header()}
