@@ -121,16 +121,45 @@ export default connect((store: AppState) => {
     };
 
     private renderCircle = (item: folderListItem) => {
-      return <ListItem>{this.circle(new WatchItem(item))}</ListItem>;
+      var currentWatch = new WatchItem(item);
+
+      if (currentWatch.item.name == "North") {
+        return (
+          <Body style={{ marginTop: 0, position: "absolute", top: 160 }}>
+            {this.circle(currentWatch)}
+          </Body>
+        );
+      } else if (currentWatch.item.name == "South") {
+        return (
+          <Body style={{ marginTop: 0, position: "absolute", top: 460 }}>
+            {this.circle(currentWatch)}
+          </Body>
+        );
+      } else if (currentWatch.item.name == "East") {
+        return (
+          <Body
+            style={{ marginTop: 0, position: "absolute", top: 305, right: 70 }}
+          >
+            {this.circle(currentWatch)}
+          </Body>
+        );
+      } else if (currentWatch.item.name == "West") {
+        return (
+          <Body
+            style={{ marginTop: 0, position: "absolute", top: 305, left: 50 }}
+          >
+            {this.circle(currentWatch)}
+          </Body>
+        );
+      }
     };
     protected circle(stopwatch: WatchItem) {
       return (
         <>
-          <Body style={compassStyle.center}>
-            <H1 numberOfLines={1}>{stopwatch.item.name}</H1>
-            <Text>{stopwatch.timeString(this.props.time)}</Text>
-          </Body>
-          <Right style={compassStyle.right}>
+          <H1 numberOfLines={1}>{stopwatch.item.name}</H1>
+          <Text>{stopwatch.timeString(this.props.time)}</Text>
+
+          <Right style={{ position: "absolute", left: -20, top: 60 }}>
             {this.circleButton(
               {
                 [[undefined, "dark", "danger"][stopwatch.data.state]]: true,
@@ -140,6 +169,8 @@ export default connect((store: AppState) => {
               },
               ["repeat", "repeat", "square"][stopwatch.data.state]
             )}
+          </Right>
+          <Right style={{ position: "absolute", left: 45, top: 60 }}>
             {this.circleButton(
               {
                 [["success", "warning", "success"][stopwatch.data.state]]: true,
@@ -232,7 +263,8 @@ const compassStyle = StyleSheet.create({
   body: {},
   center: {},
   right: {
-    marginRight: 200
+    marginRight: 200,
+    marginTop: 20
   },
   circular: {
     justifyContent: "center",
