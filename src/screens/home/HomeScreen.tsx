@@ -12,8 +12,9 @@ import {
   Title
 } from "native-base";
 import * as React from "react";
-import { StyleSheet } from "react-native";
+import { StyleSheet, View, TouchableOpacity } from "react-native";
 import { connect } from "react-redux";
+import { Accelerometer, Constants } from "expo";
 import Icon from "../../components/Icon";
 import NavigationComponent from "../../components/NavigationComponent";
 import { folderListItem, FolderListType } from "../../pages/FolderList";
@@ -24,6 +25,7 @@ import {
 import { AppState } from "../../store/store";
 import WatchItem, { State } from "../stopwatch/WatchItem";
 import { watchActions, watchState } from "../stopwatch/watchStore";
+import { any } from "prop-types";
 
 type Props = {
   time: number;
@@ -39,6 +41,34 @@ export default connect((store: AppState) => {
   } as Props;
 })(
   class HomeScreen extends NavigationComponent<Props> {
+    isSensorSubscribed = false;
+    homeWatch = any;
+
+    state = {
+      accelerometerData: {
+        x: {},
+        y: {},
+        z: {}
+      }
+    };
+
+    _slow = () => {
+      Accelerometer.setUpdateInterval(1000);
+    };
+
+    _fast = () => {
+      Accelerometer.setUpdateInterval(16);
+    };
+
+    _subscribe = () => {
+      if (!this.isSensorSubscribed) {
+        Accelerometer.addListener(accelerometerData => {
+          this.setState({ accelerometerData });
+        });
+        this.isSensorSubscribed = true;
+      }
+    };
+
     public componentDidMount(): void {
       this.createStopWatch("HomeWatch", "Movement");
       this.createStopWatch("NorthWatch", "North");
@@ -82,7 +112,20 @@ export default connect((store: AppState) => {
       this.props.dispatch(watchActions.deleteWatch(id));
     }
 
+    _toggle = () => {
+      this._subscribe();
+    };
+
     render() {
+      let { x, y, z } = this.state.accelerometerData;
+      this._subscribe();
+
+      // if (x > 1.5 || x < -1.5 || y > 1.5 || y < -1.5 || z > 1.5 || z < -1.5) {
+      //   // var homeWatch = new WatchItem(this.props.items["HomeWatch"]);
+      //   // homeWatch.rightAction();
+      //   console.log("movement detected");
+      // }
+
       if (!this.props.items["HomeWatch"]) return null;
       if (!this.props.items["NorthWatch"]) return null;
       if (!this.props.items["EastWatch"]) return null;
@@ -200,6 +243,14 @@ export default connect((store: AppState) => {
       );
     };
     protected item(stopwatch: WatchItem) {
+      if (stopwatch.item.name == "Movement") {
+        let { x, y, z } = this.state.accelerometerData;
+        if (x > 1.5 || x < -1.5 || y > 1.5 || y < -1.5 || z > 1.5 || z < -1.5) {
+          stopwatch.movementOn();
+        } else {
+          stopwatch.movementOff();
+        }
+      }
       return (
         <>
           <Body style={innerStyle.center}>
