@@ -60,6 +60,7 @@ export default connect( ( store: AppState ) => {
 	}
 	
 	private login() {
+		console.log(Firebase.user)
 		return <ListItem
 			button icon
 			onPress={() => {
@@ -68,7 +69,7 @@ export default connect( ( store: AppState ) => {
 		>
 			<Body><Text>Login/Logout</Text></Body>
 			<Right>
-				<Text>{Firebase.user.email}</Text>
+				<Text>{Firebase.user ? Firebase.user.email : ''}</Text>
 				<Icon name='arrow-forward'/>
 			</Right>
 		</ListItem>;
