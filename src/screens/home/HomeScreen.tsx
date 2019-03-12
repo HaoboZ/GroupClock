@@ -14,7 +14,13 @@ import {
 import * as React from "react";
 import { StyleSheet, View, TouchableOpacity } from "react-native";
 import { connect } from "react-redux";
-import { Accelerometer, Constants } from "expo";
+import {
+  Accelerometer,
+  Constants,
+  Magnetometer,
+  ScreenOrientation,
+  Location
+} from "expo";
 import Icon from "../../components/Icon";
 import NavigationComponent from "../../components/NavigationComponent";
 import { folderListItem, FolderListType } from "../../pages/FolderList";
@@ -25,7 +31,7 @@ import {
 import { AppState } from "../../store/store";
 import WatchItem, { State } from "../stopwatch/WatchItem";
 import { watchActions, watchState } from "../stopwatch/watchStore";
-import { any } from "prop-types";
+import { any, number } from "prop-types";
 
 type Props = {
   time: number;
@@ -42,6 +48,7 @@ export default connect((store: AppState) => {
 })(
   class HomeScreen extends NavigationComponent<Props> {
     isSensorSubscribed = false;
+    isMagnetometerSubscribed = false;
     homeWatch = any;
 
     state = {
@@ -49,7 +56,8 @@ export default connect((store: AppState) => {
         x: {},
         y: {},
         z: {}
-      }
+      },
+      magnetometer: "0"
     };
 
     _slow = () => {
@@ -67,7 +75,48 @@ export default connect((store: AppState) => {
         });
         this.isSensorSubscribed = true;
       }
+      if (!this.isMagnetometerSubscribed) {
+        Magnetometer.addListener(data => {
+          this.setState({ magnetometer: this._angle(data) });
+        });
+        this.isMagnetometerSubscribed = true;
+      }
     };
+
+    _angle = magnetometer => {
+      if (magnetometer) {
+        let { x, y, z } = magnetometer;
+
+        if (Math.atan2(y, x) >= 0) {
+          var angle = Math.atan2(y, x) * (180 / Math.PI);
+        } else {
+          var angle = (Math.atan2(y, x) + 2 * Math.PI) * (180 / Math.PI);
+        }
+      }
+
+      return Math.round(angle);
+    };
+
+    _direction = degree => {
+      if (degree > 315 || degree <= 45) {
+        return "N";
+      } else if (degree > 45 && degree <= 135) {
+        return "E";
+      } else if (degree > 135 && degree <= 225) {
+        return "S";
+      } else {
+        return "W";
+      }
+    };
+
+    // Match the device top with pointer 0° degree. (By default 0° starts from the right of the device.)
+    _degree = magnetometer => {
+      return magnetometer - 90 >= 0 ? magnetometer - 90 : magnetometer + 271;
+    };
+
+    public componentWillMount() {
+      ScreenOrientation.allow(ScreenOrientation.Orientation.ALL);
+    }
 
     public componentDidMount(): void {
       this.createStopWatch("HomeWatch", "Movement");
@@ -119,12 +168,6 @@ export default connect((store: AppState) => {
     render() {
       let { x, y, z } = this.state.accelerometerData;
       this._subscribe();
-
-      // if (x > 1.5 || x < -1.5 || y > 1.5 || y < -1.5 || z > 1.5 || z < -1.5) {
-      //   // var homeWatch = new WatchItem(this.props.items["HomeWatch"]);
-      //   // homeWatch.rightAction();
-      //   console.log("movement detected");
-      // }
 
       if (!this.props.items["HomeWatch"]) return null;
       if (!this.props.items["NorthWatch"]) return null;
@@ -197,6 +240,24 @@ export default connect((store: AppState) => {
       }
     };
     protected circle(stopwatch: WatchItem) {
+      let { x, y, z } = this.state.accelerometerData;
+      if (x > 1.5 || x < -1.5 || y > 1.5 || y < -1.5 || z > 1.5 || z < -1.5) {
+        let direction = this._direction(this._degree(this.state.magnetometer));
+        if (stopwatch.item.name == "North" && direction == "N") {
+          stopwatch.movementOn();
+        } else if (stopwatch.item.name == "East" && direction == "E") {
+          stopwatch.movementOn();
+        } else if (stopwatch.item.name == "South" && direction == "S") {
+          stopwatch.movementOn();
+        } else if (stopwatch.item.name == "West" && direction == "W") {
+          stopwatch.movementOn();
+        } else {
+          stopwatch.movementOff();
+        }
+      } else {
+        stopwatch.movementOff();
+      }
+
       return (
         <>
           <H1 numberOfLines={1}>{stopwatch.item.name}</H1>
