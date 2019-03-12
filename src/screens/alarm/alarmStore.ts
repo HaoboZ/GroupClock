@@ -27,6 +27,8 @@ export default function alarmStore( state: alarmState = {}, action ): alarmState
 	switch ( action.type ) {
 	case 'reset':
 	case selectors.reset:
+		if ( action.state )
+			return action.state.alarm;
 		return {};
 	case selectors.save:
 		return { ...state, [ action.itemId ]: { ...action.item, id: action.itemId } };

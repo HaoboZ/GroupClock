@@ -27,6 +27,8 @@ export default function timerStore( state: timerState = {}, action ): timerState
 	switch ( action.type ) {
 	case 'reset':
 	case selectors.reset:
+		if ( action.state )
+			return action.state.timer;
 		return {};
 	case selectors.save:
 		return { ...state, [ action.itemId ]: { ...action.item, id: action.itemId } };

@@ -26,6 +26,8 @@ export default function watchStore( state: watchState = {}, action ): watchState
 	switch ( action.type ) {
 	case 'reset':
 	case selectors.reset:
+		if ( action.state )
+			return action.state.stopwatch;
 		return {};
 	case selectors.save:
 		return { ...state, [ action.itemId ]: { ...action.item, id: action.itemId } };

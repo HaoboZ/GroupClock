@@ -7,6 +7,7 @@ import Icon from '../../../components/Icon';
 import NavigationComponent from '../../../components/NavigationComponent';
 import { AppState } from '../../../store/store';
 import styles from '../../../styles';
+import Firebase from '../../../utils/Firebase';
 import Timezone from '../../../utils/Timezone';
 import { alarmActions } from '../../alarm/alarmStore';
 import { watchActions } from '../../stopwatch/watchStore';
@@ -67,7 +68,7 @@ export default connect( ( store: AppState ) => {
 		>
 			<Body><Text>Login/Logout</Text></Body>
 			<Right>
-				<Text>Name</Text>
+				<Text>{Firebase.user.email}</Text>
 				<Icon name='arrow-forward'/>
 			</Right>
 		</ListItem>;

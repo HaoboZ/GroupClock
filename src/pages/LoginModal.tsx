@@ -1,9 +1,9 @@
 import * as firebase from 'firebase';
-import { Body, Button, Container, Header, Right, Title } from 'native-base';
+import { Body, Button, Container, Header, Right, Text, Title } from 'native-base';
 import * as React from 'react';
-import { Alert, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, StyleSheet, TextInput } from 'react-native';
 import NavigationComponent from '../components/NavigationComponent';
-import fb from '../screens/home/settings/firebaseUser';
+import Firebase from '../utils/Firebase';
 
 export default class LoginModal extends NavigationComponent {
 	
@@ -11,10 +11,6 @@ export default class LoginModal extends NavigationComponent {
 		password: '',
 		email:    ''
 	};
-	
-	componentDidMount() {
-		console.log( !!fb.user );
-	}
 	
 	render() {
 		return <Container>
@@ -33,23 +29,25 @@ export default class LoginModal extends NavigationComponent {
 	
 	// Occurs when signout is pressed...
 	onLogout = () => {
-		firebase.auth().signOut();
-		this.props.navigation.goBack();
+		firebase.auth().signOut().then( () => {
+			this.props.navigation.goBack();
+		} );
 	};
 	
 	onLogin = () => {
 		firebase.auth().signInWithEmailAndPassword( this.state.email, this.state.password )
 			.then( () => {
+				this.props.navigation.goBack();
 			}, ( error ) => {
 				Alert.alert( error.message );
 				console.log( error.message );
 			} );
-		this.props.navigation.goBack();
 	};
 	
 	onSignup = () => {
 		firebase.auth().createUserWithEmailAndPassword( this.state.email, this.state.password )
 			.then( () => {
+				this.props.navigation.goBack();
 			}, ( error ) => {
 				Alert.alert( error.message );
 				console.log( error.message );
@@ -58,7 +56,7 @@ export default class LoginModal extends NavigationComponent {
 	};
 	
 	login() {
-		return <View style={styles.container}>
+		return <Container>
 			<TextInput
 				value={this.state.email}
 				onChangeText={( email ) => this.setState( { email } )}
@@ -76,23 +74,23 @@ export default class LoginModal extends NavigationComponent {
 			<Button
 				style={styles.input}
 				onPress={this.onSignup}
-				disabled={!!fb.user}
-			>Sign up</Button>
+				disabled={!!Firebase.user}
+			><Text>Sign up</Text></Button>
 			
 			<Button
 				style={styles.input}
 				onPress={this.onLogin}
-				disabled={!!fb.user}
-			>Login</Button>
+				disabled={!!Firebase.user}
+			><Text>Login</Text></Button>
 			
 			<Button
 				style={styles.input}
 				onPress={this.onLogout}
-				disabled={!fb.user}
-			>Logout</Button>
+				disabled={!Firebase.user}
+			><Text>Logout</Text></Button>
 			
-			<Text>{fb.user ? fb.user.email : ''}</Text>
-		</View>;
+			<Text>{Firebase.user ? Firebase.user.email : ''}</Text>
+		</Container>;
 	}
 }
 

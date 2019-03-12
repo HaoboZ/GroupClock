@@ -3,6 +3,7 @@ import { createTransform, persistReducer, persistStore } from 'redux-persist';
 import { PersistConfig } from 'redux-persist/es/types';
 import storage from 'redux-persist/lib/storage';
 import promise from 'redux-promise-middleware';
+import Firebase from '../utils/Firebase';
 import reducer from './reducers';
 
 const middleware = applyMiddleware( promise() );
@@ -13,10 +14,10 @@ const persistConfig: PersistConfig = {
 	blacklist:  [ 'time', 'localNotice' ],
 	transforms: [ createTransform(
 		( state, key ) => {
-			console.log( 'inbound ' + key );
+			Firebase.setVal( key, state );
 			return state;
 		},
-		( state, key ) => {
+		( state ) => {
 			return state;
 		},
 		{
