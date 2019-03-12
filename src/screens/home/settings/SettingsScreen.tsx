@@ -60,7 +60,6 @@ export default connect( ( store: AppState ) => {
 	}
 	
 	private login() {
-		console.log(Firebase.user)
 		return <ListItem
 			button icon
 			onPress={() => {

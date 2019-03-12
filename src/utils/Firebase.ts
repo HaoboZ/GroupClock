@@ -28,10 +28,10 @@ export default new class Firebase {
 				
 				const db = firebase.database();
 				this.db = db;
-				if ( db )
+				if ( db && user )
 					db.ref( 'users/' + user.uid ).once( 'value' ).then( ( snapshot ) => {
-						this.data = snapshot;
-						console.log( 'database' );
+						this.data = snapshot.toJSON();
+						console.log( this.data );
 						Alert.alert(
 							'Sync Style',
 							'Which data to use?',
@@ -45,7 +45,7 @@ export default new class Firebase {
 								{
 									text:    'Device',
 									onPress: () => {
-										const items = [ 'alarm', 'folderList', 'settings', 'stopwatch', 'timer' ];
+										const items = [ 'alarm', 'folderList', 'stopwatch', 'timer' ];
 										const state = store.getState();
 										for ( let i of items ) {
 											this.setVal( i, state[ i ] );
@@ -66,7 +66,7 @@ export default new class Firebase {
 	}
 	
 	public setVal( key, value ) {
-		if ( !this.db || !this.data || this.disabled ) return;
+		if ( !this.db || !this.data || this.disabled || !this.user) return;
 		
 		console.log( 'set ' + key );
 		this.db.ref( 'users/' + this.user.uid )

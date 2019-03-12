@@ -21,8 +21,9 @@ export const folderListActions = {
 export default function folderListStore( state: folderListState = {}, action ): folderListState {
 	switch ( action.type ) {
 	case 'reset':
-		if ( action.state )
+		if ( action.state ) {
 			return action.state.folderList;
+		}
 		return {};
 	case selectors.save:
 		console.log( 'inner saved' );

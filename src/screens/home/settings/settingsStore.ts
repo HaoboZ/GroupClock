@@ -59,8 +59,6 @@ const initialState: settingsState = {
 export default function settingsStore( state: settingsState = initialState, action ) {
 	switch ( action.type ) {
 	case 'reset':
-		if ( action.state )
-			return action.state.settings;
 		return initialState;
 	case selectors.permission:
 		return { ...state, permission: action.permission };
