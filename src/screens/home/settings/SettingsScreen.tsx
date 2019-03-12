@@ -62,10 +62,14 @@ export default connect( ( store: AppState ) => {
 		return <ListItem
 			button icon
 			onPress={() => {
-				alert( 'To Be Implemented' );
+				this.props.navigation.navigate( 'Login' );
 			}}
 		>
 			<Body><Text>Login/Logout</Text></Body>
+			<Right>
+				<Text>Name</Text>
+				<Icon name='arrow-forward'/>
+			</Right>
 		</ListItem>;
 	}
 	

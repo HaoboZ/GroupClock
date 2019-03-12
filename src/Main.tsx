@@ -14,6 +14,7 @@ import AlarmItem from './screens/alarm/AlarmItem';
 import { settingsState, themes } from './screens/home/settings/settingsStore';
 import TimerItem from './screens/timer/TimerItem';
 import store, { AppState } from './store/store';
+import Movement from './utils/Movement';
 import Notice from './utils/notice/Notice';
 
 type Props = {
@@ -32,6 +33,7 @@ export default connect( ( store: AppState ) => {
 	public componentDidMount(): void {
 		console.disableYellowBox = true;
 		Notice.init();
+		Movement.init();
 		AlarmItem.reset();
 		TimerItem.reset();
 		this.interval = setInterval( () => {
