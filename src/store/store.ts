@@ -14,16 +14,13 @@ const persistConfig: PersistConfig = {
 	transforms: [ createTransform(
 		( state, key ) => {
 			console.log( 'inbound ' + key );
-			// send to firebase
 			return state;
 		},
 		( state, key ) => {
-			console.log( 'outbound ' + key );
-			// check firebase for corresponding
 			return state;
 		},
 		{
-			blacklist: [ 'notice' ]
+			blacklist: [ 'notice','_persist' ]
 		}
 	) ]
 };
