@@ -20,7 +20,7 @@ const persistConfig: PersistConfig = {
 			return state;
 		},
 		{
-			blacklist: [ 'notice','_persist' ]
+			blacklist: [ 'notice', '_persist' ]
 		}
 	) ]
 };
