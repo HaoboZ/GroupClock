@@ -39,6 +39,8 @@ export default class WatchItem {
 	constructor( item: folderListItem ) {
 		this.item = item;
 		this.data = store.getState().stopwatch[ item.id ];
+		if ( !this.data.laps ) this.data.laps = [];
+		if ( !( this.data.laps instanceof Array ) ) this.data.laps = Object.values( this.data.laps );
 	}
 	
 	public timeString( time: number ) {
@@ -100,14 +102,6 @@ export default class WatchItem {
 	
 	public async movementOn() {
 		switch ( this.data.state ) {
-		case State.OFF:
-			Object.assign( this.data, {
-				state:     State.ON,
-				startTime: Date.now()
-			} );
-			break;
-		case State.ON:
-			break;
 		case State.PAUSED:
 			Object.assign( this.data, {
 				state:     State.ON,
@@ -116,12 +110,10 @@ export default class WatchItem {
 			} );
 			break;
 		}
+		store.dispatch( watchActions.saveWatch( this.data.id, this.data ) );
 	}
-	
 	public async movementOff() {
 		switch ( this.data.state ) {
-		case State.OFF:
-			break;
 		case State.ON:
 			Object.assign( this.data, {
 				state:     State.PAUSED,
@@ -129,8 +121,8 @@ export default class WatchItem {
 				savedTime: Date.now() - this.data.startTime
 			} );
 			break;
-		case State.PAUSED:
 		}
+		store.dispatch( watchActions.saveWatch( this.data.id, this.data ) );
 	}
 	
 	public delete() {

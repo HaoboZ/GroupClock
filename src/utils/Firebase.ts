@@ -1,7 +1,4 @@
 import * as firebase from 'firebase';
-import { Alert } from 'react-native';
-import { settingsActions } from '../screens/home/settings/settingsStore';
-import store from '../store/store';
 
 export default new class Firebase {
 	
@@ -23,50 +20,11 @@ export default new class Firebase {
 				storageBucket:     'coen-268.appspot.com',
 				messagingSenderId: '625850952515'
 			} );
-			firebase.auth().onAuthStateChanged( async ( user ) => {
-				this.user = user;
-				
-				const db = firebase.database();
-				this.db = db;
-				if ( db && user )
-					db.ref( 'users/' + user.uid ).once( 'value' ).then( ( snapshot ) => {
-						this.data = snapshot.toJSON();
-						console.log( this.data );
-						Alert.alert(
-							'Sync Style',
-							'Which data to use?',
-							[
-								{
-									text:    'Cloud',
-									onPress: () => {
-										store.dispatch( settingsActions.reset( this.data ) );
-									}
-								},
-								{
-									text:    'Device',
-									onPress: () => {
-										const items = [ 'alarm', 'folderList', 'stopwatch', 'timer' ];
-										const state = store.getState();
-										for ( let i of items ) {
-											this.setVal( i, state[ i ] );
-										}
-									}
-								},
-								{
-									text:     'Cancel',
-									onPress:  () => {
-										this.disabled = true;
-									}, style: 'cancel'
-								}
-							]
-						);
-					} );
-			} );
 		}
 	}
 	
 	public setVal( key, value ) {
-		if ( !this.db || !this.data || this.disabled || !this.user) return;
+		if ( !this.db || !this.data || this.disabled || !this.user ) return;
 		
 		console.log( 'set ' + key );
 		this.db.ref( 'users/' + this.user.uid )

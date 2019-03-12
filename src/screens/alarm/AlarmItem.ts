@@ -57,6 +57,8 @@ export default class AlarmItem {
 	constructor( item: folderListItem ) {
 		this.item = item;
 		this.data = store.getState().alarm[ item.id ] as alarmItemData;
+		if ( !this.data.repeatDays ) this.data.repeatDays = [];
+		if ( !( this.data.repeatDays instanceof Array ) ) this.data.repeatDays = Object.values( this.data.repeatDays );
 	}
 	
 	public async offAction() {

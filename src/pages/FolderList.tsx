@@ -109,6 +109,7 @@ export default connect( ( store: AppState ) => {
 		const list = this.props.items[ this.state.listId ];
 		// if data has been reset, will need to run init
 		if ( !list ) return this.reset();
+		if ( !list.items ) list.items = {};
 		
 		return <Container>
 			{this.header( list )}

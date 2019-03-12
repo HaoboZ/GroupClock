@@ -25,31 +25,55 @@ export default connect( ( store: AppState ) => {
 	} as Props;
 } )(
 	class HomeScreen extends NavigationComponent<Props> {
-		isSensorSubscribed = false;
-		isMagnetometerSubscribed = false;
 		
-		state = {
-			accelerometerData: {
-				x: {},
-				y: {},
-				z: {}
-			},
-			magnetometer:      '0'
+		accelerometer: {
+			x: {},
+			y: {},
+			z: {}
 		};
 		
-		_subscribe = () => {
-			if ( !this.isSensorSubscribed ) {
-				Accelerometer.addListener( accelerometerData => {
-					this.setState( { accelerometerData } );
-				} );
-				this.isSensorSubscribed = true;
+		magnetometer = 0;
+		
+		
+		public componentWillMount(): void {
+			Accelerometer.addListener( accelerometerData => {
+				this.accelerometer = accelerometerData;
+			} );
+			Magnetometer.addListener( data => {
+				this.magnetometer = this._angle( data );
+			} );
+			setInterval( this.calculate, 500 );
+		}
+		
+		calculate = () => {
+			const { x, y, z } = this.accelerometer,
+			      direction   = this._direction( this._degree( this.magnetometer ) );
+			
+			const watches = [
+				'HomeWatch',
+				'NorthWatch',
+				'EastWatch',
+				'SouthWatch',
+				'WestWatch'
+			];
+			
+			for ( let i of watches ) {
+				const stopwatch = new WatchItem( this.props.items[ i ] );
+				if ( x > 1.5 || x < -1.5 || y > 1.5 || y < -1.5 || z > 1.5 || z < -1.5 ) {
+					if ( i === 'HomeWatch'
+						|| ( i === 'NorthWatch' && direction == 'N' )
+						|| ( i == 'EastWatch' && direction == 'E' )
+						|| ( i == 'SouthWatch' && direction == 'S' )
+						|| ( i == 'WestWatch' && direction == 'W' ) ) {
+						stopwatch.movementOn();
+					} else {
+						stopwatch.movementOff();
+					}
+				} else {
+					stopwatch.movementOff();
+				}
 			}
-			if ( !this.isMagnetometerSubscribed ) {
-				Magnetometer.addListener( data => {
-					this.setState( { magnetometer: this._angle( data ) } );
-				} );
-				this.isMagnetometerSubscribed = true;
-			}
+			
 		};
 		
 		_angle = magnetometer => {
@@ -118,8 +142,6 @@ export default connect( ( store: AppState ) => {
 		}
 		
 		render() {
-			this._subscribe();
-			
 			if ( !this.props.items[ 'HomeWatch' ] ) return null;
 			if ( !this.props.items[ 'NorthWatch' ] ) return null;
 			if ( !this.props.items[ 'EastWatch' ] ) return null;
@@ -130,10 +152,21 @@ export default connect( ( store: AppState ) => {
 				<Container>
 					{this.header()}
 					{this.renderItem( this.props.items[ 'HomeWatch' ] )}
-					{this.renderCircle( this.props.items[ 'NorthWatch' ] )}
-					{this.renderCircle( this.props.items[ 'EastWatch' ] )}
-					{this.renderCircle( this.props.items[ 'SouthWatch' ] )}
-					{this.renderCircle( this.props.items[ 'WestWatch' ] )}
+					{this.renderCircle( this.props.items[ 'NorthWatch' ],
+						{ marginTop: 0, position: 'absolute', top: 160 } )}
+					{this.renderCircle( this.props.items[ 'EastWatch' ], {
+						marginTop: 0,
+						position:  'absolute',
+						top:       305,
+						right:     70
+					} )}
+					{this.renderCircle( this.props.items[ 'SouthWatch' ], { marginTop: 0, position: 'absolute', top: 460 } )}
+					{this.renderCircle( this.props.items[ 'WestWatch' ], {
+						marginTop: 0,
+						position:  'absolute',
+						top:       305,
+						left:      50
+					} )}
 				</Container>
 			);
 		}
@@ -157,140 +190,82 @@ export default connect( ( store: AppState ) => {
 			this.props.navigation.navigate( 'Settings' );
 		};
 		
-		private renderCircle = ( item: folderListItem ) => {
+		private renderCircle = ( item: folderListItem, style ) => {
 			var currentWatch = new WatchItem( item );
 			
-			if ( currentWatch.item.name == 'North' ) {
-				return (
-					<Body style={{ marginTop: 0, position: 'absolute', top: 160 }}>
-					{this.circle( currentWatch )}
-					</Body>
-				);
-			} else if ( currentWatch.item.name == 'South' ) {
-				return (
-					<Body style={{ marginTop: 0, position: 'absolute', top: 460 }}>
-					{this.circle( currentWatch )}
-					</Body>
-				);
-			} else if ( currentWatch.item.name == 'East' ) {
-				return (
-					<Body
-						style={{ marginTop: 0, position: 'absolute', top: 305, right: 70 }}
-					>
-					{this.circle( currentWatch )}
-					</Body>
-				);
-			} else if ( currentWatch.item.name == 'West' ) {
-				return (
-					<Body
-						style={{ marginTop: 0, position: 'absolute', top: 305, left: 50 }}
-					>
-					{this.circle( currentWatch )}
-					</Body>
-				);
-			}
+			return <Body style={style}>
+			{this.circle( currentWatch )}
+			</Body>;
 		};
 		protected circle( stopwatch: WatchItem ) {
-			let { x, y, z } = this.state.accelerometerData;
-			if ( x > 1.5 || x < -1.5 || y > 1.5 || y < -1.5 || z > 1.5 || z < -1.5 ) {
-				let direction = this._direction( this._degree( this.state.magnetometer ) );
-				if ( stopwatch.item.name == 'North' && direction == 'N' ) {
-					stopwatch.movementOn();
-				} else if ( stopwatch.item.name == 'East' && direction == 'E' ) {
-					stopwatch.movementOn();
-				} else if ( stopwatch.item.name == 'South' && direction == 'S' ) {
-					stopwatch.movementOn();
-				} else if ( stopwatch.item.name == 'West' && direction == 'W' ) {
-					stopwatch.movementOn();
-				} else {
-					stopwatch.movementOff();
-				}
-			} else {
-				stopwatch.movementOff();
-			}
-			
-			return (
-				<>
-					<H1 numberOfLines={1}>{stopwatch.item.name}</H1>
-					<Text>{stopwatch.timeString( this.props.time )}</Text>
-					
-					<Right style={{ position: 'absolute', left: -20, top: 60 }}>
-						{this.circleButton(
-							{
-								[ [ undefined, 'dark', 'danger' ][ stopwatch.data.state ] ]: true,
-								
-								disabled: stopwatch.data.state === State.OFF,
-								onPress:  () => stopwatch.leftAction()
-							},
-							[ 'repeat', 'repeat', 'square' ][ stopwatch.data.state ]
-						)}
-					</Right>
-					<Right style={{ position: 'absolute', left: 45, top: 60 }}>
-						{this.circleButton(
-							{
-								[ [ 'success', 'warning', 'success' ][ stopwatch.data.state ] ]: true,
-								
-								onPress: () => stopwatch.rightAction()
-							},
-							[ 'play', 'pause', 'play' ][ stopwatch.data.state ]
-						)}
-					</Right>
-				</>
-			);
+			return <>
+				<H1 numberOfLines={1}>{stopwatch.item.name}</H1>
+				<Text>{stopwatch.timeString( this.props.time )}</Text>
+				
+				<Right style={{ position: 'absolute', left: -20, top: 60 }}>
+					{this.circleButton(
+						{
+							[ [ undefined, 'dark', 'danger' ][ stopwatch.data.state ] ]: true,
+							
+							disabled: stopwatch.data.state === State.OFF,
+							onPress:  () => stopwatch.leftAction()
+						},
+						[ 'repeat', 'repeat', 'square' ][ stopwatch.data.state ]
+					)}
+				</Right>
+				<Right style={{ position: 'absolute', left: 45, top: 60 }}>
+					{this.circleButton(
+						{
+							[ [ 'success', 'warning', 'success' ][ stopwatch.data.state ] ]: true,
+							
+							onPress: () => stopwatch.rightAction()
+						},
+						[ 'play', 'pause', 'play' ][ stopwatch.data.state ]
+					)}
+				</Right>
+			</>;
 		}
 		
 		private renderItem = ( item: folderListItem ) => {
-			return (
-				<ListItem
-					button
-					style={innerStyle.listItem}
-					onPress={() => {
-						this.props.navigation.navigate( 'WatchDetails', {
-							itemId: item.id
-						} );
-					}}
-				>
-					{this.item( new WatchItem( item ) )}
-				</ListItem>
-			);
+			return <ListItem
+				button
+				style={innerStyle.listItem}
+				onPress={() => {
+					this.props.navigation.navigate( 'WatchDetails', {
+						itemId: item.id
+					} );
+				}}
+			>
+				{this.item( new WatchItem( item ) )}
+			</ListItem>;
 		};
 		protected item( stopwatch: WatchItem ) {
-			if ( stopwatch.item.name == 'Movement' ) {
-				let { x, y, z } = this.state.accelerometerData;
-				if ( x > 1.5 || x < -1.5 || y > 1.5 || y < -1.5 || z > 1.5 || z < -1.5 ) {
-					stopwatch.movementOn();
-				} else {
-					stopwatch.movementOff();
-				}
-			}
-			return (
-				<>
-					<Body style={innerStyle.center}>
-					<H1 numberOfLines={1}>{stopwatch.item.name}</H1>
-					<Text>Time: {stopwatch.timeString( this.props.time )}</Text>
-					<Text>Lap: {stopwatch.toString( stopwatch.lapDiff[ 0 ] )}</Text>
-					</Body>
-					<Right style={innerStyle.right}>
-						{this.circleButton(
-							{
-								[ [ undefined, 'dark', 'danger' ][ stopwatch.data.state ] ]: true,
-								
-								disabled: stopwatch.data.state === State.OFF,
-								onPress:  () => stopwatch.leftAction()
-							},
-							[ 'repeat', 'repeat', 'square' ][ stopwatch.data.state ]
-						)}
-						{this.circleButton(
-							{
-								[ [ 'success', 'warning', 'success' ][ stopwatch.data.state ] ]: true,
-								
-								onPress: () => stopwatch.rightAction()
-							},
-							[ 'play', 'pause', 'play' ][ stopwatch.data.state ]
-						)}
-					</Right>
-				</>
-			);
+			return <>
+				<Body style={innerStyle.center}>
+				<H1 numberOfLines={1}>{stopwatch.item.name}</H1>
+				<Text>Time: {stopwatch.timeString( this.props.time )}</Text>
+				<Text>Lap: {stopwatch.toString( stopwatch.lapDiff[ 0 ] )}</Text>
+				</Body>
+				<Right style={innerStyle.right}>
+					{this.circleButton(
+						{
+							[ [ undefined, 'dark', 'danger' ][ stopwatch.data.state ] ]: true,
+							
+							disabled: stopwatch.data.state === State.OFF,
+							onPress:  () => stopwatch.leftAction()
+						},
+						[ 'repeat', 'repeat', 'square' ][ stopwatch.data.state ]
+					)}
+					{this.circleButton(
+						{
+							[ [ 'success', 'warning', 'success' ][ stopwatch.data.state ] ]: true,
+							
+							onPress: () => stopwatch.rightAction()
+						},
+						[ 'play', 'pause', 'play' ][ stopwatch.data.state ]
+					)}
+				</Right>
+			</>;
 		}
 		
 		protected circleButton( props: NativeBase.Button, name: string ) {
@@ -312,22 +287,6 @@ const innerStyle = StyleSheet.create( {
 		flex:           3,
 		flexDirection:  'row',
 		justifyContent: 'space-between'
-	},
-	circular: {
-		justifyContent: 'center',
-		width:          circleSize,
-		height:         circleSize,
-		borderRadius:   circleSize / 2
-	}
-} );
-
-const compassStyle = StyleSheet.create( {
-	listItem: { height: 72, marginLeft: 0 },
-	body:     {},
-	center:   {},
-	right:    {
-		marginRight: 200,
-		marginTop:   20
 	},
 	circular: {
 		justifyContent: 'center',
