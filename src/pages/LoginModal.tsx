@@ -56,7 +56,8 @@ export default class LoginModal extends NavigationComponent {
 	};
 	
 	login() {
-		return <Container>
+		return <Container
+		style={styles.container}>
 			<TextInput
 				value={this.state.email}
 				onChangeText={( email ) => this.setState( { email } )}
@@ -75,7 +76,8 @@ export default class LoginModal extends NavigationComponent {
 				style={styles.input}
 				onPress={this.onSignup}
 				disabled={!!Firebase.user}
-			><Text>Sign up</Text></Button>
+			><Text
+			>Sign up</Text></Button>
 			
 			<Button
 				style={styles.input}
@@ -100,7 +102,7 @@ const styles = StyleSheet.create( {
 		flex:            1,
 		alignItems:      'center',
 		justifyContent:  'center',
-		backgroundColor: '#d6ffd6'
+		backgroundColor: '#ffffff'
 	},
 	input:     {
 		width:        200,
@@ -108,6 +110,7 @@ const styles = StyleSheet.create( {
 		padding:      10,
 		borderWidth:  1,
 		borderColor:  'black',
-		marginBottom: 10
+		marginBottom: 10,
+		'alignSelf':  'center'
 	}
 } );
