@@ -110,7 +110,7 @@ export default class WatchItem {
 			} );
 			break;
 		}
-		store.dispatch( watchActions.saveWatch( this.data.id, this.data ) );
+		// store.dispatch( watchActions.saveWatch( this.data.id, this.data ) );
 	}
 	public async movementOff() {
 		switch ( this.data.state ) {
@@ -122,7 +122,7 @@ export default class WatchItem {
 			} );
 			break;
 		}
-		store.dispatch( watchActions.saveWatch( this.data.id, this.data ) );
+		// store.dispatch( watchActions.saveWatch( this.data.id, this.data ) );
 	}
 	
 	public delete() {

@@ -38,11 +38,11 @@ export default connect( ( store: AppState ) => {
 		public componentWillMount(): void {
 			Accelerometer.addListener( accelerometerData => {
 				this.accelerometer = accelerometerData;
+				this.calculate();
 			} );
 			Magnetometer.addListener( data => {
 				this.magnetometer = this._angle( data );
 			} );
-			setInterval( this.calculate, 500 );
 		}
 		
 		calculate = () => {
@@ -73,7 +73,6 @@ export default connect( ( store: AppState ) => {
 					stopwatch.movementOff();
 				}
 			}
-			
 		};
 		
 		_angle = magnetometer => {
